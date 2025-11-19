@@ -14,6 +14,7 @@ struct AddSymptomView: View {
     @State private var sleepHours: String = ""
     @State private var notes: String = ""
     @State private var medications: [MedicationInput] = []
+    @State private var substances: [SubstanceInput] = []
     @State private var isLoadingSleepData = false
     @State private var healthKitMedications: [HKUserAnnotatedMedication] = []
     @State private var showingHealthKitMedications = false
@@ -23,8 +24,8 @@ struct AddSymptomView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Date & Time") {
-                    DatePicker("Entry Date", selection: $selectedDate)
+                Section("Date") {
+                    DatePicker("Entry Date", selection: $selectedDate, in: ...Date(), displayedComponents: [.date])
                 }
 
                 Section("Mood") {
@@ -153,6 +154,91 @@ struct AddSymptomView: View {
                     }
                 }
 
+                Section("Substances") {
+                    ForEach(substances) { substance in
+                        VStack(alignment: .leading, spacing: 8) {
+                            TextField(
+                                "Substance Name",
+                                text: Binding(
+                                    get: { substance.name },
+                                    set: { newValue in
+                                        if let index = substances.firstIndex(
+                                            where: { $0.id == substance.id })
+                                        {
+                                            substances[index].name = newValue
+                                        }
+                                    }
+                                )
+                            )
+                            .font(.headline)
+
+                            HStack {
+                                TextField(
+                                    "Amount",
+                                    text: Binding(
+                                        get: { substance.amount },
+                                        set: { newValue in
+                                            if let index = substances.firstIndex(
+                                                where: { $0.id == substance.id })
+                                            {
+                                                substances[index].amount = newValue
+                                            }
+                                        }
+                                    )
+                                )
+                                .keyboardType(.decimalPad)
+                                .frame(maxWidth: 100)
+
+                                Picker(
+                                    "Unit",
+                                    selection: Binding(
+                                        get: { substance.unit },
+                                        set: { newValue in
+                                            if let index = substances.firstIndex(
+                                                where: { $0.id == substance.id })
+                                            {
+                                                substances[index].unit = newValue
+                                            }
+                                        }
+                                    )
+                                ) {
+                                    ForEach(SubstanceUnit.allCases, id: \.self) {
+                                        unit in
+                                        Text(unit.displayName).tag(unit)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                            }
+
+                            TextField(
+                                "Notes (optional)",
+                                text: Binding(
+                                    get: { substance.notes },
+                                    set: { newValue in
+                                        if let index = substances.firstIndex(
+                                            where: { $0.id == substance.id })
+                                        {
+                                            substances[index].notes = newValue
+                                        }
+                                    }
+                                )
+                            )
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .onDelete { indexSet in
+                        substances.remove(atOffsets: indexSet)
+                    }
+
+                    Button {
+                        substances.append(SubstanceInput())
+                    } label: {
+                        Label("Add Substance", systemImage: "plus.circle.fill")
+                    }
+                }
+
                 Section("Notes") {
                     TextEditor(text: $notes)
                         .frame(minHeight: 100)
@@ -183,6 +269,11 @@ struct AddSymptomView: View {
             .task {
                 await loadHealthKitMedications()
                 await loadSleepData()
+            }
+            .onChange(of: selectedDate) { _, _ in
+                Task {
+                    await loadSleepData()
+                }
             }
         }
     }
@@ -234,8 +325,11 @@ struct AddSymptomView: View {
     }
 
     private func saveEntry() {
+        let calendar = Calendar.current
+        let endOfDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: selectedDate) ?? selectedDate
+
         let entry = SymptomEntry(
-            timestamp: selectedDate,
+            timestamp: endOfDay,
             moodLevel: moodLevel,
             anxietyLevel: anxietyLevel,
             anhedoniaLevel: anhedoniaLevel,
@@ -248,7 +342,7 @@ struct AddSymptomView: View {
             Medication(
                 name: input.name,
                 dosage: input.dosage,
-                timestamp: selectedDate,
+                timestamp: endOfDay,
                 taken: input.taken,
                 notes: input.notes
             )
@@ -256,8 +350,26 @@ struct AddSymptomView: View {
 
         entry.medications = meds
         meds.forEach { $0.symptomEntry = entry }
+        meds.forEach { modelContext.insert($0) }
+
+        let subs = substances.compactMap { input -> Substance? in
+            guard !input.name.isEmpty, let amount = Double(input.amount) else {
+                return nil
+            }
+            return Substance(
+                name: input.name,
+                amount: amount,
+                unit: input.unit,
+                timestamp: endOfDay,
+                notes: input.notes
+            )
+        }
+
+        entry.substances = subs
+        subs.forEach { $0.symptomEntry = entry }
 
         modelContext.insert(entry)
+        subs.forEach { modelContext.insert($0) }
 
         if healthKitManager.isAuthorized, let mood = moodLevel {
             Task {
@@ -266,7 +378,7 @@ struct AddSymptomView: View {
                         valence: mood.stateOfMindValence,
                         kind: .dailyMood,
                         labels: mood.stateOfMindLabels,
-                        date: selectedDate
+                        date: endOfDay
                     )
                 }
             }
@@ -281,6 +393,14 @@ struct MedicationInput: Identifiable {
     var name: String = ""
     var dosage: String = ""
     var taken: Bool = false
+    var notes: String = ""
+}
+
+struct SubstanceInput: Identifiable {
+    let id = UUID()
+    var name: String = ""
+    var amount: String = ""
+    var unit: SubstanceUnit = .milliliters
     var notes: String = ""
 }
 

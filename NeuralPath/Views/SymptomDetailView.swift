@@ -4,24 +4,31 @@ import SwiftData
 struct SymptomDetailView: View {
     let entry: SymptomEntry
 
+    @Query private var allEntries: [SymptomEntry]
+
+    private var freshEntry: SymptomEntry? {
+        allEntries.first { $0.id == entry.id }
+    }
+
     var body: some View {
+        let displayEntry = freshEntry ?? entry
         List {
             Section("Date & Time") {
                 HStack {
                     Text("Date")
                     Spacer()
-                    Text(entry.timestamp, style: .date)
+                    Text(displayEntry.timestamp, style: .date)
                         .foregroundStyle(.secondary)
                 }
                 HStack {
                     Text("Time")
                     Spacer()
-                    Text(entry.timestamp, style: .time)
+                    Text(displayEntry.timestamp, style: .time)
                         .foregroundStyle(.secondary)
                 }
             }
 
-            if let mood = entry.moodLevel {
+            if let mood = displayEntry.moodLevel {
                 Section("Mood") {
                     HStack {
                         Text(mood.emoji)
@@ -32,7 +39,7 @@ struct SymptomDetailView: View {
                 }
             }
 
-            if let anxiety = entry.anxietyLevel {
+            if let anxiety = displayEntry.anxietyLevel {
                 Section("Anxiety") {
                     HStack {
                         Text("Level")
@@ -46,7 +53,7 @@ struct SymptomDetailView: View {
                 }
             }
 
-            if let anhedonia = entry.anhedoniaLevel {
+            if let anhedonia = displayEntry.anhedoniaLevel {
                 Section("Anhedonia") {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -63,9 +70,9 @@ struct SymptomDetailView: View {
                 }
             }
 
-            if entry.sleepHours != nil || entry.sleepQualityRating != nil {
+            if displayEntry.sleepHours != nil || displayEntry.sleepQualityRating != nil {
                 Section("Sleep") {
-                    if let hours = entry.sleepHours {
+                    if let hours = displayEntry.sleepHours {
                         HStack {
                             Text("Duration")
                             Spacer()
@@ -74,7 +81,7 @@ struct SymptomDetailView: View {
                         }
                     }
 
-                    if let quality = entry.sleepQualityRating {
+                    if let quality = displayEntry.sleepQualityRating {
                         HStack {
                             Text("Quality")
                             Spacer()
@@ -90,7 +97,7 @@ struct SymptomDetailView: View {
                 }
             }
 
-            if let medications = entry.medications, !medications.isEmpty {
+            if let medications = displayEntry.medications, !medications.isEmpty {
                 Section("Medications") {
                     ForEach(medications) { medication in
                         VStack(alignment: .leading, spacing: 4) {
@@ -101,6 +108,9 @@ struct SymptomDetailView: View {
                                 if medication.taken {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundStyle(.green)
+                                } else {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.red)
                                 }
                             }
                             Text(medication.dosage)
@@ -117,9 +127,34 @@ struct SymptomDetailView: View {
                 }
             }
 
-            if !entry.notes.isEmpty {
+            if let substances = displayEntry.substances, !substances.isEmpty {
+                Section("Substances") {
+                    ForEach(substances) { substance in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(substance.name)
+                                .font(.headline)
+                            HStack {
+                                Text("Amount")
+                                    .font(.caption)
+                                Spacer()
+                                Text("\(String(format: "%.1f", substance.amount)) \(substance.unit.abbreviation)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            if !substance.notes.isEmpty {
+                                Text(substance.notes)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+
+            if !displayEntry.notes.isEmpty {
                 Section("Notes") {
-                    Text(entry.notes)
+                    Text(displayEntry.notes)
                 }
             }
         }

@@ -87,54 +87,6 @@ struct ContentView: View {
     }
 }
 
-struct SymptomEntryRow: View {
-    let entry: SymptomEntry
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(entry.timestamp, style: .date)
-                    .font(.headline)
-                Spacer()
-                Text(entry.timestamp, style: .time)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            HStack(spacing: 12) {
-                if let mood = entry.moodLevel {
-                    Label(mood.emoji, systemImage: "face.smiling")
-                        .labelStyle(.titleOnly)
-                }
-                if let anxiety = entry.anxietyLevel {
-                    Label(anxiety.displayName, systemImage: "brain.head.profile")
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.orange.opacity(0.2))
-                        .cornerRadius(8)
-                }
-                if let anhedonia = entry.anhedoniaLevel {
-                    Label("Anhedonia: \(anhedonia.displayName.prefix(4))", systemImage: "sparkles")
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.purple.opacity(0.2))
-                        .cornerRadius(8)
-                }
-            }
-
-            if !entry.notes.isEmpty {
-                Text(entry.notes)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-}
-
 #Preview {
     ContentView()
         .modelContainer(for: SymptomEntry.self, inMemory: true)

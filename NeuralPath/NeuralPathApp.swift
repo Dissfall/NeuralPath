@@ -13,7 +13,8 @@ struct NeuralPathApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             SymptomEntry.self,
-            Medication.self
+            Medication.self,
+            Substance.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

@@ -15,6 +15,9 @@ final class SymptomEntry {
     @Relationship(deleteRule: .cascade, inverse: \Medication.symptomEntry)
     var medications: [Medication]?
 
+    @Relationship(deleteRule: .cascade, inverse: \Substance.symptomEntry)
+    var substances: [Substance]?
+
     init(
         id: UUID = UUID(),
         timestamp: Date = Date(),
@@ -24,7 +27,8 @@ final class SymptomEntry {
         sleepQualityRating: Int? = nil,
         sleepHours: Double? = nil,
         notes: String = "",
-        medications: [Medication]? = nil
+        medications: [Medication]? = nil,
+        substances: [Substance]? = nil
     ) {
         self.id = id
         self.timestamp = timestamp
@@ -35,5 +39,6 @@ final class SymptomEntry {
         self.sleepHours = sleepHours
         self.notes = notes
         self.medications = medications
+        self.substances = substances
     }
 }

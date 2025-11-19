@@ -6,6 +6,7 @@ struct ChartsView: View {
     @Query(sort: \SymptomEntry.timestamp) private var entries: [SymptomEntry]
     @State private var selectedMetric: MetricType = .mood
     @State private var timeRange: TimeRange = .week
+    @State private var selectedSubstance: String?
 
     var body: some View {
         NavigationStack {
@@ -26,6 +27,17 @@ struct ChartsView: View {
                     }
                     .pickerStyle(.menu)
                     .padding(.horizontal)
+
+                    if selectedMetric == .substances {
+                        Picker("Substance", selection: $selectedSubstance) {
+                            Text("Select Substance").tag(nil as String?)
+                            ForEach(uniqueSubstanceNames, id: \.self) { name in
+                                Text(name).tag(name as String?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .padding(.horizontal)
+                    }
 
                     if filteredEntries.isEmpty {
                         ContentUnavailableView(
@@ -66,6 +78,8 @@ struct ChartsView: View {
             anhedoniaChart
         case .sleep:
             sleepChart
+        case .substances:
+            substancesChart
         }
     }
 
@@ -146,6 +160,43 @@ struct ChartsView: View {
         }
     }
 
+    private var substancesChart: some View {
+        Group {
+            if selectedSubstance == nil {
+                ContentUnavailableView(
+                    "Select a Substance",
+                    systemImage: "drop.fill",
+                    description: Text("Choose a substance from the menu above")
+                )
+            } else if filteredSubstances.isEmpty {
+                ContentUnavailableView(
+                    "No Data",
+                    systemImage: "calendar",
+                    description: Text("No consumption data for this time period")
+                )
+            } else {
+                Chart {
+                    ForEach(filteredSubstances, id: \.substance.id) { item in
+                        BarMark(
+                            x: .value("Date", item.entry.timestamp, unit: .day),
+                            y: .value("Amount", item.substance.amount)
+                        )
+                        .foregroundStyle(.blue)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks { value in
+                        AxisValueLabel {
+                            if let amount = value.as(Double.self) {
+                                Text("\(String(format: "%.0f", amount)) \(substanceUnit)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private var statsView: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Statistics")
@@ -167,6 +218,21 @@ struct ChartsView: View {
             case .sleep:
                 if let avgSleep = averageSleep {
                     StatRow(label: "Average Sleep", value: String(format: "%.1f hours", avgSleep))
+                }
+            case .substances:
+                if selectedSubstance != nil && !filteredSubstances.isEmpty {
+                    StatRow(
+                        label: "Total Consumption",
+                        value: "\(String(format: "%.1f", totalSubstanceConsumption)) \(substanceUnit)"
+                    )
+                    StatRow(
+                        label: "Average per Entry",
+                        value: "\(String(format: "%.1f", averageSubstanceConsumption)) \(substanceUnit)"
+                    )
+                    StatRow(
+                        label: "Frequency",
+                        value: "\(filteredSubstances.count) times"
+                    )
                 }
             }
 
@@ -201,6 +267,45 @@ struct ChartsView: View {
         guard !sleepHours.isEmpty else { return nil }
         return sleepHours.reduce(0, +) / Double(sleepHours.count)
     }
+
+    private var allSubstances: [(substance: Substance, entry: SymptomEntry)] {
+        entries.flatMap { entry in
+            (entry.substances ?? []).map { (substance: $0, entry: entry) }
+        }
+    }
+
+    private var uniqueSubstanceNames: [String] {
+        let names = Set(allSubstances.map { $0.substance.name })
+        return names.sorted()
+    }
+
+    private var filteredSubstances: [(substance: Substance, entry: SymptomEntry)] {
+        let startDate = Calendar.current.date(
+            byAdding: timeRange.dateComponent,
+            value: -timeRange.value,
+            to: Date()
+        ) ?? Date()
+
+        return allSubstances.filter { item in
+            guard let selectedName = selectedSubstance else { return false }
+            return item.substance.name == selectedName &&
+                   item.entry.timestamp >= startDate
+        }
+    }
+
+    private var totalSubstanceConsumption: Double {
+        filteredSubstances.reduce(0) { $0 + $1.substance.amount }
+    }
+
+    private var averageSubstanceConsumption: Double {
+        guard !filteredSubstances.isEmpty else { return 0 }
+        return totalSubstanceConsumption / Double(filteredSubstances.count)
+    }
+
+    private var substanceUnit: String {
+        guard let first = filteredSubstances.first else { return "" }
+        return first.substance.unit.abbreviation
+    }
 }
 
 struct StatRow: View {
@@ -222,6 +327,7 @@ enum MetricType: String, CaseIterable {
     case anxiety = "Anxiety"
     case anhedonia = "Anhedonia"
     case sleep = "Sleep"
+    case substances = "Substances"
 }
 
 enum TimeRange: String, CaseIterable {
