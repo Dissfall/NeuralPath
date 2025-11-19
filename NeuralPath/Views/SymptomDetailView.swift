@@ -5,6 +5,7 @@ struct SymptomDetailView: View {
     let entry: SymptomEntry
 
     @Query private var allEntries: [SymptomEntry]
+    @State private var showingEditSheet = false
 
     private var freshEntry: SymptomEntry? {
         allEntries.first { $0.id == entry.id }
@@ -182,6 +183,18 @@ struct SymptomDetailView: View {
         }
         .navigationTitle("Entry Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Edit") {
+                    showingEditSheet = true
+                }
+            }
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            if let displayEntry = freshEntry {
+                AddSymptomView(entryToEdit: displayEntry)
+            }
+        }
     }
 }
 

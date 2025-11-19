@@ -1,0 +1,341 @@
+{
+  "activityEntities" : [
+    "trainingDataAdded",
+    [
+      {
+        "createdDate" : "2025-11-19T21:22:20Z",
+        "event" : "trainingDataAdded",
+        "id" : "BA93F8B8-B619-44F5-8E72-E19BD15BCCE6",
+        "subtitle" : "neuralpath_ml_training.csv",
+        "title" : "Training Data Added"
+      }
+    ],
+    "trainingStarted",
+    [
+      {
+        "createdDate" : "2025-11-19T21:22:30Z",
+        "event" : "trainingStarted",
+        "id" : "5027CA91-F401-4FFC-9184-96902178EDD7",
+        "subtitle" : "AnxietyPredictor",
+        "title" : "Training Started"
+      }
+    ],
+    "trainingFinished",
+    [
+      {
+        "createdDate" : "2025-11-19T21:22:30Z",
+        "event" : "trainingFinished",
+        "id" : "09C439C8-7AB6-4302-8FE5-8ADD4645DE09",
+        "subtitle" : "AnxietyPredictor",
+        "title" : "Training Completed"
+      }
+    ],
+    "experimentCreated",
+    [
+      {
+        "createdDate" : "2025-11-19T21:22:15Z",
+        "event" : "experimentCreated",
+        "id" : "CB138E13-5B7E-4E0E-980D-55BA82BF53F3",
+        "subtitle" : "AnxietyPredictor",
+        "title" : "Model Source Created"
+      }
+    ]
+  ],
+  "contentDataResult" : {
+    "createdDate" : "2025-11-19T21:22:15Z"
+  },
+  "createdDate" : "2025-11-19T21:22:15Z",
+  "evaluationContainerEntity" : {
+    "createdDate" : "2025-11-19T21:28:40Z",
+    "evaluationEntities" : [
+      {
+        "analysedDataType" : "none",
+        "createdDate" : "2025-11-19T21:22:30Z",
+        "dataResult" : {
+          "createdDate" : "2025-11-19T21:22:49Z"
+        },
+        "id" : "fbd836fd-af03-4aec-ad62-bad190f45c11"
+      }
+    ],
+    "id" : "a357662d-baa4-43fe-99f7-a9bcd2fc155b",
+    "modifiedDate" : "2025-11-19T21:28:40Z",
+    "previewType" : "tabularRegressor",
+    "testingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2025-11-19T21:22:15Z",
+      "dataResult" : {
+        "createdDate" : "2025-11-19T21:22:15Z"
+      },
+      "id" : "59704fdc-68f6-4189-a75a-1670ed97b3aa"
+    },
+    "trainingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2025-11-19T21:22:15Z",
+      "dataResult" : {
+        "createdDate" : "2025-11-19T21:22:15Z",
+        "dataAnalysis" : {
+          "classifierAnalysis" : {
+
+          },
+          "issues" : [
+            {
+              "description" : "Data has 180 rows",
+              "severity" : "info"
+            }
+          ],
+          "objectDetectorAnalysis" : {
+            "details" : {
+
+            }
+          },
+          "summary" : {
+            "canUseValidation" : 1,
+            "maximum" : 4,
+            "minimum" : 0,
+            "sampleCount" : 180
+          }
+        },
+        "dataSourceID" : "79816882-4777-423B-81B1-F8D8F856D7C4",
+        "dataURL" : "file:///Users/dissfall/Projects/NeuralPath/neuralpath_ml_training.csv",
+        "itemsCount" : 180
+      },
+      "dataSourceID" : "79816882-4777-423B-81B1-F8D8F856D7C4",
+      "evaluationResult" : {
+        "generalRegressor" : {
+          "maximumError" : 0.11174321174621582,
+          "rootMeanSquaredError" : 0.026644474619608755
+        }
+      },
+      "id" : "d72bbbf4-e8f6-40a9-abdf-42f8995ca4f4"
+    },
+    "validationEvaluationEntity" : {
+      "analysedDataType" : "auto",
+      "createdDate" : "2025-11-19T21:22:15Z",
+      "dataResult" : {
+        "createdDate" : "2025-11-19T21:22:15Z"
+      },
+      "evaluationResult" : {
+        "generalRegressor" : {
+          "maximumError" : 1.0456671714782715,
+          "rootMeanSquaredError" : 0.4417571221773159
+        }
+      },
+      "id" : "b52be5e4-a0a9-4569-b9b5-1555243f021a"
+    }
+  },
+  "evaluationEntity" : {
+    "analysedDataType" : "none",
+    "dataResult" : {
+
+    },
+    "id" : "550c6a59-dcb5-44e9-91dd-f37c90295335"
+  },
+  "evaluationState" : "uninitialized",
+  "id" : "1AC60830-3BA9-4A40-87E0-6D5A41F1E9AF",
+  "modelEntity" : {
+    "createdDate" : "2025-11-19T21:22:15Z",
+    "experimentID" : "1AC60830-3BA9-4A40-87E0-6D5A41F1E9AF",
+    "id" : "E50FC7A6-B2FF-4E3C-AEBB-14D6A7F3A64E",
+    "modelURL" : "Models/AnxietyPredictor.mlmodel/",
+    "modifiedDate" : "2025-11-19T21:22:15Z",
+    "title" : "",
+    "version" : "1.0"
+  },
+  "modifiedDate" : "2025-11-19T21:28:40Z",
+  "preferredFilename" : "AnxietyPredictor",
+  "settingEntity" : {
+    "algorithmType" : "maxEnt",
+    "augmentations" : [
+
+    ],
+    "featureNames" : [
+      "sleepHours",
+      "sleepQuality",
+      "daylightMinutes",
+      "exerciseMinutes",
+      "medicationTaken",
+      "substanceAmount",
+      "dayOfWeek",
+      "previousDaySleep",
+      "previousDayMood"
+    ],
+    "generalRegressorType" : {
+      "auto" : {
+
+      }
+    },
+    "handActionClassifierAugmentations" : [
+
+    ],
+    "handPoseClassifierAugmentations" : [
+
+    ],
+    "harVideoAugmentations" : 0,
+    "seedType" : "default",
+    "styleTransferAlgorithmType" : "image",
+    "suggestedColumnTypes" : [
+      "Int",
+      "Int",
+      "Int",
+      "Double",
+      "Int",
+      "Double",
+      "Double",
+      "Int",
+      "Double",
+      "Int",
+      "Double",
+      "Int"
+    ],
+    "suggestedColumnValues" : [
+      "2, 3, 3, 4, 4, 2, 3, 4, 3, 3, 4, 3, 3, 4, 2, 3, 3, 5, 4, 3, 3, 3, 3, 3, 5, 3, 3, 3, 2, 2",
+      "3, 4, 2, 2, 3, 3, 3, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 2, 2, 3, 4, 3, 3, 3",
+      "2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 3, 2, 2, 3, 2, 2, 2, 2, 3, 2, 3, 2",
+      "6,80, 6,40, 8,90, 8,80, 6,20, 7,40, 8,00, 7,20, 8,00, 9,00, 7,60, 6,90, 8,10, 6,20, 8,10, 6,30, 9,00, 9,00, 7,80, 7,40, 7,30, 7,10, 7,10, 8,60, 8,60, 8,10, 6,90, 6,10, 6,50, 8,00",
+      "3, 3, 5, 5, 3, 3, 4, 4, 4, 5, 4, 4, 4, 3, 4, 3, 5, 4, 5, 4, 5, 4, 3, 5, 4, 4, 4, 3, 4, 5",
+      "133,50, 124,20, 150,60, 239,30, 122,70, 71,60, 82,90, 114,60, 121,80, 92,10, 247,70, 138,10, 156,30, 99,70, 67,10, 146,80, 235,30, 245,10, 59,50, 60,30, 131,60, 146,10, 80,60, 210,90, 248,60, 86,30, 76,00, 122,80, 144,10, 80,90",
+      "0,00, 0,00, 58,30, 0,00, 31,10, 0,00, 32,60, 29,90, 24,40, 0,00, 0,00, 0,00, 55,10, 54,90, 0,00, 0,00, 0,00, 33,60, 0,00, 36,00, 0,00, 0,00, 0,00, 35,80, 57,30, 0,00, 0,00, 50,80, 0,00, 0,00",
+      "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+      "367,70, 166,10, 129,00, 358,50, 211,10, 396,90, 382,90, 275,40, 0,00, 0,00, 815,20, 100,20, 245,80, 261,80, 201,40, 171,40, 129,10, 157,10, 0,00, 395,60, 189,00, 388,20, 285,80, 194,90, 263,10, 381,70, 179,20, 322,40, 144,40, 334,00",
+      "5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6",
+      "0,00, 6,40, 8,90, 8,80, 6,20, 7,40, 8,00, 7,20, 8,00, 9,00, 7,60, 6,90, 8,10, 6,20, 8,10, 6,30, 9,00, 9,00, 7,80, 7,40, 7,30, 7,10, 7,10, 8,60, 8,60, 8,10, 6,90, 6,10, 6,50, 8,00",
+      "0, 3, 3, 4, 4, 2, 3, 4, 3, 3, 4, 3, 3, 4, 2, 3, 3, 5, 4, 3, 3, 3, 3, 3, 5, 3, 3, 3, 2, 2"
+    ],
+    "suggestedColumns" : [
+      "moodLevel",
+      "anxietyLevel",
+      "anhedoniaLevel",
+      "sleepHours",
+      "sleepQuality",
+      "daylightMinutes",
+      "exerciseMinutes",
+      "medicationTaken",
+      "substanceAmount",
+      "dayOfWeek",
+      "previousDaySleep",
+      "previousDayMood"
+    ],
+    "targetColumn" : "anxietyLevel",
+    "taskType" : "generalRegresor",
+    "transferLearningEmbeddingType" : "dynamic"
+  },
+  "snapshotRole" : {
+    "withoutSnapshots" : 0
+  },
+  "state" : "trained",
+  "title" : "NeuralPath 1",
+  "trainingEntity" : {
+    "analysedDataType" : "datasource",
+    "checkpointMetrics" : {
+
+    },
+    "dataResult" : {
+      "columnTypes" : [
+        "Int",
+        "Int",
+        "Int",
+        "Double",
+        "Int",
+        "Double",
+        "Double",
+        "Int",
+        "Double",
+        "Int",
+        "Double",
+        "Int"
+      ],
+      "columnValues" : [
+        "2, 3, 3, 4, 4, 2, 3, 4, 3, 3, 4, 3, 3, 4, 2, 3, 3, 5, 4, 3, 3, 3, 3, 3, 5, 3, 3, 3, 2, 2",
+        "3, 4, 2, 2, 3, 3, 3, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 2, 2, 3, 4, 3, 3, 3",
+        "2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 3, 2, 2, 3, 2, 2, 2, 2, 3, 2, 3, 2",
+        "6,80, 6,40, 8,90, 8,80, 6,20, 7,40, 8,00, 7,20, 8,00, 9,00, 7,60, 6,90, 8,10, 6,20, 8,10, 6,30, 9,00, 9,00, 7,80, 7,40, 7,30, 7,10, 7,10, 8,60, 8,60, 8,10, 6,90, 6,10, 6,50, 8,00",
+        "3, 3, 5, 5, 3, 3, 4, 4, 4, 5, 4, 4, 4, 3, 4, 3, 5, 4, 5, 4, 5, 4, 3, 5, 4, 4, 4, 3, 4, 5",
+        "133,50, 124,20, 150,60, 239,30, 122,70, 71,60, 82,90, 114,60, 121,80, 92,10, 247,70, 138,10, 156,30, 99,70, 67,10, 146,80, 235,30, 245,10, 59,50, 60,30, 131,60, 146,10, 80,60, 210,90, 248,60, 86,30, 76,00, 122,80, 144,10, 80,90",
+        "0,00, 0,00, 58,30, 0,00, 31,10, 0,00, 32,60, 29,90, 24,40, 0,00, 0,00, 0,00, 55,10, 54,90, 0,00, 0,00, 0,00, 33,60, 0,00, 36,00, 0,00, 0,00, 0,00, 35,80, 57,30, 0,00, 0,00, 50,80, 0,00, 0,00",
+        "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+        "367,70, 166,10, 129,00, 358,50, 211,10, 396,90, 382,90, 275,40, 0,00, 0,00, 815,20, 100,20, 245,80, 261,80, 201,40, 171,40, 129,10, 157,10, 0,00, 395,60, 189,00, 388,20, 285,80, 194,90, 263,10, 381,70, 179,20, 322,40, 144,40, 334,00",
+        "5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6",
+        "0,00, 6,40, 8,90, 8,80, 6,20, 7,40, 8,00, 7,20, 8,00, 9,00, 7,60, 6,90, 8,10, 6,20, 8,10, 6,30, 9,00, 9,00, 7,80, 7,40, 7,30, 7,10, 7,10, 8,60, 8,60, 8,10, 6,90, 6,10, 6,50, 8,00",
+        "0, 3, 3, 4, 4, 2, 3, 4, 3, 3, 4, 3, 3, 4, 2, 3, 3, 5, 4, 3, 3, 3, 3, 3, 5, 3, 3, 3, 2, 2"
+      ],
+      "columns" : [
+        "moodLevel",
+        "anxietyLevel",
+        "anhedoniaLevel",
+        "sleepHours",
+        "sleepQuality",
+        "daylightMinutes",
+        "exerciseMinutes",
+        "medicationTaken",
+        "substanceAmount",
+        "dayOfWeek",
+        "previousDaySleep",
+        "previousDayMood"
+      ],
+      "createdDate" : "2025-11-19T21:22:15Z",
+      "dataAnalysis" : {
+        "classifierAnalysis" : {
+
+        },
+        "issues" : [
+          {
+            "description" : "Data has 180 rows",
+            "severity" : "info"
+          }
+        ],
+        "objectDetectorAnalysis" : {
+          "details" : {
+
+          }
+        },
+        "summary" : {
+          "canUseValidation" : 1,
+          "maximum" : 4,
+          "minimum" : 0,
+          "sampleCount" : 180
+        }
+      },
+      "dataSourceID" : "79816882-4777-423B-81B1-F8D8F856D7C4",
+      "dataURL" : "file:///Users/dissfall/Projects/NeuralPath/neuralpath_ml_training.csv",
+      "itemsCount" : 180
+    },
+    "dataSourceID" : "79816882-4777-423B-81B1-F8D8F856D7C4",
+    "featureExtractionCheckpointMayBeAvailable" : false,
+    "finishTime" : "2025-11-19T21:22:30Z",
+    "progress" : [
+
+    ],
+    "snapshottableCheckpoints" : {
+
+    },
+    "startTime" : "2025-11-19T21:22:30Z",
+    "trainingAccuracy" : 0.026644474619608755,
+    "trainingResults" : {
+      "generalRegressor" : {
+        "maximumError" : 0.11174321174621582,
+        "rootMeanSquaredError" : 0.026644474619608755
+      }
+    },
+    "validationAccuracy" : 0.4417571221773159,
+    "validationResults" : {
+      "generalRegressor" : {
+        "maximumError" : 1.0456671714782715,
+        "rootMeanSquaredError" : 0.4417571221773159
+      }
+    }
+  },
+  "validationEntity" : {
+    "analysedDataType" : "auto",
+    "dataResult" : {
+      "createdDate" : "2025-11-19T21:22:15Z"
+    },
+    "splitOptions" : {
+      "strategy" : {
+        "automatic" : {
+
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

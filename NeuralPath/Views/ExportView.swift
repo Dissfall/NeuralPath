@@ -83,6 +83,8 @@ struct ExportView: View {
             exportCSV()
         case .json:
             exportJSON()
+        case .mlTraining:
+            exportMLTraining()
         }
     }
 
@@ -141,6 +143,42 @@ struct ExportView: View {
         }
     }
 
+    private func exportMLTraining() {
+        var csv = "moodLevel,anxietyLevel,anhedoniaLevel,sleepHours,sleepQuality,daylightMinutes,exerciseMinutes,medicationTaken,substanceAmount,dayOfWeek,previousDaySleep,previousDayMood\n"
+
+        let sortedEntries = entries.sorted { $0.timestamp < $1.timestamp }
+
+        for (index, entry) in sortedEntries.enumerated() {
+            let mood = entry.moodLevel?.rawValue ?? 0
+            let anxiety = entry.anxietyLevel?.rawValue ?? 0
+            let anhedonia = entry.anhedoniaLevel?.rawValue ?? 0
+            let sleepHours = entry.sleepHours ?? 0
+            let sleepQuality = entry.sleepQualityRating ?? 0
+            let daylight = entry.timeInDaylightMinutes ?? 0
+            let exercise = entry.exerciseMinutes ?? 0
+            let medTaken = (entry.medications?.contains { $0.taken } ?? false) ? 1 : 0
+
+            let totalSubstances = entry.substances?.reduce(0.0) { $0 + $1.amount } ?? 0
+
+            let calendar = Calendar.current
+            let dayOfWeek = calendar.component(.weekday, from: entry.timestamp)
+
+            let previousDaySleep: Double
+            let previousDayMood: Int
+            if index > 0 {
+                previousDaySleep = sortedEntries[index - 1].sleepHours ?? 0
+                previousDayMood = sortedEntries[index - 1].moodLevel?.rawValue ?? 0
+            } else {
+                previousDaySleep = 0
+                previousDayMood = 0
+            }
+
+            csv += "\(mood),\(anxiety),\(anhedonia),\(sleepHours),\(sleepQuality),\(daylight),\(exercise),\(medTaken),\(totalSubstances),\(dayOfWeek),\(previousDaySleep),\(previousDayMood)\n"
+        }
+
+        saveAndShare(data: csv, filename: "neuralpath_ml_training.csv")
+    }
+
     private func saveAndShare(data: String, filename: String) {
         let temporaryDirectory = FileManager.default.temporaryDirectory
         let fileURL = temporaryDirectory.appendingPathComponent(filename)
@@ -175,6 +213,7 @@ struct ExportMedication: Codable {
 enum ExportFormat: String, CaseIterable {
     case csv = "CSV"
     case json = "JSON"
+    case mlTraining = "ML Training"
 }
 
 struct ShareSheet: UIViewControllerRepresentable {

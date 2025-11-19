@@ -1,0 +1,29 @@
+{
+  "activityEntities" : [
+    "projectCreated",
+    [
+      {
+        "createdDate" : "2025-11-19T21:18:42Z",
+        "event" : "projectCreated",
+        "id" : "1982DEB5-B181-45BF-B715-E6491B69572C",
+        "subtitle" : "NeuralPath",
+        "title" : "Project Created"
+      }
+    ]
+  ],
+  "authorName" : "Goša Lukyanau",
+  "createdDate" : "2025-11-19T21:18:42Z",
+  "description" : "",
+  "id" : "0CF17E5C-3A6D-4F0B-BD7C-10E344B82F2E",
+  "license" : "",
+  "location" : "",
+  "modifiedDate" : "2025-11-19T21:18:42Z",
+  "projectName" : "NeuralPath",
+  "settingsEntity" : {
+    "snapshotOnExtendTraining" : true,
+    "snapshotOnResumeTraining" : false
+  },
+  "taskType" : "generalRegresor",
+  "title" : "Tabular Regression",
+  "version" : "1.1"
+}

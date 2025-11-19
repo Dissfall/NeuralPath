@@ -8,7 +8,9 @@ struct AddSymptomView: View {
 
     @Query private var allEntries: [SymptomEntry]
 
-    @State private var selectedDate = Date()
+    let entryToEdit: SymptomEntry?
+
+    @State private var selectedDate: Date
     @State private var showingDuplicateAlert = false
     @State private var moodLevel: MoodLevel?
     @State private var anxietyLevel: AnxietyLevel?
@@ -26,8 +28,18 @@ struct AddSymptomView: View {
 
     private let healthKitManager = HealthKitManager.shared
 
+    init(entryToEdit: SymptomEntry? = nil) {
+        self.entryToEdit = entryToEdit
+        _selectedDate = State(initialValue: entryToEdit?.timestamp ?? Date())
+    }
+
+    private var isEditMode: Bool {
+        entryToEdit != nil
+    }
+
     private var hasEntryForSelectedDate: Bool {
         allEntries.contains { entry in
+            entry.id != entryToEdit?.id &&
             Calendar.current.isDate(entry.timestamp, inSameDayAs: selectedDate)
         }
     }
@@ -294,7 +306,7 @@ struct AddSymptomView: View {
                         .frame(minHeight: 100)
                 }
             }
-            .navigationTitle("New Entry")
+            .navigationTitle(isEditMode ? "Edit Entry" : "New Entry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -317,14 +329,20 @@ struct AddSymptomView: View {
                 )
             }
             .task {
-                await loadHealthKitMedications()
-                await loadSleepData()
-                await loadActivityData()
-            }
-            .onChange(of: selectedDate) { _, _ in
-                Task {
+                if let entry = entryToEdit {
+                    loadEntryData(entry)
+                } else {
+                    await loadHealthKitMedications()
                     await loadSleepData()
                     await loadActivityData()
+                }
+            }
+            .onChange(of: selectedDate) { _, _ in
+                if !isEditMode {
+                    Task {
+                        await loadSleepData()
+                        await loadActivityData()
+                    }
                 }
             }
             .alert("Entry Already Exists", isPresented: $showingDuplicateAlert) {
@@ -367,6 +385,36 @@ struct AddSymptomView: View {
         }
     }
 
+    private func loadEntryData(_ entry: SymptomEntry) {
+        selectedDate = entry.timestamp
+        moodLevel = entry.moodLevel
+        anxietyLevel = entry.anxietyLevel
+        anhedoniaLevel = entry.anhedoniaLevel
+        sleepQualityRating = entry.sleepQualityRating
+        sleepHours = entry.sleepHours.map { String(format: "%.1f", $0) } ?? ""
+        timeInDaylightMinutes = entry.timeInDaylightMinutes.map { String(format: "%.0f", $0) } ?? ""
+        exerciseMinutes = entry.exerciseMinutes.map { String(format: "%.0f", $0) } ?? ""
+        notes = entry.notes
+
+        medications = entry.medications?.map { med in
+            MedicationInput(
+                name: med.name,
+                dosage: med.dosage,
+                taken: med.taken,
+                notes: med.notes
+            )
+        } ?? []
+
+        substances = entry.substances?.map { sub in
+            SubstanceInput(
+                name: sub.name,
+                amount: String(format: "%.1f", sub.amount),
+                unit: sub.unit,
+                notes: sub.notes
+            )
+        } ?? []
+    }
+
     private func loadHealthKitMedications() async {
         do {
             healthKitMedications = try await healthKitManager.fetchMedications()
@@ -403,6 +451,14 @@ struct AddSymptomView: View {
             return
         }
 
+        if let existingEntry = entryToEdit {
+            updateEntry(existingEntry)
+        } else {
+            createEntry()
+        }
+    }
+
+    private func createEntry() {
         let calendar = Calendar.current
         let endOfDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: selectedDate) ?? selectedDate
 
@@ -428,10 +484,6 @@ struct AddSymptomView: View {
             )
         }
 
-        entry.medications = meds
-        meds.forEach { $0.symptomEntry = entry }
-        meds.forEach { modelContext.insert($0) }
-
         let subs = substances.compactMap { input -> Substance? in
             guard !input.name.isEmpty, let amount = Double(input.amount) else {
                 return nil
@@ -445,10 +497,89 @@ struct AddSymptomView: View {
             )
         }
 
+        entry.medications = meds
         entry.substances = subs
+        meds.forEach { $0.symptomEntry = entry }
         subs.forEach { $0.symptomEntry = entry }
 
         modelContext.insert(entry)
+        meds.forEach { modelContext.insert($0) }
+        subs.forEach { modelContext.insert($0) }
+
+        if healthKitManager.isAuthorized, let mood = moodLevel {
+            Task {
+                if #available(iOS 18.0, *) {
+                    try? await healthKitManager.saveStateOfMind(
+                        valence: mood.stateOfMindValence,
+                        kind: .dailyMood,
+                        labels: mood.stateOfMindLabels,
+                        date: endOfDay
+                    )
+                }
+            }
+        }
+
+        dismiss()
+    }
+
+    private func updateEntry(_ entry: SymptomEntry) {
+        let calendar = Calendar.current
+        let endOfDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: selectedDate) ?? selectedDate
+
+        entry.timestamp = endOfDay
+        entry.moodLevel = moodLevel
+        entry.anxietyLevel = anxietyLevel
+        entry.anhedoniaLevel = anhedoniaLevel
+        entry.sleepQualityRating = sleepQualityRating
+        entry.sleepHours = Double(sleepHours)
+        entry.timeInDaylightMinutes = Double(timeInDaylightMinutes)
+        entry.exerciseMinutes = Double(exerciseMinutes)
+        entry.notes = notes
+
+        // Delete old medications
+        if let oldMeds = entry.medications {
+            oldMeds.forEach { modelContext.delete($0) }
+        }
+        entry.medications = nil
+
+        let meds = medications.map { input in
+            Medication(
+                name: input.name,
+                dosage: input.dosage,
+                timestamp: endOfDay,
+                taken: input.taken,
+                notes: input.notes
+            )
+        }
+
+        entry.medications = meds
+        meds.forEach { $0.symptomEntry = entry }
+        meds.forEach { modelContext.insert($0) }
+
+        // Delete old substances
+        if let oldSubs = entry.substances {
+            oldSubs.forEach { modelContext.delete($0) }
+        }
+        entry.substances = nil
+
+        let subs = substances.compactMap { input -> Substance? in
+            guard !input.name.isEmpty, let amount = Double(input.amount) else {
+                print("⚠️ Skipping substance: name='\(input.name)', amount='\(input.amount)'")
+                return nil
+            }
+            print("✅ Creating substance: \(input.name) - \(amount) \(input.unit.abbreviation)")
+            return Substance(
+                name: input.name,
+                amount: amount,
+                unit: input.unit,
+                timestamp: endOfDay,
+                notes: input.notes
+            )
+        }
+
+        print("📊 Total substances to save: \(subs.count)")
+        entry.substances = subs
+        subs.forEach { $0.symptomEntry = entry }
         subs.forEach { modelContext.insert($0) }
 
         if healthKitManager.isAuthorized, let mood = moodLevel {
