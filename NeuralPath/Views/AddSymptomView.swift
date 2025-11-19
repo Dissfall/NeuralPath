@@ -6,7 +6,10 @@ struct AddSymptomView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    @Query private var allEntries: [SymptomEntry]
+
     @State private var selectedDate = Date()
+    @State private var showingDuplicateAlert = false
     @State private var moodLevel: MoodLevel?
     @State private var anxietyLevel: AnxietyLevel?
     @State private var anhedoniaLevel: AnhedoniaLevel?
@@ -21,11 +24,32 @@ struct AddSymptomView: View {
 
     private let healthKitManager = HealthKitManager.shared
 
+    private var hasEntryForSelectedDate: Bool {
+        allEntries.contains { entry in
+            Calendar.current.isDate(entry.timestamp, inSameDayAs: selectedDate)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Form {
                 Section("Date") {
                     DatePicker("Entry Date", selection: $selectedDate, in: ...Date(), displayedComponents: [.date])
+
+                    if hasEntryForSelectedDate {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                            Text("Entry already exists for this date")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.orange.opacity(0.1))
+                        .cornerRadius(8)
+                    }
                 }
 
                 Section("Mood") {
@@ -275,6 +299,11 @@ struct AddSymptomView: View {
                     await loadSleepData()
                 }
             }
+            .alert("Entry Already Exists", isPresented: $showingDuplicateAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("An entry for this date already exists. Please choose a different date or delete the existing entry first.")
+            }
         }
     }
 
@@ -325,6 +354,11 @@ struct AddSymptomView: View {
     }
 
     private func saveEntry() {
+        if hasEntryForSelectedDate {
+            showingDuplicateAlert = true
+            return
+        }
+
         let calendar = Calendar.current
         let endOfDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: selectedDate) ?? selectedDate
 
