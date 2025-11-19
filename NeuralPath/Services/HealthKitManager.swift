@@ -18,12 +18,17 @@ class HealthKitManager {
         var typesToRead: Set<HKObjectType> = [
             HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!,
             HKObjectType.quantityType(forIdentifier: .heartRate)!,
-            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+            HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!
         ]
 
         var typesToWrite: Set<HKSampleType> = [
             HKObjectType.categoryType(forIdentifier: .mindfulSession)!
         ]
+
+        if #available(iOS 17.0, *) {
+            typesToRead.insert(HKObjectType.quantityType(forIdentifier: .timeInDaylight)!)
+        }
 
         if #available(iOS 18.0, *) {
             typesToRead.insert(HKObjectType.stateOfMindType())
@@ -110,6 +115,87 @@ class HealthKitManager {
         )
 
         try await healthStore.save(sample)
+    }
+
+    @available(iOS 17.0, *)
+    func fetchTimeInDaylight(for date: Date) async throws -> Double? {
+        guard let daylightType = HKObjectType.quantityType(forIdentifier: .timeInDaylight) else {
+            return nil
+        }
+
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startOfDay,
+            end: endOfDay,
+            options: .strictStartDate
+        )
+
+        let samples = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKQuantitySample], Error>) in
+            let query = HKSampleQuery(
+                sampleType: daylightType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
+            ) { _, samples, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: samples as? [HKQuantitySample] ?? [])
+            }
+            self.healthStore.execute(query)
+        }
+
+        guard !samples.isEmpty else { return nil }
+
+        let totalMinutes = samples.reduce(0.0) { total, sample in
+            total + sample.quantity.doubleValue(for: HKUnit.minute())
+        }
+
+        return totalMinutes
+    }
+
+    func fetchExerciseMinutes(for date: Date) async throws -> Double? {
+        guard let exerciseType = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) else {
+            return nil
+        }
+
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startOfDay,
+            end: endOfDay,
+            options: .strictStartDate
+        )
+
+        let samples = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKQuantitySample], Error>) in
+            let query = HKSampleQuery(
+                sampleType: exerciseType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
+            ) { _, samples, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: samples as? [HKQuantitySample] ?? [])
+            }
+            self.healthStore.execute(query)
+        }
+
+        guard !samples.isEmpty else { return nil }
+
+        let totalMinutes = samples.reduce(0.0) { total, sample in
+            total + sample.quantity.doubleValue(for: HKUnit.minute())
+        }
+
+        return totalMinutes
     }
 
 

@@ -78,6 +78,10 @@ struct ChartsView: View {
             anhedoniaChart
         case .sleep:
             sleepChart
+        case .timeInDaylight:
+            daylightChart
+        case .exercise:
+            exerciseChart
         case .substances:
             substancesChart
         }
@@ -160,6 +164,38 @@ struct ChartsView: View {
         }
     }
 
+    private var daylightChart: some View {
+        Chart {
+            ForEach(filteredEntries.filter { $0.timeInDaylightMinutes != nil }) { entry in
+                BarMark(
+                    x: .value("Date", entry.timestamp, unit: .day),
+                    y: .value("Minutes", entry.timeInDaylightMinutes ?? 0)
+                )
+                .foregroundStyle(.yellow)
+            }
+
+            RuleMark(y: .value("Recommended", 120))
+                .foregroundStyle(.green.opacity(0.5))
+                .lineStyle(StrokeStyle(dash: [5]))
+        }
+    }
+
+    private var exerciseChart: some View {
+        Chart {
+            ForEach(filteredEntries.filter { $0.exerciseMinutes != nil }) { entry in
+                BarMark(
+                    x: .value("Date", entry.timestamp, unit: .day),
+                    y: .value("Minutes", entry.exerciseMinutes ?? 0)
+                )
+                .foregroundStyle(.green)
+            }
+
+            RuleMark(y: .value("Goal", 30))
+                .foregroundStyle(.green.opacity(0.5))
+                .lineStyle(StrokeStyle(dash: [5]))
+        }
+    }
+
     private var substancesChart: some View {
         Group {
             if selectedSubstance == nil {
@@ -219,6 +255,14 @@ struct ChartsView: View {
                 if let avgSleep = averageSleep {
                     StatRow(label: "Average Sleep", value: String(format: "%.1f hours", avgSleep))
                 }
+            case .timeInDaylight:
+                if let avgDaylight = averageDaylight {
+                    StatRow(label: "Average Daylight", value: String(format: "%.0f minutes", avgDaylight))
+                }
+            case .exercise:
+                if let avgExercise = averageExercise {
+                    StatRow(label: "Average Exercise", value: String(format: "%.0f minutes", avgExercise))
+                }
             case .substances:
                 if selectedSubstance != nil && !filteredSubstances.isEmpty {
                     StatRow(
@@ -266,6 +310,18 @@ struct ChartsView: View {
         let sleepHours = filteredEntries.compactMap { $0.sleepHours }
         guard !sleepHours.isEmpty else { return nil }
         return sleepHours.reduce(0, +) / Double(sleepHours.count)
+    }
+
+    private var averageDaylight: Double? {
+        let values = filteredEntries.compactMap { $0.timeInDaylightMinutes }
+        guard !values.isEmpty else { return nil }
+        return values.reduce(0, +) / Double(values.count)
+    }
+
+    private var averageExercise: Double? {
+        let values = filteredEntries.compactMap { $0.exerciseMinutes }
+        guard !values.isEmpty else { return nil }
+        return values.reduce(0, +) / Double(values.count)
     }
 
     private var allSubstances: [(substance: Substance, entry: SymptomEntry)] {
@@ -327,6 +383,8 @@ enum MetricType: String, CaseIterable {
     case anxiety = "Anxiety"
     case anhedonia = "Anhedonia"
     case sleep = "Sleep"
+    case timeInDaylight = "Daylight"
+    case exercise = "Exercise"
     case substances = "Substances"
 }
 

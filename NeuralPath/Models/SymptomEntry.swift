@@ -10,6 +10,8 @@ final class SymptomEntry {
     var anhedoniaLevel: AnhedoniaLevel?
     var sleepQualityRating: Int?
     var sleepHours: Double?
+    var timeInDaylightMinutes: Double?
+    var exerciseMinutes: Double?
     var notes: String
 
     @Relationship(deleteRule: .cascade, inverse: \Medication.symptomEntry)
@@ -26,6 +28,8 @@ final class SymptomEntry {
         anhedoniaLevel: AnhedoniaLevel? = nil,
         sleepQualityRating: Int? = nil,
         sleepHours: Double? = nil,
+        timeInDaylightMinutes: Double? = nil,
+        exerciseMinutes: Double? = nil,
         notes: String = "",
         medications: [Medication]? = nil,
         substances: [Substance]? = nil
@@ -37,6 +41,8 @@ final class SymptomEntry {
         self.anhedoniaLevel = anhedoniaLevel
         self.sleepQualityRating = sleepQualityRating
         self.sleepHours = sleepHours
+        self.timeInDaylightMinutes = timeInDaylightMinutes
+        self.exerciseMinutes = exerciseMinutes
         self.notes = notes
         self.medications = medications
         self.substances = substances

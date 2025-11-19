@@ -97,6 +97,28 @@ struct SymptomDetailView: View {
                 }
             }
 
+            if displayEntry.timeInDaylightMinutes != nil || displayEntry.exerciseMinutes != nil {
+                Section("Activity") {
+                    if let daylight = displayEntry.timeInDaylightMinutes {
+                        HStack {
+                            Text("Time in Daylight")
+                            Spacer()
+                            Text("\(String(format: "%.0f", daylight)) minutes")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if let exercise = displayEntry.exerciseMinutes {
+                        HStack {
+                            Text("Exercise")
+                            Spacer()
+                            Text("\(String(format: "%.0f", exercise)) minutes")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+
             if let medications = displayEntry.medications, !medications.isEmpty {
                 Section("Medications") {
                     ForEach(medications) { medication in

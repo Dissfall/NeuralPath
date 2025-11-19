@@ -15,6 +15,8 @@ struct AddSymptomView: View {
     @State private var anhedoniaLevel: AnhedoniaLevel?
     @State private var sleepQualityRating: Int?
     @State private var sleepHours: String = ""
+    @State private var timeInDaylightMinutes: String = ""
+    @State private var exerciseMinutes: String = ""
     @State private var notes: String = ""
     @State private var medications: [MedicationInput] = []
     @State private var substances: [SubstanceInput] = []
@@ -119,6 +121,30 @@ struct AddSymptomView: View {
                     }
                 } header: {
                     Text("Sleep")
+                }
+
+                Section("Activity") {
+                    HStack {
+                        Text("Daylight")
+                        Spacer()
+                        TextField("Minutes", text: $timeInDaylightMinutes)
+                            .keyboardType(.numberPad)
+                            .frame(width: 80)
+                            .multilineTextAlignment(.trailing)
+                        Text("min")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    HStack {
+                        Text("Exercise")
+                        Spacer()
+                        TextField("Minutes", text: $exerciseMinutes)
+                            .keyboardType(.numberPad)
+                            .frame(width: 80)
+                            .multilineTextAlignment(.trailing)
+                        Text("min")
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Section("Medications") {
@@ -293,10 +319,12 @@ struct AddSymptomView: View {
             .task {
                 await loadHealthKitMedications()
                 await loadSleepData()
+                await loadActivityData()
             }
             .onChange(of: selectedDate) { _, _ in
                 Task {
                     await loadSleepData()
+                    await loadActivityData()
                 }
             }
             .alert("Entry Already Exists", isPresented: $showingDuplicateAlert) {
@@ -320,6 +348,22 @@ struct AddSymptomView: View {
             }
         } catch {
             print("Error loading sleep data: \(error)")
+        }
+    }
+
+    private func loadActivityData() async {
+        do {
+            if #available(iOS 17.0, *) {
+                if let daylight = try await healthKitManager.fetchTimeInDaylight(for: selectedDate) {
+                    timeInDaylightMinutes = String(format: "%.0f", daylight)
+                }
+            }
+
+            if let exercise = try await healthKitManager.fetchExerciseMinutes(for: selectedDate) {
+                exerciseMinutes = String(format: "%.0f", exercise)
+            }
+        } catch {
+            print("Error loading activity data: \(error)")
         }
     }
 
@@ -369,6 +413,8 @@ struct AddSymptomView: View {
             anhedoniaLevel: anhedoniaLevel,
             sleepQualityRating: sleepQualityRating,
             sleepHours: Double(sleepHours),
+            timeInDaylightMinutes: Double(timeInDaylightMinutes),
+            exerciseMinutes: Double(exerciseMinutes),
             notes: notes
         )
 
