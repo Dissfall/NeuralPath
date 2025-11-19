@@ -7,6 +7,9 @@ struct ChartsView: View {
     @State private var selectedMetric: MetricType = .mood
     @State private var timeRange: TimeRange = .week
     @State private var selectedSubstance: String?
+    @State private var comparisonMode: Bool = false
+    @State private var primaryMetric: MetricType = .mood
+    @State private var secondaryMetric: MetricType = .sleep
 
     var body: some View {
         NavigationStack {
@@ -20,23 +23,52 @@ struct ChartsView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
 
-                    Picker("Metric", selection: $selectedMetric) {
-                        ForEach(MetricType.allCases, id: \.self) { metric in
-                            Text(metric.rawValue).tag(metric)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .padding(.horizontal)
+                    Toggle("Compare Metrics", isOn: $comparisonMode)
+                        .padding(.horizontal)
 
-                    if selectedMetric == .substances {
-                        Picker("Substance", selection: $selectedSubstance) {
-                            Text("Select Substance").tag(nil as String?)
-                            ForEach(uniqueSubstanceNames, id: \.self) { name in
-                                Text(name).tag(name as String?)
+                    if comparisonMode {
+                        HStack {
+                            Text("Primary:")
+                                .foregroundStyle(.secondary)
+                            Picker("Primary Metric", selection: $primaryMetric) {
+                                ForEach(availableMetricsForComparison, id: \.self) { metric in
+                                    Text(metric.rawValue).tag(metric)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                        }
+                        .padding(.horizontal)
+
+                        HStack {
+                            Text("Secondary:")
+                                .foregroundStyle(.secondary)
+                            Picker("Secondary Metric", selection: $secondaryMetric) {
+                                ForEach(availableMetricsForComparison, id: \.self) { metric in
+                                    Text(metric.rawValue).tag(metric)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                        }
+                        .padding(.horizontal)
+                    } else {
+                        Picker("Metric", selection: $selectedMetric) {
+                            ForEach(MetricType.allCases, id: \.self) { metric in
+                                Text(metric.rawValue).tag(metric)
                             }
                         }
                         .pickerStyle(.menu)
                         .padding(.horizontal)
+
+                        if selectedMetric == .substances {
+                            Picker("Substance", selection: $selectedSubstance) {
+                                Text("Select Substance").tag(nil as String?)
+                                ForEach(uniqueSubstanceNames, id: \.self) { name in
+                                    Text(name).tag(name as String?)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .padding(.horizontal)
+                        }
                     }
 
                     if filteredEntries.isEmpty {
@@ -47,9 +79,14 @@ struct ChartsView: View {
                         )
                         .frame(height: 300)
                     } else {
-                        chartView
-                            .frame(height: 300)
-                            .padding()
+                        if comparisonMode {
+                            comparisonChartView
+                                .padding()
+                        } else {
+                            chartView
+                                .frame(height: 300)
+                                .padding()
+                        }
 
                         statsView
                             .padding()
@@ -65,6 +102,90 @@ struct ChartsView: View {
     private var filteredEntries: [SymptomEntry] {
         let startDate = Calendar.current.date(byAdding: timeRange.dateComponent, value: -timeRange.value, to: Date()) ?? Date()
         return entries.filter { $0.timestamp >= startDate }
+    }
+
+    private var availableMetricsForComparison: [MetricType] {
+        MetricType.allCases.filter { $0 != .substances }
+    }
+
+    private func getMetricValues(_ metric: MetricType) -> [Double?] {
+        filteredEntries.map { entry in
+            switch metric {
+            case .mood:
+                return entry.moodLevel.map { Double($0.rawValue) }
+            case .anxiety:
+                return entry.anxietyLevel.map { Double($0.rawValue) }
+            case .anhedonia:
+                return entry.anhedoniaLevel.map { Double($0.rawValue) }
+            case .sleep:
+                return entry.sleepHours
+            case .timeInDaylight:
+                return entry.timeInDaylightMinutes
+            case .exercise:
+                return entry.exerciseMinutes
+            case .substances:
+                return nil
+            }
+        }
+    }
+
+    private var correlationCoefficient: Double? {
+        let primaryValues = getMetricValues(primaryMetric)
+        let secondaryValues = getMetricValues(secondaryMetric)
+
+        let pairs = zip(primaryValues, secondaryValues).compactMap { primary, secondary -> (Double, Double)? in
+            guard let p = primary, let s = secondary else { return nil }
+            return (p, s)
+        }
+
+        guard pairs.count >= 3 else { return nil }
+
+        let n = Double(pairs.count)
+        let sumX = pairs.reduce(0.0) { $0 + $1.0 }
+        let sumY = pairs.reduce(0.0) { $0 + $1.1 }
+        let sumXY = pairs.reduce(0.0) { $0 + $1.0 * $1.1 }
+        let sumX2 = pairs.reduce(0.0) { $0 + $1.0 * $1.0 }
+        let sumY2 = pairs.reduce(0.0) { $0 + $1.1 * $1.1 }
+
+        let numerator = n * sumXY - sumX * sumY
+        let denominator = sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY))
+
+        guard denominator != 0 else { return nil }
+        return numerator / denominator
+    }
+
+    private func interpretCorrelation(_ r: Double) -> String {
+        let absR = abs(r)
+        let direction = r >= 0 ? "positive" : "negative"
+
+        if absR < 0.3 {
+            return "Weak \(direction) correlation"
+        } else if absR < 0.7 {
+            return "Moderate \(direction) correlation"
+        } else {
+            return "Strong \(direction) correlation"
+        }
+    }
+
+    @ViewBuilder
+    private var comparisonChartView: some View {
+        VStack(spacing: 12) {
+            Text("Primary: \(primaryMetric.rawValue)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            chartForMetric(primaryMetric)
+                .frame(height: 250)
+
+            Divider()
+
+            Text("Secondary: \(secondaryMetric.rawValue)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            chartForMetric(secondaryMetric)
+                .frame(height: 250)
+        }
     }
 
     @ViewBuilder
@@ -233,50 +354,87 @@ struct ChartsView: View {
         }
     }
 
+    @ViewBuilder
+    private func chartForMetric(_ metric: MetricType) -> some View {
+        switch metric {
+        case .mood:
+            moodChart
+        case .anxiety:
+            anxietyChart
+        case .anhedonia:
+            anhedoniaChart
+        case .sleep:
+            sleepChart
+        case .timeInDaylight:
+            daylightChart
+        case .exercise:
+            exerciseChart
+        case .substances:
+            EmptyView()
+        }
+    }
+
     private var statsView: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Statistics")
                 .font(.headline)
 
-            switch selectedMetric {
-            case .mood:
-                if let avgMood = averageMood {
-                    StatRow(label: "Average Mood", value: avgMood.displayName)
-                }
-            case .anxiety:
-                if let avgAnxiety = averageAnxiety {
-                    StatRow(label: "Average Anxiety", value: String(format: "%.1f/4", avgAnxiety))
-                }
-            case .anhedonia:
-                if let avgAnhedonia = averageAnhedonia {
-                    StatRow(label: "Average Anhedonia", value: String(format: "%.1f/4", avgAnhedonia))
-                }
-            case .sleep:
-                if let avgSleep = averageSleep {
-                    StatRow(label: "Average Sleep", value: String(format: "%.1f hours", avgSleep))
-                }
-            case .timeInDaylight:
-                if let avgDaylight = averageDaylight {
-                    StatRow(label: "Average Daylight", value: String(format: "%.0f minutes", avgDaylight))
-                }
-            case .exercise:
-                if let avgExercise = averageExercise {
-                    StatRow(label: "Average Exercise", value: String(format: "%.0f minutes", avgExercise))
-                }
-            case .substances:
-                if selectedSubstance != nil && !filteredSubstances.isEmpty {
+            if comparisonMode {
+                if let correlation = correlationCoefficient {
                     StatRow(
-                        label: "Total Consumption",
-                        value: "\(String(format: "%.1f", totalSubstanceConsumption)) \(substanceUnit)"
+                        label: "Correlation",
+                        value: String(format: "%.3f", correlation)
                     )
                     StatRow(
-                        label: "Average per Entry",
-                        value: "\(String(format: "%.1f", averageSubstanceConsumption)) \(substanceUnit)"
+                        label: "Interpretation",
+                        value: interpretCorrelation(correlation)
                     )
-                    StatRow(
-                        label: "Frequency",
-                        value: "\(filteredSubstances.count) times"
-                    )
+                } else {
+                    Text("Insufficient data for correlation")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                switch selectedMetric {
+                case .mood:
+                    if let avgMood = averageMood {
+                        StatRow(label: "Average Mood", value: avgMood.displayName)
+                    }
+                case .anxiety:
+                    if let avgAnxiety = averageAnxiety {
+                        StatRow(label: "Average Anxiety", value: String(format: "%.1f/4", avgAnxiety))
+                    }
+                case .anhedonia:
+                    if let avgAnhedonia = averageAnhedonia {
+                        StatRow(label: "Average Anhedonia", value: String(format: "%.1f/4", avgAnhedonia))
+                    }
+                case .sleep:
+                    if let avgSleep = averageSleep {
+                        StatRow(label: "Average Sleep", value: String(format: "%.1f hours", avgSleep))
+                    }
+                case .timeInDaylight:
+                    if let avgDaylight = averageDaylight {
+                        StatRow(label: "Average Daylight", value: String(format: "%.0f minutes", avgDaylight))
+                    }
+                case .exercise:
+                    if let avgExercise = averageExercise {
+                        StatRow(label: "Average Exercise", value: String(format: "%.0f minutes", avgExercise))
+                    }
+                case .substances:
+                    if selectedSubstance != nil && !filteredSubstances.isEmpty {
+                        StatRow(
+                            label: "Total Consumption",
+                            value: "\(String(format: "%.1f", totalSubstanceConsumption)) \(substanceUnit)"
+                        )
+                        StatRow(
+                            label: "Average per Entry",
+                            value: "\(String(format: "%.1f", averageSubstanceConsumption)) \(substanceUnit)"
+                        )
+                        StatRow(
+                            label: "Frequency",
+                            value: "\(filteredSubstances.count) times"
+                        )
+                    }
                 }
             }
 
