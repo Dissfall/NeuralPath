@@ -65,18 +65,6 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    NavigationLink {
-                        InsightsView()
-                    } label: {
-                        Label("AI Insights", systemImage: "brain")
-                    }
-                } header: {
-                    Text("Analysis")
-                } footer: {
-                    Text("AI-powered analysis of your mental health patterns and medication effectiveness")
-                }
-
-                Section {
                     Button {
                         showingExport = true
                     } label: {

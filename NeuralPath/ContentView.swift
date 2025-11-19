@@ -28,6 +28,12 @@ struct ContentView: View {
                     Label("Charts", systemImage: "chart.xyaxis.line")
                 }
                 .tag(1)
+
+            InsightsView()
+                .tabItem {
+                    Label("Insights", systemImage: "brain")
+                }
+                .tag(2)
         }
     }
 
