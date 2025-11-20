@@ -82,6 +82,14 @@ struct SettingsView: View {
                     Link(destination: URL(string: "https://github.com")!) {
                         Label("Support", systemImage: "questionmark.circle")
                     }
+
+                    Link(destination: URL(string: "https://github.com/Dissfall/NeuralPath/issues/new?labels=bug")!) {
+                        Label("Report a Bug", systemImage: "ant.fill")
+                    }
+
+                    Link(destination: URL(string: "https://github.com/Dissfall/NeuralPath/issues/new?labels=enhancement")!) {
+                        Label("Suggest a Feature", systemImage: "lightbulb.fill")
+                    }
                 } header: {
                     Text("About")
                 }
