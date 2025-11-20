@@ -7,6 +7,7 @@ struct AddSymptomView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Query private var allEntries: [SymptomEntry]
+    @Query(filter: #Predicate<UserMedication> { $0.isActive }, sort: \UserMedication.name) private var userMedications: [UserMedication]
 
     let entryToEdit: SymptomEntry?
 
@@ -20,11 +21,10 @@ struct AddSymptomView: View {
     @State private var timeInDaylightMinutes: String = ""
     @State private var exerciseMinutes: String = ""
     @State private var notes: String = ""
-    @State private var medications: [MedicationInput] = []
+    @State private var takenMedications: Set<UUID> = []
     @State private var substances: [SubstanceInput] = []
     @State private var isLoadingSleepData = false
-    @State private var healthKitMedications: [HKUserAnnotatedMedication] = []
-    @State private var showingHealthKitMedications = false
+    @State private var showingHealthKitImport = false
 
     private let healthKitManager = HealthKitManager.shared
 
@@ -160,59 +160,58 @@ struct AddSymptomView: View {
                 }
 
                 Section("Medications") {
-                    if healthKitManager.isAuthorized
-                        && !healthKitMedications.isEmpty
-                    {
-                        Button {
-                            showingHealthKitMedications = true
-                        } label: {
-                            Label(
-                                "Import from Health App",
-                                systemImage: "arrow.down.circle"
-                            )
-                        }
-                    }
+                    if userMedications.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("No medications in your library")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
 
-                    ForEach(medications) { med in
-                        HStack {
-                            TextField(
-                                "Medication Name",
-                                text: Binding(
-                                    get: { med.name },
-                                    set: { newValue in
-                                        if let index = medications.firstIndex(
-                                            where: { $0.id == med.id })
-                                        {
-                                            medications[index].name = newValue
-                                        }
-                                    }
-                                )
-                            )
-                            .font(.headline)
-                            Spacer()
-                            Toggle(
-                                "Taken",
-                                isOn: Binding(
-                                    get: { med.taken },
-                                    set: { newValue in
-                                        if let index = medications.firstIndex(
-                                            where: { $0.id == med.id })
-                                        {
-                                            medications[index].taken = newValue
-                                        }
-                                    }
-                                )
-                            )
-                        }
-                    }
-                    .onDelete { indexSet in
-                        medications.remove(atOffsets: indexSet)
-                    }
+                            if healthKitManager.isAuthorized {
+                                Button {
+                                    showingHealthKitImport = true
+                                } label: {
+                                    Label("Import from HealthKit", systemImage: "heart.text.square")
+                                }
+                            }
 
-                    Button {
-                        medications.append(MedicationInput())
-                    } label: {
-                        Label("Add Medication", systemImage: "plus.circle.fill")
+                            NavigationLink {
+                                MedicationManagementView()
+                            } label: {
+                                Label("Add Medications in Settings", systemImage: "gear")
+                                    .font(.caption)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    } else {
+                        ForEach(userMedications) { medication in
+                            Toggle(isOn: Binding(
+                                get: { takenMedications.contains(medication.id) },
+                                set: { newValue in
+                                    if newValue {
+                                        takenMedications.insert(medication.id)
+                                    } else {
+                                        takenMedications.remove(medication.id)
+                                    }
+                                }
+                            )) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(medication.name)
+                                        .font(.headline)
+
+                                    HStack(spacing: 8) {
+                                        if !medication.dosage.isEmpty {
+                                            Text(medication.dosage)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+
+                                        Text(medication.frequency.shortName)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -320,22 +319,16 @@ struct AddSymptomView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingHealthKitMedications) {
-                HealthKitMedicationPickerView(
-                    healthKitMedications: healthKitMedications,
-                    onSelect: { medication in
-                        importHealthKitMedication(medication)
-                    }
-                )
-            }
             .task {
                 if let entry = entryToEdit {
                     loadEntryData(entry)
                 } else {
-                    await loadHealthKitMedications()
                     await loadSleepData()
                     await loadActivityData()
                 }
+            }
+            .sheet(isPresented: $showingHealthKitImport) {
+                HealthKitImportView(onImport: importMedicationsFromHealthKit)
             }
             .onChange(of: selectedDate) { _, _ in
                 if !isEditMode {
@@ -396,14 +389,13 @@ struct AddSymptomView: View {
         exerciseMinutes = entry.exerciseMinutes.map { String(format: "%.0f", $0) } ?? ""
         notes = entry.notes
 
-        medications = entry.medications?.map { med in
-            MedicationInput(
-                name: med.name,
-                dosage: med.dosage,
-                taken: med.taken,
-                notes: med.notes
-            )
-        } ?? []
+        takenMedications = Set(
+            entry.medications?
+                .filter { $0.taken }
+                .compactMap { med in
+                    userMedications.first(where: { $0.name == med.name })?.id
+                } ?? []
+        )
 
         substances = entry.substances?.map { sub in
             SubstanceInput(
@@ -415,34 +407,18 @@ struct AddSymptomView: View {
         } ?? []
     }
 
-    private func loadHealthKitMedications() async {
-        do {
-            healthKitMedications = try await healthKitManager.fetchMedications()
-
-            medications = healthKitMedications.map { medication in
-                MedicationInput.init(
-                    name: medication.medication.displayText,
-                    dosage: "",
-                    taken: false
-                )
-            }
-        } catch {
-            print("Failed to load HealthKit medications: \(error)")
+    private func importMedicationsFromHealthKit(_ selectedMedications: [HKUserAnnotatedMedication]) {
+        for hkMed in selectedMedications {
+            let userMed = UserMedication(
+                name: hkMed.medication.displayText,
+                dosage: "",
+                category: nil,
+                frequency: .onceDaily,
+                notes: "Imported from HealthKit"
+            )
+            modelContext.insert(userMed)
         }
-    }
-
-    private func importHealthKitMedication(
-        _ medication: HKUserAnnotatedMedication
-    ) {
-        let medicationName = medication.medication.displayText
-
-        let medInput = MedicationInput(
-            name: medicationName,
-            dosage: "",
-            taken: false
-        )
-        medications.append(medInput)
-        showingHealthKitMedications = false
+        showingHealthKitImport = false
     }
 
     private func saveEntry() {
@@ -474,13 +450,14 @@ struct AddSymptomView: View {
             notes: notes
         )
 
-        let meds = medications.map { input in
-            Medication(
-                name: input.name,
-                dosage: input.dosage,
+        let meds = userMedications.compactMap { userMed -> Medication? in
+            guard takenMedications.contains(userMed.id) else { return nil }
+            return Medication(
+                name: userMed.name,
+                dosage: userMed.dosage,
                 timestamp: endOfDay,
-                taken: input.taken,
-                notes: input.notes
+                taken: true,
+                notes: ""
             )
         }
 
@@ -542,13 +519,14 @@ struct AddSymptomView: View {
         }
         entry.medications = nil
 
-        let meds = medications.map { input in
-            Medication(
-                name: input.name,
-                dosage: input.dosage,
+        let meds = userMedications.compactMap { userMed -> Medication? in
+            guard takenMedications.contains(userMed.id) else { return nil }
+            return Medication(
+                name: userMed.name,
+                dosage: userMed.dosage,
                 timestamp: endOfDay,
-                taken: input.taken,
-                notes: input.notes
+                taken: true,
+                notes: ""
             )
         }
 

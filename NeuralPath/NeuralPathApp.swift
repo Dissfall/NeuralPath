@@ -14,7 +14,8 @@ struct NeuralPathApp: App {
         let schema = Schema([
             SymptomEntry.self,
             Medication.self,
-            Substance.self
+            Substance.self,
+            UserMedication.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

@@ -36,6 +36,18 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    NavigationLink {
+                        MedicationManagementView()
+                    } label: {
+                        Label("Manage Medications", systemImage: "pills.fill")
+                    }
+                } header: {
+                    Text("Medications")
+                } footer: {
+                    Text("Add and manage your medications, dosages, and schedules")
+                }
+
+                Section {
                     HStack {
                         Text("HealthKit")
                         Spacer()
