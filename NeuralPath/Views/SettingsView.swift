@@ -90,6 +90,10 @@ struct SettingsView: View {
                     Link(destination: URL(string: "https://github.com/Dissfall/NeuralPath/issues/new?labels=enhancement")!) {
                         Label("Suggest a Feature", systemImage: "lightbulb.fill")
                     }
+
+                    Link(destination: URL(string: "mailto:heorhi@lukyanau.me")!) {
+                        Label("Share Feedback", systemImage: "envelope.fill")
+                    }
                 } header: {
                     Text("About")
                 }
