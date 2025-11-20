@@ -41,10 +41,16 @@ struct SettingsView: View {
                     } label: {
                         Label("Manage Medications", systemImage: "pills.fill")
                     }
+
+                    NavigationLink {
+                        SubstanceManagementView()
+                    } label: {
+                        Label("Manage Substances", systemImage: "drop.triangle.fill")
+                    }
                 } header: {
-                    Text("Medications")
+                    Text("Tracking")
                 } footer: {
-                    Text("Add and manage your medications, dosages, and schedules")
+                    Text("Manage your medications and substances for easy tracking")
                 }
 
                 Section {

@@ -13,6 +13,8 @@ struct ContentView: View {
     @Query(sort: \SymptomEntry.timestamp, order: .reverse) private var entries: [SymptomEntry]
     @State private var showingAddEntry = false
     @State private var showingSettings = false
+    @State private var showingLogMedication = false
+    @State private var showingLogSubstance = false
     @State private var selectedTab = 0
 
     var body: some View {
@@ -52,10 +54,28 @@ struct ContentView: View {
             .navigationTitle("NeuralPath")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAddEntry = true
+                    Menu {
+                        Button {
+                            showingLogMedication = true
+                        } label: {
+                            Label("Log Medication", systemImage: "pills")
+                        }
+
+                        Button {
+                            showingLogSubstance = true
+                        } label: {
+                            Label("Log Substance", systemImage: "drop.triangle")
+                        }
+
+                        Divider()
+
+                        Button {
+                            showingAddEntry = true
+                        } label: {
+                            Label("Add Full Entry", systemImage: "plus.circle")
+                        }
                     } label: {
-                        Label("Add Entry", systemImage: "plus")
+                        Label("Add", systemImage: "plus")
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -71,6 +91,12 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+            }
+            .sheet(isPresented: $showingLogMedication) {
+                QuickLogMedicationView()
+            }
+            .sheet(isPresented: $showingLogSubstance) {
+                QuickLogSubstanceView()
             }
             .overlay {
                 if entries.isEmpty {

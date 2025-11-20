@@ -7,7 +7,18 @@ struct AddSymptomView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Query private var allEntries: [SymptomEntry]
-    @Query(filter: #Predicate<UserMedication> { $0.isActive }, sort: \UserMedication.name) private var userMedications: [UserMedication]
+    @Query(
+        filter: #Predicate<UserMedication> { $0.isActive },
+        sort: \UserMedication.name
+    ) private var userMedications: [UserMedication]
+    @Query(
+        filter: #Predicate<UserSubstance> { $0.isActive },
+        sort: \UserSubstance.name
+    ) private var userSubstances: [UserSubstance]
+    @Query(sort: \MedicationLog.timestamp, order: .forward) private
+        var allMedicationLogs: [MedicationLog]
+    @Query(sort: \SubstanceLog.timestamp, order: .forward) private
+        var allSubstanceLogs: [SubstanceLog]
 
     let entryToEdit: SymptomEntry?
 
@@ -21,8 +32,8 @@ struct AddSymptomView: View {
     @State private var timeInDaylightMinutes: String = ""
     @State private var exerciseMinutes: String = ""
     @State private var notes: String = ""
-    @State private var takenMedications: Set<UUID> = []
-    @State private var substances: [SubstanceInput] = []
+    @State private var takenMedications: [UUID: Date] = [:]
+    @State private var takenSubstances: [SubstanceEntry] = []
     @State private var isLoadingSleepData = false
     @State private var showingHealthKitImport = false
 
@@ -39,8 +50,11 @@ struct AddSymptomView: View {
 
     private var hasEntryForSelectedDate: Bool {
         allEntries.contains { entry in
-            entry.id != entryToEdit?.id &&
-            Calendar.current.isDate(entry.timestamp, inSameDayAs: selectedDate)
+            entry.id != entryToEdit?.id
+                && Calendar.current.isDate(
+                    entry.timestamp,
+                    inSameDayAs: selectedDate
+                )
         }
     }
 
@@ -48,7 +62,12 @@ struct AddSymptomView: View {
         NavigationStack {
             Form {
                 Section("Date") {
-                    DatePicker("Entry Date", selection: $selectedDate, in: ...Date(), displayedComponents: [.date])
+                    DatePicker(
+                        "Entry Date",
+                        selection: $selectedDate,
+                        in: ...Date(),
+                        displayedComponents: [.date]
+                    )
 
                     if hasEntryForSelectedDate {
                         HStack(spacing: 8) {
@@ -170,133 +189,140 @@ struct AddSymptomView: View {
                                 Button {
                                     showingHealthKitImport = true
                                 } label: {
-                                    Label("Import from HealthKit", systemImage: "heart.text.square")
+                                    Label(
+                                        "Import from HealthKit",
+                                        systemImage: "heart.text.square"
+                                    )
                                 }
                             }
 
                             NavigationLink {
                                 MedicationManagementView()
                             } label: {
-                                Label("Add Medications in Settings", systemImage: "gear")
-                                    .font(.caption)
+                                Label(
+                                    "Add Medications in Settings",
+                                    systemImage: "gear"
+                                )
+                                .font(.caption)
                             }
                         }
                         .padding(.vertical, 4)
                     } else {
                         ForEach(userMedications) { medication in
-                            Toggle(isOn: Binding(
-                                get: { takenMedications.contains(medication.id) },
-                                set: { newValue in
-                                    if newValue {
-                                        takenMedications.insert(medication.id)
-                                    } else {
-                                        takenMedications.remove(medication.id)
-                                    }
-                                }
-                            )) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(medication.name)
-                                        .font(.headline)
+                            VStack(alignment: .leading, spacing: 8) {
+                                Toggle(
+                                    isOn: Binding(
+                                        get: {
+                                            takenMedications[medication.id]
+                                                != nil
+                                        },
+                                        set: { newValue in
+                                            if newValue {
+                                                takenMedications[
+                                                    medication.id
+                                                ] = Date()
+                                            } else {
+                                                takenMedications[
+                                                    medication.id
+                                                ] = nil
+                                            }
+                                        }
+                                    )
+                                ) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(medication.name)
+                                            .font(.headline)
 
-                                    HStack(spacing: 8) {
-                                        if !medication.dosage.isEmpty {
-                                            Text(medication.dosage)
+                                        HStack(spacing: 8) {
+                                            if !medication.dosage.isEmpty {
+                                                Text(medication.dosage)
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                            }
+
+                                            Text(medication.frequency.shortName)
                                                 .font(.caption)
                                                 .foregroundStyle(.secondary)
                                         }
-
-                                        Text(medication.frequency.shortName)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
                                     }
                                 }
+
+                                if takenMedications[medication.id] != nil {
+                                    DatePicker(
+                                        "Time Taken",
+                                        selection: Binding(
+                                            get: {
+                                                takenMedications[medication.id]
+                                                    ?? Date()
+                                            },
+                                            set: { newValue in
+                                                takenMedications[
+                                                    medication.id
+                                                ] = newValue
+                                            }
+                                        ),
+                                        displayedComponents: [.hourAndMinute]
+                                    )
+                                    .padding(.leading)
+                                    .accessibilityLabel("Time taken for \(medication.name)")
+                                    .accessibilityHint("Select when you took this medication")
+                                }
                             }
+                            .padding(.vertical, 4)
                         }
                     }
                 }
 
                 Section("Substances") {
-                    ForEach(substances) { substance in
-                        VStack(alignment: .leading, spacing: 8) {
-                            TextField(
-                                "Substance Name",
-                                text: Binding(
-                                    get: { substance.name },
-                                    set: { newValue in
-                                        if let index = substances.firstIndex(
-                                            where: { $0.id == substance.id })
-                                        {
-                                            substances[index].name = newValue
-                                        }
-                                    }
-                                )
+                    // Get unique substance IDs that have instances, sorted for stability
+                    let uniqueSubstanceIds = Array(Set(takenSubstances.map { $0.userSubstanceId })).sorted(by: { id1, id2 in
+                        let name1 = userSubstances.first(where: { $0.id == id1 })?.name ?? ""
+                        let name2 = userSubstances.first(where: { $0.id == id2 })?.name ?? ""
+                        return name1 < name2
+                    })
+
+                    ForEach(uniqueSubstanceIds, id: \.self) { substanceId in
+                        if let substance = userSubstances.first(where: { $0.id == substanceId }) {
+                            SubstanceInstancesView(
+                                substance: substance,
+                                takenSubstances: $takenSubstances
                             )
-                            .font(.headline)
+                        }
+                    }
 
-                            HStack {
-                                TextField(
-                                    "Amount",
-                                    text: Binding(
-                                        get: { substance.amount },
-                                        set: { newValue in
-                                            if let index = substances.firstIndex(
-                                                where: { $0.id == substance.id })
-                                            {
-                                                substances[index].amount = newValue
-                                            }
-                                        }
+                    // Add instance picker
+                    Menu {
+                        ForEach(userSubstances) { substance in
+                            Button(substance.name) {
+                                withAnimation {
+                                    takenSubstances.append(
+                                        SubstanceEntry(
+                                            userSubstanceId: substance.id,
+                                            amount: "",
+                                            unit: substance.defaultUnit
+                                                ?? .cups,
+                                            timestamp: Date()
+                                        )
                                     )
-                                )
-                                .keyboardType(.decimalPad)
-                                .frame(maxWidth: 100)
-
-                                Picker(
-                                    "Unit",
-                                    selection: Binding(
-                                        get: { substance.unit },
-                                        set: { newValue in
-                                            if let index = substances.firstIndex(
-                                                where: { $0.id == substance.id })
-                                            {
-                                                substances[index].unit = newValue
-                                            }
-                                        }
-                                    )
-                                ) {
-                                    ForEach(SubstanceUnit.allCases, id: \.self) {
-                                        unit in
-                                        Text(unit.displayName).tag(unit)
-                                    }
                                 }
-                                .pickerStyle(.menu)
                             }
+                        }
+                    } label: {
+                        Label("Add Substance", systemImage: "plus.circle")
+                            .font(.subheadline)
+                    }
+                    .disabled(userSubstances.isEmpty)
 
-                            TextField(
-                                "Notes (optional)",
-                                text: Binding(
-                                    get: { substance.notes },
-                                    set: { newValue in
-                                        if let index = substances.firstIndex(
-                                            where: { $0.id == substance.id })
-                                        {
-                                            substances[index].notes = newValue
-                                        }
-                                    }
-                                )
+                    if userSubstances.isEmpty {
+                        NavigationLink {
+                            SubstanceManagementView()
+                        } label: {
+                            Label(
+                                "Add Substances in Settings",
+                                systemImage: "gear"
                             )
                             .font(.caption)
-                            .foregroundStyle(.secondary)
                         }
-                        .padding(.vertical, 4)
-                    }
-                    .onDelete { indexSet in
-                        substances.remove(atOffsets: indexSet)
-                    }
-
-                    Button {
-                        substances.append(SubstanceInput())
-                    } label: {
-                        Label("Add Substance", systemImage: "plus.circle.fill")
                     }
                 }
 
@@ -323,6 +349,7 @@ struct AddSymptomView: View {
                 if let entry = entryToEdit {
                     loadEntryData(entry)
                 } else {
+                    loadLogsForDate()
                     await loadSleepData()
                     await loadActivityData()
                 }
@@ -332,16 +359,20 @@ struct AddSymptomView: View {
             }
             .onChange(of: selectedDate) { _, _ in
                 if !isEditMode {
+                    loadLogsForDate()
                     Task {
                         await loadSleepData()
                         await loadActivityData()
                     }
                 }
             }
-            .alert("Entry Already Exists", isPresented: $showingDuplicateAlert) {
-                Button("OK", role: .cancel) { }
+            .alert("Entry Already Exists", isPresented: $showingDuplicateAlert)
+            {
+                Button("OK", role: .cancel) {}
             } message: {
-                Text("An entry for this date already exists. Please choose a different date or delete the existing entry first.")
+                Text(
+                    "An entry for this date already exists. Please choose a different date or delete the existing entry first."
+                )
             }
         }
     }
@@ -365,12 +396,18 @@ struct AddSymptomView: View {
     private func loadActivityData() async {
         do {
             if #available(iOS 17.0, *) {
-                if let daylight = try await healthKitManager.fetchTimeInDaylight(for: selectedDate) {
+                if let daylight =
+                    try await healthKitManager.fetchTimeInDaylight(
+                        for: selectedDate
+                    )
+                {
                     timeInDaylightMinutes = String(format: "%.0f", daylight)
                 }
             }
 
-            if let exercise = try await healthKitManager.fetchExerciseMinutes(for: selectedDate) {
+            if let exercise = try await healthKitManager.fetchExerciseMinutes(
+                for: selectedDate
+            ) {
                 exerciseMinutes = String(format: "%.0f", exercise)
             }
         } catch {
@@ -385,29 +422,97 @@ struct AddSymptomView: View {
         anhedoniaLevel = entry.anhedoniaLevel
         sleepQualityRating = entry.sleepQualityRating
         sleepHours = entry.sleepHours.map { String(format: "%.1f", $0) } ?? ""
-        timeInDaylightMinutes = entry.timeInDaylightMinutes.map { String(format: "%.0f", $0) } ?? ""
-        exerciseMinutes = entry.exerciseMinutes.map { String(format: "%.0f", $0) } ?? ""
+        timeInDaylightMinutes =
+            entry.timeInDaylightMinutes.map { String(format: "%.0f", $0) } ?? ""
+        exerciseMinutes =
+            entry.exerciseMinutes.map { String(format: "%.0f", $0) } ?? ""
         notes = entry.notes
 
-        takenMedications = Set(
-            entry.medications?
-                .filter { $0.taken }
-                .compactMap { med in
-                    userMedications.first(where: { $0.name == med.name })?.id
-                } ?? []
-        )
+        var takenMeds: [UUID: Date] = [:]
+        entry.medications?
+            .filter { $0.taken }
+            .forEach { med in
+                if let userMed = userMedications.first(where: {
+                    $0.name == med.name
+                }) {
+                    takenMeds[userMed.id] = med.timestamp
+                }
+            }
+        takenMedications = takenMeds
 
-        substances = entry.substances?.map { sub in
-            SubstanceInput(
-                name: sub.name,
-                amount: String(format: "%.1f", sub.amount),
-                unit: sub.unit,
-                notes: sub.notes
-            )
-        } ?? []
+        var substanceEntries: [SubstanceEntry] = []
+        entry.substances?.forEach { sub in
+            if let userSubstance = userSubstances.first(where: {
+                $0.name == sub.name
+            }) {
+                substanceEntries.append(
+                    SubstanceEntry(
+                        userSubstanceId: userSubstance.id,
+                        amount: String(format: "%.1f", sub.amount),
+                        unit: sub.unit,
+                        timestamp: sub.timestamp
+                    )
+                )
+            }
+        }
+        takenSubstances = substanceEntries
     }
 
-    private func importMedicationsFromHealthKit(_ selectedMedications: [HKUserAnnotatedMedication]) {
+    private func loadLogsForDate() {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: selectedDate)
+        let endOfDay =
+            calendar.date(byAdding: .day, value: 1, to: startOfDay)
+            ?? selectedDate
+
+        // Load medication logs for the selected date
+        let medicationLogsForDate = allMedicationLogs.filter { log in
+            log.timestamp >= startOfDay && log.timestamp < endOfDay
+        }
+
+        var takenMeds: [UUID: Date] = [:]
+        for log in medicationLogsForDate {
+            if let userMed = userMedications.first(where: {
+                $0.name == log.medicationName
+            }) {
+                // If multiple logs for same medication, use the most recent timestamp
+                if let existingTimestamp = takenMeds[userMed.id] {
+                    if log.timestamp > existingTimestamp {
+                        takenMeds[userMed.id] = log.timestamp
+                    }
+                } else {
+                    takenMeds[userMed.id] = log.timestamp
+                }
+            }
+        }
+        takenMedications = takenMeds
+
+        // Load substance logs for the selected date
+        let substanceLogsForDate = allSubstanceLogs.filter { log in
+            log.timestamp >= startOfDay && log.timestamp < endOfDay
+        }
+
+        var substanceEntries: [SubstanceEntry] = []
+        for log in substanceLogsForDate {
+            if let userSub = userSubstances.first(where: {
+                $0.name == log.substanceName
+            }) {
+                substanceEntries.append(
+                    SubstanceEntry(
+                        userSubstanceId: userSub.id,
+                        amount: String(format: "%.1f", log.amount),
+                        unit: log.unit,
+                        timestamp: log.timestamp
+                    )
+                )
+            }
+        }
+        takenSubstances = substanceEntries
+    }
+
+    private func importMedicationsFromHealthKit(
+        _ selectedMedications: [HKUserAnnotatedMedication]
+    ) {
         for hkMed in selectedMedications {
             let userMed = UserMedication(
                 name: hkMed.medication.displayText,
@@ -436,7 +541,13 @@ struct AddSymptomView: View {
 
     private func createEntry() {
         let calendar = Calendar.current
-        let endOfDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: selectedDate) ?? selectedDate
+        let endOfDay =
+            calendar.date(
+                bySettingHour: 23,
+                minute: 59,
+                second: 59,
+                of: selectedDate
+            ) ?? selectedDate
 
         let entry = SymptomEntry(
             timestamp: endOfDay,
@@ -450,27 +561,34 @@ struct AddSymptomView: View {
             notes: notes
         )
 
-        let meds = userMedications.compactMap { userMed -> Medication? in
-            guard takenMedications.contains(userMed.id) else { return nil }
+        let meds = takenMedications.compactMap {
+            (id, timestamp) -> Medication? in
+            guard let userMed = userMedications.first(where: { $0.id == id })
+            else { return nil }
             return Medication(
                 name: userMed.name,
                 dosage: userMed.dosage,
-                timestamp: endOfDay,
+                timestamp: timestamp,
                 taken: true,
                 notes: ""
             )
         }
 
-        let subs = substances.compactMap { input -> Substance? in
-            guard !input.name.isEmpty, let amount = Double(input.amount) else {
+        let subs = takenSubstances.compactMap { substanceEntry -> Substance? in
+            guard
+                let userSubstance = userSubstances.first(where: {
+                    $0.id == substanceEntry.userSubstanceId
+                }),
+                let amount = Double(substanceEntry.amount), amount > 0
+            else {
                 return nil
             }
             return Substance(
-                name: input.name,
+                name: userSubstance.name,
                 amount: amount,
-                unit: input.unit,
-                timestamp: endOfDay,
-                notes: input.notes
+                unit: substanceEntry.unit,
+                timestamp: substanceEntry.timestamp,
+                notes: ""
             )
         }
 
@@ -501,7 +619,13 @@ struct AddSymptomView: View {
 
     private func updateEntry(_ entry: SymptomEntry) {
         let calendar = Calendar.current
-        let endOfDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: selectedDate) ?? selectedDate
+        let endOfDay =
+            calendar.date(
+                bySettingHour: 23,
+                minute: 59,
+                second: 59,
+                of: selectedDate
+            ) ?? selectedDate
 
         entry.timestamp = endOfDay
         entry.moodLevel = moodLevel
@@ -519,12 +643,14 @@ struct AddSymptomView: View {
         }
         entry.medications = nil
 
-        let meds = userMedications.compactMap { userMed -> Medication? in
-            guard takenMedications.contains(userMed.id) else { return nil }
+        let meds = takenMedications.compactMap {
+            (id, timestamp) -> Medication? in
+            guard let userMed = userMedications.first(where: { $0.id == id })
+            else { return nil }
             return Medication(
                 name: userMed.name,
                 dosage: userMed.dosage,
-                timestamp: endOfDay,
+                timestamp: timestamp,
                 taken: true,
                 notes: ""
             )
@@ -540,18 +666,21 @@ struct AddSymptomView: View {
         }
         entry.substances = nil
 
-        let subs = substances.compactMap { input -> Substance? in
-            guard !input.name.isEmpty, let amount = Double(input.amount) else {
-                print("⚠️ Skipping substance: name='\(input.name)', amount='\(input.amount)'")
+        let subs = takenSubstances.compactMap { substanceEntry -> Substance? in
+            guard
+                let userSubstance = userSubstances.first(where: {
+                    $0.id == substanceEntry.userSubstanceId
+                }),
+                let amount = Double(substanceEntry.amount), amount > 0
+            else {
                 return nil
             }
-            print("✅ Creating substance: \(input.name) - \(amount) \(input.unit.abbreviation)")
             return Substance(
-                name: input.name,
+                name: userSubstance.name,
                 amount: amount,
-                unit: input.unit,
-                timestamp: endOfDay,
-                notes: input.notes
+                unit: substanceEntry.unit,
+                timestamp: substanceEntry.timestamp,
+                notes: ""
             )
         }
 
@@ -591,6 +720,250 @@ struct SubstanceInput: Identifiable {
     var amount: String = ""
     var unit: SubstanceUnit = .milliliters
     var notes: String = ""
+}
+
+struct SubstanceAmount {
+    var amount: String
+    var unit: SubstanceUnit
+    var timestamp: Date
+}
+
+struct SubstanceEntry: Identifiable {
+    var id: UUID
+    var userSubstanceId: UUID
+    var amount: String
+    var unit: SubstanceUnit
+    var timestamp: Date
+
+    init(id: UUID = UUID(), userSubstanceId: UUID, amount: String, unit: SubstanceUnit, timestamp: Date) {
+        self.id = id
+        self.userSubstanceId = userSubstanceId
+        self.amount = amount
+        self.unit = unit
+        self.timestamp = timestamp
+    }
+}
+
+struct SubstanceInstancesView: View {
+    let substance: UserSubstance
+    @Binding var takenSubstances: [SubstanceEntry]
+
+    @State private var editingInstanceId: UUID?
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
+
+    private func deleteInstance(_ instanceId: UUID) {
+        if let index = takenSubstances.firstIndex(where: { $0.id == instanceId }) {
+            withAnimation(.easeOut(duration: 0.2)) {
+                _ = takenSubstances.remove(at: index)
+            }
+        }
+    }
+
+    private func addInstance() {
+        let filteredInstances = takenSubstances.filter { $0.userSubstanceId == substance.id }
+        let lastUnit = filteredInstances.last?.unit ?? substance.defaultUnit ?? .cups
+
+        let newEntry = SubstanceEntry(
+            userSubstanceId: substance.id,
+            amount: "",
+            unit: lastUnit,
+            timestamp: Date()
+        )
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            takenSubstances.append(newEntry)
+            editingInstanceId = newEntry.id
+        }
+    }
+
+    var body: some View {
+        let filteredInstances = takenSubstances
+            .filter { $0.userSubstanceId == substance.id }
+            .sorted { $0.timestamp < $1.timestamp }
+
+        VStack(alignment: .leading, spacing: 8) {
+            // Header with count
+            HStack {
+                Text(substance.name)
+                    .font(.headline)
+
+                if !filteredInstances.isEmpty {
+                    Text("(\(filteredInstances.count))")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+
+            if filteredInstances.isEmpty {
+                VStack(spacing: 12) {
+                    Text("No instances logged")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+
+                    Button(action: addInstance) {
+                        Label("Log First Instance", systemImage: "plus.circle.fill")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                    .accessibilityLabel("Log first \(substance.name) instance")
+                    .accessibilityHint("Tap to add the first instance of \(substance.name) for today")
+                }
+                .padding(.vertical, 8)
+            } else {
+                // Instance list
+                ForEach(filteredInstances) { instance in
+                    SubstanceInstanceRow(
+                        instance: instance,
+                        isEditing: editingInstanceId == instance.id,
+                        timeFormatter: timeFormatter,
+                        onUpdateAmount: { newValue in
+                            if let index = takenSubstances.firstIndex(where: { $0.id == instance.id }) {
+                                takenSubstances[index].amount = newValue
+                            }
+                        },
+                        onUpdateUnit: { newValue in
+                            if let index = takenSubstances.firstIndex(where: { $0.id == instance.id }) {
+                                takenSubstances[index].unit = newValue
+                            }
+                        },
+                        onUpdateTime: { newValue in
+                            if let index = takenSubstances.firstIndex(where: { $0.id == instance.id }) {
+                                takenSubstances[index].timestamp = newValue
+                            }
+                        },
+                        onDelete: { deleteInstance(instance.id) },
+                        onTap: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                editingInstanceId = editingInstanceId == instance.id ? nil : instance.id
+                            }
+                        }
+                    )
+                }
+
+                Button(action: addInstance) {
+                    Label("Add Another", systemImage: "plus.circle")
+                        .font(.caption)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .padding(.top, 4)
+                .accessibilityLabel("Add another \(substance.name) instance")
+                .accessibilityHint("Tap to log another instance of \(substance.name)")
+            }
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+struct SubstanceInstanceRow: View {
+    let instance: SubstanceEntry
+    let isEditing: Bool
+    let timeFormatter: DateFormatter
+    let onUpdateAmount: (String) -> Void
+    let onUpdateUnit: (SubstanceUnit) -> Void
+    let onUpdateTime: (Date) -> Void
+    let onDelete: () -> Void
+    let onTap: () -> Void
+
+    var body: some View {
+        VStack(spacing: 6) {
+            HStack(spacing: 12) {
+                // Time label
+                Text(timeFormatter.string(from: instance.timestamp))
+                    .font(.system(.subheadline, design: .monospaced))
+                    .foregroundStyle(.blue)
+                    .frame(minWidth: 60, alignment: .leading)
+                    .accessibilityLabel("Time: \(timeFormatter.string(from: instance.timestamp))")
+
+                // Amount and unit
+                HStack(spacing: 4) {
+                    TextField("0", text: Binding(
+                        get: { instance.amount },
+                        set: onUpdateAmount
+                    ))
+                    .keyboardType(.decimalPad)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 60)
+                    .disabled(!isEditing)
+                    .accessibilityLabel("Amount")
+                    .accessibilityValue(instance.amount.isEmpty ? "Not set" : instance.amount)
+                    .accessibilityHint(isEditing ? "Enter the amount" : "Tap edit to change")
+
+                    Picker("Unit", selection: Binding(
+                        get: { instance.unit },
+                        set: onUpdateUnit
+                    )) {
+                        ForEach(SubstanceUnit.allCases, id: \.self) { unit in
+                            Text(unit.displayName).tag(unit)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .disabled(!isEditing)
+                    .frame(minWidth: 50)
+                    .accessibilityLabel("Unit")
+                    .accessibilityValue(instance.unit.displayName)
+                    .accessibilityHint(isEditing ? "Select a unit of measurement" : "Tap edit to change")
+                }
+
+                Spacer()
+
+                // Actions
+                HStack(spacing: 8) {
+                    Button(action: onTap) {
+                        Image(systemName: isEditing ? "checkmark.circle.fill" : "pencil.circle")
+                            .foregroundStyle(isEditing ? .green : .blue)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(isEditing ? "Save changes" : "Edit instance")
+                    .accessibilityHint(isEditing ? "Tap to save your changes" : "Tap to edit this instance")
+
+                    Button(action: onDelete) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.red.opacity(0.7))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Delete instance")
+                    .accessibilityHint("Tap to remove this instance")
+                }
+            }
+
+            // Expanded time picker when editing
+            if isEditing {
+                DatePicker(
+                    "Time",
+                    selection: Binding(
+                        get: { instance.timestamp },
+                        set: onUpdateTime
+                    ),
+                    displayedComponents: [.hourAndMinute]
+                )
+                .datePickerStyle(.compact)
+                .padding(.top, 4)
+                .accessibilityLabel("Instance time")
+                .accessibilityHint("Select when this instance was taken")
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isEditing ? Color.blue.opacity(0.08) : Color.gray.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isEditing ? Color.blue.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
+    }
 }
 
 #Preview {
