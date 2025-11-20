@@ -38,14 +38,20 @@ struct SymptomEntryRow: View {
                         .background(Color.purple.opacity(0.2))
                         .cornerRadius(8)
                 }
-                ForEach(entry.substances ?? []) { substance in
-                    Label(substance.name, systemImage: "drop.triangle")
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(8)
+            }
+
+            if let substances = entry.substances, !substances.isEmpty {
+                WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+                    ForEach(substances) { substance in
+                        Label(substance.name, systemImage: "drop.triangle")
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.green.opacity(0.2))
+                            .cornerRadius(8)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if !entry.notes.isEmpty {
@@ -61,9 +67,16 @@ struct SymptomEntryRow: View {
 
 #Preview {
     let coffee = Substance(name: "Coffee", amount: 1, unit: .cups)
-    let cigarettes = Substance(name: "Cigarettes", amount: 1, unit: .cigarettes)
+    let cigarettes = Substance(name: "Energy Drink", amount: 1, unit: .cups)
+    let tea = Substance(name: "Herbal Tea", amount: 1, unit: .cups)
+
+    let entry = SymptomEntry(anxietyLevel: .extreme, anhedoniaLevel: .extreme, substances: [coffee, cigarettes, tea])
     
-    let entry = SymptomEntry(anxietyLevel: .extreme, anhedoniaLevel: .extreme, substances: [coffee, cigarettes])
-    
-    SymptomEntryRow(entry: entry)
+    List {
+        NavigationLink {
+            SymptomDetailView(entry: entry)
+        } label: {
+            SymptomEntryRow(entry: entry)
+        }
+    }
 }
