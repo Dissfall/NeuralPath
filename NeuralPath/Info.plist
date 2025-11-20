@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSHealthShareUsageDescription</key>
-	<string>NeuralPath needs access to read your health data to provide insights and track correlations with your mental health symptoms.</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>NeuralPath needs permission to save your mental health symptom data to HealthKit for comprehensive tracking.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
