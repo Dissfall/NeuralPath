@@ -31,9 +31,9 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            InsightsView()
+            StatisticalAnalysisView()
                 .tabItem {
-                    Label("Insights", systemImage: "brain")
+                    Label("Analysis", systemImage: "brain")
                 }
                 .tag(2)
         }
