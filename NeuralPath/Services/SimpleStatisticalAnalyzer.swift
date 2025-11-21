@@ -12,6 +12,84 @@ class SimpleStatisticalAnalyzer {
 
     // MARK: - Analysis Results
 
+    struct ComprehensiveAnalysis {
+        let overallHealthScore: Double
+        let overallTrend: TrendAnalysis
+        let topPositiveFactors: [FactorImpact]
+        let topNegativeFactors: [FactorImpact]
+        let allFactors: [FactorImpact]
+        let keyInsights: [String]
+        let recommendations: [String]
+        let lastUpdated: Date
+    }
+
+    struct FactorImpact: Identifiable {
+        let id = UUID()
+        let name: String
+        let category: FactorCategory
+        let impactScore: Double // -1 to 1
+        let confidence: Double // 0 to 1
+        let trend: TrendDirection
+        let icon: String // SF Symbol name
+        let detail: String // Brief explanation
+    }
+
+    enum FactorCategory: String, CaseIterable {
+        case medication = "Medication"
+        case substance = "Substance"
+        case sleep = "Sleep"
+        case exercise = "Exercise"
+        case daylight = "Daylight"
+
+        var icon: String {
+            switch self {
+            case .medication: return "pills.fill"
+            case .substance: return "drop.triangle.fill"
+            case .sleep: return "moon.zzz.fill"
+            case .exercise: return "figure.run"
+            case .daylight: return "sun.max.fill"
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .medication: return .blue
+            case .substance: return .purple
+            case .sleep: return .indigo
+            case .exercise: return .orange
+            case .daylight: return .yellow
+            }
+        }
+    }
+
+    enum TrendDirection: String {
+        case strongImprovement = "Strong Improvement"
+        case improving = "Improving"
+        case stable = "Stable"
+        case worsening = "Worsening"
+        case strongDecline = "Strong Decline"
+
+        var icon: String {
+            switch self {
+            case .strongImprovement: return "arrow.up"
+            case .improving: return "arrow.up.right"
+            case .stable: return "arrow.right"
+            case .worsening: return "arrow.down.right"
+            case .strongDecline: return "arrow.down"
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .strongImprovement: return .green
+            case .improving: return .mint
+            case .stable: return .blue
+            case .worsening: return .orange
+            case .strongDecline: return .red
+            }
+        }
+    }
+
     struct MedicationEffectiveness {
         let medicationName: String
         let beforeAverage: Double      // Symptom average before starting
@@ -243,6 +321,275 @@ class SimpleStatisticalAnalyzer {
             trending: trending,
             daysToImprovement: daysToImprovement
         )
+    }
+
+    // MARK: - Comprehensive Analysis
+
+    /// Analyzes all factors at once and returns a comprehensive overview
+    func analyzeAllFactors(entries: [SymptomEntry]) -> ComprehensiveAnalysis? {
+        guard entries.count >= 7 else { return nil }
+
+        var allFactors: [FactorImpact] = []
+
+        // Analyze all medications
+        let uniqueMedications = Set(entries.flatMap { $0.medications ?? [] }.map { $0.name })
+        for medication in uniqueMedications {
+            let effectiveness = analyzeMedicationEffectiveness(
+                medication: medication,
+                entries: entries
+            )
+
+            if effectiveness.daysAnalyzed >= 7 {
+                let impact = FactorImpact(
+                    name: medication,
+                    category: .medication,
+                    impactScore: effectiveness.percentChange / 100.0,
+                    confidence: effectiveness.confidence,
+                    trend: getTrendDirection(from: effectiveness.percentChange),
+                    icon: FactorCategory.medication.icon,
+                    detail: "Taken for \(effectiveness.daysAnalyzed) days"
+                )
+                allFactors.append(impact)
+            }
+        }
+
+        // Analyze all substances
+        let uniqueSubstances = Set(entries.flatMap { $0.substances ?? [] }.map { $0.name })
+        for substance in uniqueSubstances {
+            let impact = analyzeSubstanceImpact(
+                substance: substance,
+                entries: entries
+            )
+
+            let factorImpact = FactorImpact(
+                name: substance,
+                category: .substance,
+                impactScore: impact.impactScore,
+                confidence: 0.7, // Calculate based on sample size
+                trend: getTrendDirection(from: impact.impactScore * 100),
+                icon: FactorCategory.substance.icon,
+                detail: impact.dayAfterSubstance.composite < impact.typicalDay.composite ?
+                    "Negative next-day effects" : "No significant after-effects"
+            )
+            allFactors.append(factorImpact)
+        }
+
+        // Analyze sleep impact
+        if let sleepImpact = analyzeSleepImpact(entries: entries) {
+            allFactors.append(sleepImpact)
+        }
+
+        // Analyze exercise impact
+        if let exerciseImpact = analyzeExerciseImpact(entries: entries) {
+            allFactors.append(exerciseImpact)
+        }
+
+        // Analyze daylight impact
+        if let daylightImpact = analyzeDaylightImpact(entries: entries) {
+            allFactors.append(daylightImpact)
+        }
+
+        // Sort factors by absolute impact score
+        allFactors.sort { abs($0.impactScore) > abs($1.impactScore) }
+
+        // Get top positive and negative factors
+        let topPositive = allFactors.filter { $0.impactScore > 0 }.prefix(3)
+        let topNegative = allFactors.filter { $0.impactScore < 0 }.prefix(3)
+
+        // Calculate overall health score (0-100)
+        let avgMood = entries.compactMap { $0.moodLevel?.rawValue }.reduce(0, +) / max(1, entries.count)
+        let avgAnxiety = entries.compactMap { $0.anxietyLevel?.rawValue }.reduce(0, +) / max(1, entries.count)
+        let avgAnhedonia = entries.compactMap { $0.anhedoniaLevel?.rawValue }.reduce(0, +) / max(1, entries.count)
+        let overallScore = ((Double(avgMood) / 5.0) * 40 +
+                           (1.0 - Double(avgAnxiety) / 5.0) * 30 +
+                           (1.0 - Double(avgAnhedonia) / 5.0) * 30)
+
+        // Get overall trend
+        let overallTrend = calculateTrend(entries: entries)
+
+        // Generate insights
+        let insights = generateKeyInsights(
+            factors: allFactors,
+            entries: entries,
+            trend: overallTrend
+        )
+
+        // Generate recommendations
+        let recommendations = generateRecommendations(
+            topPositive: Array(topPositive),
+            topNegative: Array(topNegative),
+            overallTrend: overallTrend
+        )
+
+        return ComprehensiveAnalysis(
+            overallHealthScore: overallScore,
+            overallTrend: overallTrend,
+            topPositiveFactors: Array(topPositive),
+            topNegativeFactors: Array(topNegative),
+            allFactors: allFactors,
+            keyInsights: insights,
+            recommendations: recommendations,
+            lastUpdated: Date()
+        )
+    }
+
+    private func analyzeSleepImpact(entries: [SymptomEntry]) -> FactorImpact? {
+        let goodSleepEntries = entries.filter { ($0.sleepHours ?? 0) > 7 }
+        let poorSleepEntries = entries.filter { ($0.sleepHours ?? 0) < 6 }
+
+        guard !goodSleepEntries.isEmpty && !poorSleepEntries.isEmpty else { return nil }
+
+        let goodSleepScore = goodSleepEntries.map { calculateCompositeScore($0) }.reduce(0, +) / Double(goodSleepEntries.count)
+        let poorSleepScore = poorSleepEntries.map { calculateCompositeScore($0) }.reduce(0, +) / Double(poorSleepEntries.count)
+
+        let impact = (goodSleepScore - poorSleepScore) / max(abs(poorSleepScore), 1)
+
+        return FactorImpact(
+            name: "Sleep Quality",
+            category: .sleep,
+            impactScore: impact,
+            confidence: min(1.0, Double(goodSleepEntries.count + poorSleepEntries.count) / 20.0),
+            trend: getTrendDirection(from: impact * 100),
+            icon: FactorCategory.sleep.icon,
+            detail: "Good sleep (\(String(format: "%.1f", goodSleepScore)) avg) vs Poor sleep (\(String(format: "%.1f", poorSleepScore)) avg)"
+        )
+    }
+
+    private func analyzeExerciseImpact(entries: [SymptomEntry]) -> FactorImpact? {
+        let exerciseEntries = entries.filter { ($0.exerciseMinutes ?? 0) > 20 }
+        let noExerciseEntries = entries.filter { ($0.exerciseMinutes ?? 0) < 5 }
+
+        guard !exerciseEntries.isEmpty && !noExerciseEntries.isEmpty else { return nil }
+
+        let exerciseScore = exerciseEntries.map { calculateCompositeScore($0) }.reduce(0, +) / Double(exerciseEntries.count)
+        let noExerciseScore = noExerciseEntries.map { calculateCompositeScore($0) }.reduce(0, +) / Double(noExerciseEntries.count)
+
+        let impact = (exerciseScore - noExerciseScore) / max(abs(noExerciseScore), 1)
+
+        return FactorImpact(
+            name: "Exercise",
+            category: .exercise,
+            impactScore: impact,
+            confidence: min(1.0, Double(exerciseEntries.count + noExerciseEntries.count) / 20.0),
+            trend: getTrendDirection(from: impact * 100),
+            icon: FactorCategory.exercise.icon,
+            detail: "\(Int(exerciseEntries.map { $0.exerciseMinutes ?? 0 }.reduce(0, +) / Double(exerciseEntries.count))) min avg on active days"
+        )
+    }
+
+    private func analyzeDaylightImpact(entries: [SymptomEntry]) -> FactorImpact? {
+        let highDaylightEntries = entries.filter { ($0.timeInDaylightMinutes ?? 0) > 30 }
+        let lowDaylightEntries = entries.filter { ($0.timeInDaylightMinutes ?? 0) < 10 }
+
+        guard !highDaylightEntries.isEmpty && !lowDaylightEntries.isEmpty else { return nil }
+
+        let highDaylightScore = highDaylightEntries.map { calculateCompositeScore($0) }.reduce(0, +) / Double(highDaylightEntries.count)
+        let lowDaylightScore = lowDaylightEntries.map { calculateCompositeScore($0) }.reduce(0, +) / Double(lowDaylightEntries.count)
+
+        let impact = (highDaylightScore - lowDaylightScore) / max(abs(lowDaylightScore), 1)
+
+        return FactorImpact(
+            name: "Daylight Exposure",
+            category: .daylight,
+            impactScore: impact,
+            confidence: min(1.0, Double(highDaylightEntries.count + lowDaylightEntries.count) / 20.0),
+            trend: getTrendDirection(from: impact * 100),
+            icon: FactorCategory.daylight.icon,
+            detail: "\(Int(highDaylightEntries.map { $0.timeInDaylightMinutes ?? 0 }.reduce(0, +) / Double(highDaylightEntries.count))) min avg on sunny days"
+        )
+    }
+
+    private func getTrendDirection(from percentChange: Double) -> TrendDirection {
+        if percentChange > 50 { return .strongImprovement }
+        if percentChange > 20 { return .improving }
+        if percentChange < -50 { return .strongDecline }
+        if percentChange < -20 { return .worsening }
+        return .stable
+    }
+
+    private func generateKeyInsights(factors: [FactorImpact], entries: [SymptomEntry], trend: TrendAnalysis) -> [String] {
+        var insights: [String] = []
+
+        // Trend insight
+        if trend.trending == .improving {
+            insights.append("Your symptoms are showing consistent improvement over time")
+        } else if trend.trending == .worsening {
+            insights.append("Your symptoms have been worsening - consider reviewing your treatment plan")
+        }
+
+        // Top factor insights
+        if let topPositive = factors.filter({ $0.impactScore > 0 }).first {
+            insights.append("\(topPositive.name) shows the strongest positive impact on your symptoms")
+        }
+
+        if let topNegative = factors.filter({ $0.impactScore < 0 }).first {
+            insights.append("\(topNegative.name) appears to worsen your symptoms significantly")
+        }
+
+        // Sleep insight
+        if let sleepFactor = factors.first(where: { $0.category == .sleep }) {
+            if abs(sleepFactor.impactScore) > 0.3 {
+                insights.append("Sleep quality is a major factor in your symptom management")
+            }
+        }
+
+        // Medication consistency insight
+        let medicationFactors = factors.filter { $0.category == .medication }
+        if !medicationFactors.isEmpty {
+            let avgConfidence = medicationFactors.map { $0.confidence }.reduce(0, +) / Double(medicationFactors.count)
+            if avgConfidence > 0.7 {
+                insights.append("Your medication regimen shows consistent patterns of effectiveness")
+            }
+        }
+
+        return insights
+    }
+
+    private func generateRecommendations(
+        topPositive: [FactorImpact],
+        topNegative: [FactorImpact],
+        overallTrend: TrendAnalysis
+    ) -> [String] {
+        var recommendations: [String] = []
+
+        // Positive factor recommendations
+        for factor in topPositive.prefix(2) {
+            switch factor.category {
+            case .medication:
+                recommendations.append("Continue taking \(factor.name) as prescribed - it's showing positive effects")
+            case .exercise:
+                recommendations.append("Maintain your exercise routine - it's benefiting your mental health")
+            case .sleep:
+                recommendations.append("Keep prioritizing good sleep habits")
+            case .daylight:
+                recommendations.append("Continue getting regular daylight exposure")
+            case .substance:
+                recommendations.append("Your use of \(factor.name) appears beneficial - maintain current pattern")
+            }
+        }
+
+        // Negative factor recommendations
+        for factor in topNegative.prefix(2) {
+            switch factor.category {
+            case .medication:
+                recommendations.append("Discuss \(factor.name) with your provider - it may need adjustment")
+            case .substance:
+                recommendations.append("Consider reducing or eliminating \(factor.name)")
+            case .sleep:
+                recommendations.append("Focus on improving sleep quality - it's affecting your symptoms")
+            case .exercise:
+                recommendations.append("Try to maintain a more consistent exercise routine")
+            case .daylight:
+                recommendations.append("Try to get more natural light exposure during the day")
+            }
+        }
+
+        // Trend-based recommendation
+        if overallTrend.trending == .stable {
+            recommendations.append("Your symptoms are stable - maintain current routines while monitoring for changes")
+        }
+
+        return recommendations
     }
 
     // MARK: - Statistical Helper Functions
