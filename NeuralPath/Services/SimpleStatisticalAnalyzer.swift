@@ -20,7 +20,7 @@ class SimpleStatisticalAnalyzer {
         let correlation: Double        // Correlation coefficient (-1 to 1)
         let confidence: Double         // Statistical confidence (0-1)
         let daysAnalyzed: Int
-        let interpretation: String     // Human-readable conclusion
+        let interpretation: Label<Text, Image> // Human-readable conclusion
         let isEffective: Bool         // Simple yes/no
     }
 
@@ -30,7 +30,7 @@ class SimpleStatisticalAnalyzer {
         let dayAfterSubstance: SymptomAverage  // Next day effects
         let typicalDay: SymptomAverage          // Days without substance
         let impactScore: Double                 // -1 (harmful) to 1 (helpful)
-        let interpretation: String
+        let interpretation: Label<Text, Image>
     }
 
     struct SymptomAverage {
@@ -84,7 +84,7 @@ class SimpleStatisticalAnalyzer {
                 correlation: 0,
                 confidence: 0,
                 daysAnalyzed: 0,
-                interpretation: "Insufficient data (need at least 7 days before and after)",
+                interpretation: Label("Insufficient data (need at least 7 days before and after)", systemImage: "calendar.badge.clock"),
                 isEffective: false
             )
         }
@@ -441,25 +441,25 @@ class SimpleStatisticalAnalyzer {
         correlation: Double,
         daysAnalyzed: Int,
         isEffective: Bool
-    ) -> String {
+    ) -> Label<Text, Image> {
 
         if daysAnalyzed < 14 {
-            return "⏱ Too early to determine (need at least 2 weeks of data)"
+            return Label("Too early to determine (need at least 2 weeks of data)", systemImage: "calendar.badge.clock")
         }
 
         if isEffective {
             if percentChange > 50 {
-                return "􀋦 Highly effective - significant improvement (\(Int(percentChange))% better)"
+                return Label("Highly effective - significant improvement (\(Int(percentChange))% better)", systemImage: "arrow.up")
             } else {
-                return "􀐿 Moderately effective - noticeable improvement (\(Int(percentChange))% better)"
+                return Label("Moderately effective - noticeable improvement (\(Int(percentChange))% better)", systemImage: "arrow.up.right")
             }
         } else {
             if percentChange < -20 {
-                return "􀇿 May be worsening symptoms (\(Int(abs(percentChange)))% worse)"
+                return Label("May be worsening symptoms (\(Int(abs(percentChange)))% worse)", systemImage: "exclamationmark.triangle.fill")
             } else if percentChange < 10 {
-                return "􀅽 No significant effect detected"
+                return Label("No significant effect detected", systemImage: "plus.minus.capsule")
             } else {
-                return "􀅺 Minimal improvement - consider discussing with provider"
+                return Label("Minimal improvement - consider discussing with provider", systemImage: "light.min")
             }
         }
     }
@@ -468,18 +468,17 @@ class SimpleStatisticalAnalyzer {
         substance: String,
         impactScore: Double,
         dayAfter: SymptomAverage
-    ) -> String {
-
+    ) -> Label<Text, Image> {
         if impactScore > 0.3 {
-            return "􀃝 \(substance) appears to improve symptoms"
+            return Label("\(substance) appears to improve symptoms", systemImage: "plus.square.fill")
         } else if impactScore < -0.3 {
             if dayAfter.composite < -0.5 {
-                return "􀇿 \(substance) worsens symptoms, especially next day"
+                return Label("\(substance) worsens symptoms, especially next day", systemImage: "exclamationmark.triangle.fill")
             } else {
-                return "􀇿 \(substance) appears to worsen symptoms"
+                return Label("\(substance) appears to worsen symptoms", systemImage: "exclamationmark.triangle.fill")
             }
         } else {
-            return "􀅽 \(substance) has minimal impact on symptoms"
+            return Label("􀅽 \(substance) has minimal impact on symptoms", systemImage: "plus.minus.capsule")
         }
     }
 }
@@ -693,7 +692,7 @@ struct MedicationResultCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(results.interpretation)
+            results.interpretation
                 .font(.subheadline)
                 .padding(.vertical, 5)
 
@@ -749,7 +748,7 @@ struct SubstanceResultCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(results.interpretation)
+            results.interpretation
                 .font(.subheadline)
                 .padding(.vertical, 5)
 
