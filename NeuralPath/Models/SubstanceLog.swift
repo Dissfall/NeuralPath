@@ -10,20 +10,23 @@ import SwiftData
 
 @Model
 final class SubstanceLog {
-    var id: UUID
+    var id: UUID = UUID()
+
+    @Relationship(inverse: \UserSubstance.logs)
     var userSubstance: UserSubstance?
-    var substanceName: String
-    var amount: Double
-    var unit: SubstanceUnit
-    var timestamp: Date
-    var notes: String
+
+    var substanceName: String = ""
+    var amount: Double = 0.0
+    var unit: SubstanceUnit = SubstanceUnit.other
+    var timestamp: Date = Date()
+    var notes: String = ""
 
     init(
         id: UUID = UUID(),
         userSubstance: UserSubstance? = nil,
-        substanceName: String,
-        amount: Double,
-        unit: SubstanceUnit,
+        substanceName: String = "",
+        amount: Double = 0.0,
+        unit: SubstanceUnit = SubstanceUnit.other,
         timestamp: Date = Date(),
         notes: String = ""
     ) {

@@ -3,12 +3,12 @@ import SwiftData
 
 @Model
 final class Medication {
-    var id: UUID
-    var name: String
-    var dosage: String
-    var timestamp: Date
-    var taken: Bool
-    var notes: String
+    var id: UUID = UUID()
+    var name: String = ""
+    var dosage: String = ""
+    var timestamp: Date = Date()
+    var taken: Bool = false
+    var notes: String = ""
 
     var symptomEntry: SymptomEntry?
 

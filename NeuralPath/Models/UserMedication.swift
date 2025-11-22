@@ -10,23 +10,26 @@ import SwiftData
 
 @Model
 final class UserMedication {
-    var id: UUID
-    var name: String
-    var dosage: String
+    var id: UUID = UUID()
+    var name: String = ""
+    var dosage: String = ""
     var category: MedicationCategory?
-    var frequency: MedicationFrequency
-    var notes: String
-    var isActive: Bool
-    var createdDate: Date
+    var frequency: MedicationFrequency = MedicationFrequency.onceDaily
+    var notes: String = ""
+    var isActive: Bool = true
+    var createdDate: Date = Date()
     var startDate: Date?
     var endDate: Date?
+
+    @Relationship(deleteRule: .cascade)
+    var logs: [MedicationLog]?
 
     init(
         id: UUID = UUID(),
         name: String,
         dosage: String = "",
         category: MedicationCategory? = nil,
-        frequency: MedicationFrequency = .onceDaily,
+        frequency: MedicationFrequency = MedicationFrequency.onceDaily,
         notes: String = "",
         isActive: Bool = true,
         createdDate: Date = Date(),
