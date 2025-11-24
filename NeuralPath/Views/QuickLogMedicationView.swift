@@ -12,7 +12,7 @@ struct QuickLogMedicationView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @Query(filter: #Predicate<UserMedication> { $0.isActive }, sort: \UserMedication.name) private var userMedications: [UserMedication]
+    @Query(filter: #Predicate<UserMedication> { $0.isActive == true }, sort: \UserMedication.name) private var userMedications: [UserMedication]
 
     @State private var selectedMedications: Set<UUID> = []
     @State private var logTime: Date = Date()
@@ -36,21 +36,25 @@ struct QuickLogMedicationView: View {
                     } else {
                         ForEach(userMedications) { medication in
                             Toggle(isOn: Binding(
-                                get: { selectedMedications.contains(medication.id) },
+                                get: {
+                                    guard let medId = medication.id else { return false }
+                                    return selectedMedications.contains(medId)
+                                },
                                 set: { newValue in
+                                    guard let medId = medication.id else { return }
                                     if newValue {
-                                        selectedMedications.insert(medication.id)
+                                        selectedMedications.insert(medId)
                                     } else {
-                                        selectedMedications.remove(medication.id)
+                                        selectedMedications.remove(medId)
                                     }
                                 }
                             )) {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(medication.name)
+                                    Text(medication.name ?? "")
                                         .font(.headline)
 
-                                    if !medication.dosage.isEmpty {
-                                        Text(medication.dosage)
+                                    if let dosage = medication.dosage, !dosage.isEmpty {
+                                        Text(dosage)
                                             .font(.caption)
                                             .foregroundStyle(.secondary)
                                     }
@@ -91,7 +95,7 @@ struct QuickLogMedicationView: View {
 
             let log = MedicationLog(
                 userMedication: medication,
-                medicationName: medication.name,
+                medicationName: medication.name ?? "",
                 timestamp: logTime
             )
             modelContext.insert(log)

@@ -10,21 +10,20 @@ import SwiftData
 
 @Model
 final class MedicationLog {
-    var id: UUID = UUID()
+    var id: UUID?
 
-    @Relationship(inverse: \UserMedication.logs)
     var userMedication: UserMedication?
 
-    var medicationName: String = ""
-    var timestamp: Date = Date()
-    var notes: String = ""
+    var medicationName: String?
+    var timestamp: Date?
+    var notes: String?
 
     init(
-        id: UUID = UUID(),
+        id: UUID? = UUID(),
         userMedication: UserMedication? = nil,
-        medicationName: String = "",
-        timestamp: Date = Date(),
-        notes: String = ""
+        medicationName: String? = "",
+        timestamp: Date? = Date(),
+        notes: String? = ""
     ) {
         self.id = id
         self.userMedication = userMedication

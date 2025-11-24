@@ -97,15 +97,15 @@ struct ExportView: View {
             let timeFormatter = DateFormatter()
             timeFormatter.timeStyle = .short
 
-            let date = dateFormatter.string(from: entry.timestamp)
-            let time = timeFormatter.string(from: entry.timestamp)
+            let date = dateFormatter.string(from: entry.timestamp ?? Date())
+            let time = timeFormatter.string(from: entry.timestamp ?? Date())
             let mood = entry.moodLevel?.displayName ?? ""
             let anxiety = entry.anxietyLevel?.displayName ?? ""
             let anhedonia = entry.anhedoniaLevel?.displayName ?? ""
             let sleepHours = entry.sleepHours.map { String(format: "%.1f", $0) } ?? ""
             let sleepQuality = entry.sleepQualityRating.map { String($0) } ?? ""
-            let notes = entry.notes.replacingOccurrences(of: "\"", with: "\"\"")
-            let medications = entry.medications?.map { "\($0.name) (\($0.dosage))" }.joined(separator: "; ") ?? ""
+            let notes = entry.notes?.replacingOccurrences(of: "\"", with: "\"\"") ?? ""
+            let medications = entry.medications?.map { "\($0.name ?? "") (\($0.dosage ?? ""))" }.joined(separator: "; ") ?? ""
 
             csv += "\"\(date)\",\"\(time)\",\"\(mood)\",\"\(anxiety)\",\"\(anhedonia)\",\"\(sleepHours)\",\"\(sleepQuality)\",\"\(notes)\",\"\(medications)\"\n"
         }
@@ -116,18 +116,18 @@ struct ExportView: View {
     private func exportJSON() {
         let exportData = entries.map { entry in
             ExportEntry(
-                timestamp: entry.timestamp,
+                timestamp: entry.timestamp ?? Date(),
                 mood: entry.moodLevel?.displayName,
                 anxiety: entry.anxietyLevel?.displayName,
                 anhedonia: entry.anhedoniaLevel?.displayName,
                 sleepHours: entry.sleepHours,
                 sleepQuality: entry.sleepQualityRating,
-                notes: entry.notes,
+                notes: entry.notes ?? "",
                 medications: entry.medications?.map { med in
                     ExportMedication(
-                        name: med.name,
-                        dosage: med.dosage,
-                        taken: med.taken
+                        name: med.name ?? "",
+                        dosage: med.dosage ?? "",
+                        taken: med.taken ?? false
                     )
                 }
             )
@@ -146,7 +146,7 @@ struct ExportView: View {
     private func exportMLTraining() {
         var csv = "moodLevel,anxietyLevel,anhedoniaLevel,sleepHours,sleepQuality,daylightMinutes,exerciseMinutes,medicationTaken,substanceAmount,dayOfWeek,previousDaySleep,previousDayMood\n"
 
-        let sortedEntries = entries.sorted { $0.timestamp < $1.timestamp }
+        let sortedEntries = entries.sorted { ($0.timestamp ?? Date.distantPast) < ($1.timestamp ?? Date.distantPast) }
 
         for (index, entry) in sortedEntries.enumerated() {
             let mood = entry.moodLevel?.rawValue ?? 0
@@ -156,12 +156,12 @@ struct ExportView: View {
             let sleepQuality = entry.sleepQualityRating ?? 0
             let daylight = entry.timeInDaylightMinutes ?? 0
             let exercise = entry.exerciseMinutes ?? 0
-            let medTaken = (entry.medications?.contains { $0.taken } ?? false) ? 1 : 0
+            let medTaken = (entry.medications?.contains { $0.taken == true } ?? false) ? 1 : 0
 
-            let totalSubstances = entry.substances?.reduce(0.0) { $0 + $1.amount } ?? 0
+            let totalSubstances = entry.substances?.reduce(0.0) { $0 + ($1.amount ?? 0.0) } ?? 0
 
             let calendar = Calendar.current
-            let dayOfWeek = calendar.component(.weekday, from: entry.timestamp)
+            let dayOfWeek = calendar.component(.weekday, from: entry.timestamp ?? Date())
 
             let previousDaySleep: Double
             let previousDayMood: Int

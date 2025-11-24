@@ -134,13 +134,13 @@ class MLManager {
     func analyzeMedicationEffectiveness(entries: [SymptomEntry]) -> MedicationEffectiveness? {
         guard entries.count >= 30 else { return nil }
 
-        let sortedEntries = entries.sorted { $0.timestamp < $1.timestamp }
+        let sortedEntries = entries.sorted { ($0.timestamp ?? Date.distantPast) < ($1.timestamp ?? Date.distantPast) }
 
         var daysWithMedication: [SymptomEntry] = []
         var daysWithoutMedication: [SymptomEntry] = []
 
         for entry in sortedEntries {
-            let hasMedication = entry.medications?.contains { $0.taken } ?? false
+            let hasMedication = entry.medications?.contains { $0.taken == true } ?? false
             if hasMedication {
                 daysWithMedication.append(entry)
             } else {

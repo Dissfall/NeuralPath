@@ -12,7 +12,7 @@ struct QuickLogSubstanceView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @Query(filter: #Predicate<UserSubstance> { $0.isActive }, sort: \UserSubstance.name) private var userSubstances: [UserSubstance]
+    @Query(filter: #Predicate<UserSubstance> { $0.isActive == true }, sort: \UserSubstance.name) private var userSubstances: [UserSubstance]
 
     @State private var selectedSubstances: [UUID: SubstanceAmount] = [:]
     @State private var logTime: Date = Date()
@@ -37,33 +37,37 @@ struct QuickLogSubstanceView: View {
                         ForEach(userSubstances) { substance in
                             VStack(alignment: .leading, spacing: 8) {
                                 Toggle(isOn: Binding(
-                                    get: { selectedSubstances[substance.id] != nil },
+                                    get: {
+                                        guard let substanceId = substance.id else { return false }
+                                        return selectedSubstances[substanceId] != nil
+                                    },
                                     set: { newValue in
+                                        guard let substanceId = substance.id else { return }
                                         if newValue {
-                                            selectedSubstances[substance.id] = SubstanceAmount(
+                                            selectedSubstances[substanceId] = SubstanceAmount(
                                                 amount: "",
                                                 unit: substance.defaultUnit ?? .cups,
                                                 timestamp: Date()
                                             )
                                         } else {
-                                            selectedSubstances[substance.id] = nil
+                                            selectedSubstances[substanceId] = nil
                                         }
                                     }
                                 )) {
-                                    Text(substance.name)
+                                    Text(substance.name ?? "")
                                         .font(.headline)
                                 }
 
-                                if selectedSubstances[substance.id] != nil {
+                                if let substanceId = substance.id, selectedSubstances[substanceId] != nil {
                                     HStack {
                                         TextField(
                                             "Amount",
                                             text: Binding(
-                                                get: { selectedSubstances[substance.id]?.amount ?? "" },
+                                                get: { selectedSubstances[substanceId]?.amount ?? "" },
                                                 set: { newValue in
-                                                    if var amount = selectedSubstances[substance.id] {
+                                                    if var amount = selectedSubstances[substanceId] {
                                                         amount.amount = newValue
-                                                        selectedSubstances[substance.id] = amount
+                                                        selectedSubstances[substanceId] = amount
                                                     }
                                                 }
                                             )
@@ -74,11 +78,11 @@ struct QuickLogSubstanceView: View {
                                         Picker(
                                             "Unit",
                                             selection: Binding(
-                                                get: { selectedSubstances[substance.id]?.unit ?? .cups },
+                                                get: { selectedSubstances[substanceId]?.unit ?? .cups },
                                                 set: { newValue in
-                                                    if var amount = selectedSubstances[substance.id] {
+                                                    if var amount = selectedSubstances[substanceId] {
                                                         amount.unit = newValue
-                                                        selectedSubstances[substance.id] = amount
+                                                        selectedSubstances[substanceId] = amount
                                                     }
                                                 }
                                             )
@@ -129,7 +133,7 @@ struct QuickLogSubstanceView: View {
 
             let log = SubstanceLog(
                 userSubstance: substance,
-                substanceName: substance.name,
+                substanceName: substance.name ?? "",
                 amount: amount,
                 unit: substanceAmount.unit,
                 timestamp: logTime

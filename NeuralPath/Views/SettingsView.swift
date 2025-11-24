@@ -8,6 +8,11 @@ struct SettingsView: View {
     @State private var healthKitAuthorized = false
     @State private var showingExport = false
 
+    // Developer menu states
+    @State private var tapCount = 0
+    @State private var lastTapTime = Date()
+    @State private var showDeveloperMenu = false
+
     private let healthKitManager = HealthKitManager.shared
 
     var body: some View {
@@ -52,6 +57,9 @@ struct SettingsView: View {
                 } footer: {
                     Text("Manage your medications and substances for easy tracking")
                 }
+
+                // CloudKit sync status
+                CloudKitStatusView()
 
                 Section {
                     HStack {
@@ -115,6 +123,28 @@ struct SettingsView: View {
                 } header: {
                     Text("About")
                 }
+
+                // Version section with hidden developer menu trigger
+                Section {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text(Bundle.main.appVersion)
+                            .foregroundColor(.secondary)
+                            .onTapGesture {
+                                #if DEBUG
+                                handleVersionTap()
+                                #endif
+                            }
+                    }
+
+                    HStack {
+                        Text("Build")
+                        Spacer()
+                        Text(Bundle.main.appBuild)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -128,6 +158,11 @@ struct SettingsView: View {
             .sheet(isPresented: $showingExport) {
                 ExportView()
             }
+            #if DEBUG
+            .sheet(isPresented: $showDeveloperMenu) {
+                DeveloperMenuView()
+            }
+            #endif
             .task {
                 await checkPermissions()
             }
@@ -189,6 +224,44 @@ struct SettingsView: View {
         } catch {
             print("Failed to authorize HealthKit: \(error)")
         }
+    }
+
+    #if DEBUG
+    private func handleVersionTap() {
+        let now = Date()
+
+        // Reset counter if more than 1 second has passed since last tap
+        if now.timeIntervalSince(lastTapTime) > 1.0 {
+            tapCount = 0
+        }
+
+        tapCount += 1
+        lastTapTime = now
+
+        // Show developer menu after 10 taps
+        if tapCount >= 10 {
+            showDeveloperMenu = true
+            tapCount = 0
+
+            // Haptic feedback to confirm
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        } else if tapCount == 5 {
+            // Light feedback at halfway point
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }
+    }
+    #endif
+}
+
+// MARK: - Bundle Extension
+
+extension Bundle {
+    var appVersion: String {
+        object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
+    }
+
+    var appBuild: String {
+        object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
     }
 }
 

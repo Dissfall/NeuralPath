@@ -10,23 +10,23 @@ import SwiftData
 
 @Model
 final class UserSubstance {
-    var id: UUID = UUID()
-    var name: String = ""
+    var id: UUID?
+    var name: String?
     var defaultUnit: SubstanceUnit?
-    var notes: String = ""
-    var isActive: Bool = true
-    var createdDate: Date = Date()
+    var notes: String?
+    var isActive: Bool?
+    var createdDate: Date?
 
-    @Relationship(deleteRule: .cascade)
+    @Relationship(deleteRule: .cascade, inverse: \SubstanceLog.userSubstance)
     var logs: [SubstanceLog]?
 
     init(
-        id: UUID = UUID(),
-        name: String,
+        id: UUID? = UUID(),
+        name: String? = "",
         defaultUnit: SubstanceUnit? = nil,
-        notes: String = "",
-        isActive: Bool = true,
-        createdDate: Date = Date()
+        notes: String? = "",
+        isActive: Bool? = true,
+        createdDate: Date? = Date()
     ) {
         self.id = id
         self.name = name

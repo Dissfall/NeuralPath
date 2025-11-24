@@ -33,7 +33,7 @@ struct ComprehensiveAnalysisView: View {
             value: -selectedTimeRange.days,
             to: Date()
         ) ?? Date()
-        return entries.filter { $0.timestamp > cutoff }
+        return entries.filter { ($0.timestamp ?? Date.distantPast) > cutoff }
     }
 
     var body: some View {

@@ -3,8 +3,8 @@ import SwiftData
 
 @Model
 final class SymptomEntry {
-    var id: UUID = UUID()
-    var timestamp: Date = Date()
+    var id: UUID?
+    var timestamp: Date?
     var moodLevel: MoodLevel?
     var anxietyLevel: AnxietyLevel?
     var anhedoniaLevel: AnhedoniaLevel?
@@ -12,7 +12,7 @@ final class SymptomEntry {
     var sleepHours: Double?
     var timeInDaylightMinutes: Double?
     var exerciseMinutes: Double?
-    var notes: String = ""
+    var notes: String?
 
     @Relationship(deleteRule: .cascade, inverse: \Medication.symptomEntry)
     var medications: [Medication]?
@@ -21,8 +21,8 @@ final class SymptomEntry {
     var substances: [Substance]?
 
     init(
-        id: UUID = UUID(),
-        timestamp: Date = Date(),
+        id: UUID? = UUID(),
+        timestamp: Date? = Date(),
         moodLevel: MoodLevel? = nil,
         anxietyLevel: AnxietyLevel? = nil,
         anhedoniaLevel: AnhedoniaLevel? = nil,
@@ -30,7 +30,7 @@ final class SymptomEntry {
         sleepHours: Double? = nil,
         timeInDaylightMinutes: Double? = nil,
         exerciseMinutes: Double? = nil,
-        notes: String = "",
+        notes: String? = "",
         medications: [Medication]? = nil,
         substances: [Substance]? = nil
     ) {

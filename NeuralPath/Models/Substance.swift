@@ -3,22 +3,22 @@ import SwiftData
 
 @Model
 final class Substance {
-    var id: UUID = UUID()
-    var name: String = ""
-    var amount: Double = 0.0
-    var unit: SubstanceUnit = SubstanceUnit.other
-    var timestamp: Date = Date()
-    var notes: String = ""
+    var id: UUID?
+    var name: String?
+    var amount: Double?
+    var unit: SubstanceUnit?
+    var timestamp: Date?
+    var notes: String?
 
     var symptomEntry: SymptomEntry?
 
     init(
-        id: UUID = UUID(),
-        name: String,
-        amount: Double,
-        unit: SubstanceUnit,
-        timestamp: Date = Date(),
-        notes: String = ""
+        id: UUID? = UUID(),
+        name: String? = "",
+        amount: Double? = 0.0,
+        unit: SubstanceUnit? = SubstanceUnit.other,
+        timestamp: Date? = Date(),
+        notes: String? = ""
     ) {
         self.id = id
         self.name = name

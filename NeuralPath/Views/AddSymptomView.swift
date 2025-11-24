@@ -8,11 +8,11 @@ struct AddSymptomView: View {
 
     @Query private var allEntries: [SymptomEntry]
     @Query(
-        filter: #Predicate<UserMedication> { $0.isActive },
+        filter: #Predicate<UserMedication> { $0.isActive == true },
         sort: \UserMedication.name
     ) private var userMedications: [UserMedication]
     @Query(
-        filter: #Predicate<UserSubstance> { $0.isActive },
+        filter: #Predicate<UserSubstance> { $0.isActive == true },
         sort: \UserSubstance.name
     ) private var userSubstances: [UserSubstance]
     @Query(sort: \MedicationLog.timestamp, order: .forward) private
@@ -52,7 +52,7 @@ struct AddSymptomView: View {
         allEntries.contains { entry in
             entry.id != entryToEdit?.id
                 && Calendar.current.isDate(
-                    entry.timestamp,
+                    entry.timestamp ?? Date(),
                     inSameDayAs: selectedDate
                 )
         }
@@ -61,275 +61,33 @@ struct AddSymptomView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Date") {
-                    DatePicker(
-                        "Entry Date",
-                        selection: $selectedDate,
-                        in: ...Date(),
-                        displayedComponents: [.date]
-                    )
+                DateSelectionSection(
+                    selectedDate: $selectedDate,
+                    hasEntryForSelectedDate: hasEntryForSelectedDate
+                )
 
-                    if hasEntryForSelectedDate {
-                        HStack(spacing: 8) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundStyle(.orange)
-                            Text("Entry already exists for this date")
-                                .font(.caption)
-                                .foregroundStyle(.orange)
-                        }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.orange.opacity(0.1))
-                        .cornerRadius(8)
-                    }
-                }
+                MoodSection(moodLevel: $moodLevel)
+                AnxietySection(anxietyLevel: $anxietyLevel)
+                AnhedoniaSection(anhedoniaLevel: $anhedoniaLevel)
+                SleepSection(sleepHours: $sleepHours, sleepQualityRating: $sleepQualityRating)
+                ActivitySection(
+                    timeInDaylightMinutes: $timeInDaylightMinutes,
+                    exerciseMinutes: $exerciseMinutes
+                )
 
-                Section("Mood") {
-                    Picker("Mood Level", selection: $moodLevel) {
-                        Text("Not Set").tag(nil as MoodLevel?)
-                        ForEach(MoodLevel.allCases, id: \.self) { level in
-                            Text("\(level.emoji) \(level.displayName)").tag(
-                                level as MoodLevel?
-                            )
-                        }
-                    }
-                }
+                MedicationsSectionView(
+                    takenMedications: $takenMedications,
+                    showingHealthKitImport: $showingHealthKitImport,
+                    userMedications: userMedications,
+                    healthKitManager: healthKitManager
+                )
 
-                Section("Anxiety") {
-                    Picker("Anxiety Level", selection: $anxietyLevel) {
-                        Text("Not Set").tag(nil as AnxietyLevel?)
-                        ForEach(AnxietyLevel.allCases, id: \.self) { level in
-                            Text(level.displayName).tag(level as AnxietyLevel?)
-                        }
-                    }
-                }
+                SubstancesSectionView(
+                    takenSubstances: $takenSubstances,
+                    userSubstances: userSubstances
+                )
 
-                Section("Anhedonia") {
-                    Picker("Anhedonia Level", selection: $anhedoniaLevel) {
-                        Text("Not Set").tag(nil as AnhedoniaLevel?)
-                        ForEach(AnhedoniaLevel.allCases, id: \.self) { level in
-                            Text(level.displayName).tag(
-                                level as AnhedoniaLevel?
-                            )
-                        }
-                    }
-
-                    if let anhedonia = anhedoniaLevel {
-                        Text(anhedonia.description)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Section {
-                    HStack {
-                        TextField("Hours", text: $sleepHours)
-                            .keyboardType(.decimalPad)
-                    }
-
-                    if let rating = sleepQualityRating {
-                        HStack {
-                            Text("Quality")
-                            Spacer()
-                            ForEach(1...5, id: \.self) { star in
-                                Image(
-                                    systemName: star <= rating
-                                        ? "star.fill" : "star"
-                                )
-                                .foregroundStyle(
-                                    star <= rating ? .yellow : .gray
-                                )
-                                .onTapGesture {
-                                    sleepQualityRating = star
-                                }
-                            }
-                        }
-                    } else {
-                        Button("Add Quality Rating") {
-                            sleepQualityRating = 3
-                        }
-                    }
-                } header: {
-                    Text("Sleep")
-                }
-
-                Section("Activity") {
-                    HStack {
-                        Text("Daylight")
-                        Spacer()
-                        TextField("Minutes", text: $timeInDaylightMinutes)
-                            .keyboardType(.numberPad)
-                            .frame(width: 80)
-                            .multilineTextAlignment(.trailing)
-                        Text("min")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack {
-                        Text("Exercise")
-                        Spacer()
-                        TextField("Minutes", text: $exerciseMinutes)
-                            .keyboardType(.numberPad)
-                            .frame(width: 80)
-                            .multilineTextAlignment(.trailing)
-                        Text("min")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Section("Medications") {
-                    if userMedications.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("No medications in your library")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-
-                            if healthKitManager.isAuthorized {
-                                Button {
-                                    showingHealthKitImport = true
-                                } label: {
-                                    Label(
-                                        "Import from HealthKit",
-                                        systemImage: "heart.text.square"
-                                    )
-                                }
-                            }
-
-                            NavigationLink {
-                                MedicationManagementView()
-                            } label: {
-                                Label(
-                                    "Add Medications in Settings",
-                                    systemImage: "gear"
-                                )
-                                .font(.caption)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    } else {
-                        ForEach(userMedications) { medication in
-                            VStack(alignment: .leading, spacing: 8) {
-                                Toggle(
-                                    isOn: Binding(
-                                        get: {
-                                            takenMedications[medication.id]
-                                                != nil
-                                        },
-                                        set: { newValue in
-                                            if newValue {
-                                                takenMedications[
-                                                    medication.id
-                                                ] = Date()
-                                            } else {
-                                                takenMedications[
-                                                    medication.id
-                                                ] = nil
-                                            }
-                                        }
-                                    )
-                                ) {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(medication.name)
-                                            .font(.headline)
-
-                                        HStack(spacing: 8) {
-                                            if !medication.dosage.isEmpty {
-                                                Text(medication.dosage)
-                                                    .font(.caption)
-                                                    .foregroundStyle(.secondary)
-                                            }
-
-                                            Text(medication.frequency.shortName)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                }
-
-                                if takenMedications[medication.id] != nil {
-                                    DatePicker(
-                                        "Time Taken",
-                                        selection: Binding(
-                                            get: {
-                                                takenMedications[medication.id]
-                                                    ?? Date()
-                                            },
-                                            set: { newValue in
-                                                takenMedications[
-                                                    medication.id
-                                                ] = newValue
-                                            }
-                                        ),
-                                        displayedComponents: [.hourAndMinute]
-                                    )
-                                    .padding(.leading)
-                                    .accessibilityLabel("Time taken for \(medication.name)")
-                                    .accessibilityHint("Select when you took this medication")
-                                }
-                            }
-                            .padding(.vertical, 4)
-                        }
-                    }
-                }
-
-                Section("Substances") {
-                    // Get unique substance IDs that have instances, sorted for stability
-                    let uniqueSubstanceIds = Array(Set(takenSubstances.map { $0.userSubstanceId })).sorted(by: { id1, id2 in
-                        let name1 = userSubstances.first(where: { $0.id == id1 })?.name ?? ""
-                        let name2 = userSubstances.first(where: { $0.id == id2 })?.name ?? ""
-                        return name1 < name2
-                    })
-
-                    ForEach(uniqueSubstanceIds, id: \.self) { substanceId in
-                        if let substance = userSubstances.first(where: { $0.id == substanceId }) {
-                            SubstanceInstancesView(
-                                substance: substance,
-                                takenSubstances: $takenSubstances
-                            )
-                        }
-                    }
-
-                    // Add instance picker
-                    Menu {
-                        ForEach(userSubstances) { substance in
-                            Button(substance.name) {
-                                withAnimation {
-                                    takenSubstances.append(
-                                        SubstanceEntry(
-                                            userSubstanceId: substance.id,
-                                            amount: "",
-                                            unit: substance.defaultUnit
-                                                ?? .cups,
-                                            timestamp: Date()
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    } label: {
-                        Label("Add Substance", systemImage: "plus.circle")
-                            .font(.subheadline)
-                    }
-                    .disabled(userSubstances.isEmpty)
-
-                    if userSubstances.isEmpty {
-                        NavigationLink {
-                            SubstanceManagementView()
-                        } label: {
-                            Label(
-                                "Add Substances in Settings",
-                                systemImage: "gear"
-                            )
-                            .font(.caption)
-                        }
-                    }
-                }
-
-                Section("Notes") {
-                    TextEditor(text: $notes)
-                        .frame(minHeight: 100)
-                }
+                NotesSection(notes: $notes)
             }
             .navigationTitle(isEditMode ? "Edit Entry" : "New Entry")
             .navigationBarTitleDisplayMode(.inline)
@@ -416,7 +174,7 @@ struct AddSymptomView: View {
     }
 
     private func loadEntryData(_ entry: SymptomEntry) {
-        selectedDate = entry.timestamp
+        selectedDate = entry.timestamp ?? Date()
         moodLevel = entry.moodLevel
         anxietyLevel = entry.anxietyLevel
         anhedoniaLevel = entry.anhedoniaLevel
@@ -426,16 +184,18 @@ struct AddSymptomView: View {
             entry.timeInDaylightMinutes.map { String(format: "%.0f", $0) } ?? ""
         exerciseMinutes =
             entry.exerciseMinutes.map { String(format: "%.0f", $0) } ?? ""
-        notes = entry.notes
+        notes = entry.notes ?? ""
 
         var takenMeds: [UUID: Date] = [:]
         entry.medications?
-            .filter { $0.taken }
+            .filter { $0.taken == true }
             .forEach { med in
                 if let userMed = userMedications.first(where: {
                     $0.name == med.name
                 }) {
-                    takenMeds[userMed.id] = med.timestamp
+                    if let userMedId = userMed.id {
+                        takenMeds[userMedId] = med.timestamp ?? Date()
+                    }
                 }
             }
         takenMedications = takenMeds
@@ -444,13 +204,13 @@ struct AddSymptomView: View {
         entry.substances?.forEach { sub in
             if let userSubstance = userSubstances.first(where: {
                 $0.name == sub.name
-            }) {
+            }), let userSubId = userSubstance.id {
                 substanceEntries.append(
                     SubstanceEntry(
-                        userSubstanceId: userSubstance.id,
-                        amount: String(format: "%.1f", sub.amount),
-                        unit: sub.unit,
-                        timestamp: sub.timestamp
+                        userSubstanceId: userSubId,
+                        amount: String(format: "%.1f", sub.amount ?? 0.0),
+                        unit: sub.unit ?? .other,
+                        timestamp: sub.timestamp ?? Date()
                     )
                 )
             }
@@ -467,21 +227,23 @@ struct AddSymptomView: View {
 
         // Load medication logs for the selected date
         let medicationLogsForDate = allMedicationLogs.filter { log in
-            log.timestamp >= startOfDay && log.timestamp < endOfDay
+            (log.timestamp ?? Date.distantPast) >= startOfDay && (log.timestamp ?? Date.distantFuture) < endOfDay
         }
 
         var takenMeds: [UUID: Date] = [:]
         for log in medicationLogsForDate {
             if let userMed = userMedications.first(where: {
                 $0.name == log.medicationName
-            }) {
+            }),
+            let userMedId = userMed.id,
+            let logTimestamp = log.timestamp {
                 // If multiple logs for same medication, use the most recent timestamp
-                if let existingTimestamp = takenMeds[userMed.id] {
-                    if log.timestamp > existingTimestamp {
-                        takenMeds[userMed.id] = log.timestamp
+                if let existingTimestamp = takenMeds[userMedId] {
+                    if logTimestamp > existingTimestamp {
+                        takenMeds[userMedId] = logTimestamp
                     }
                 } else {
-                    takenMeds[userMed.id] = log.timestamp
+                    takenMeds[userMedId] = logTimestamp
                 }
             }
         }
@@ -489,20 +251,21 @@ struct AddSymptomView: View {
 
         // Load substance logs for the selected date
         let substanceLogsForDate = allSubstanceLogs.filter { log in
-            log.timestamp >= startOfDay && log.timestamp < endOfDay
+            (log.timestamp ?? Date.distantPast) >= startOfDay && (log.timestamp ?? Date.distantFuture) < endOfDay
         }
 
         var substanceEntries: [SubstanceEntry] = []
         for log in substanceLogsForDate {
             if let userSub = userSubstances.first(where: {
                 $0.name == log.substanceName
-            }) {
+            }),
+            let userSubId = userSub.id {
                 substanceEntries.append(
                     SubstanceEntry(
-                        userSubstanceId: userSub.id,
-                        amount: String(format: "%.1f", log.amount),
-                        unit: log.unit,
-                        timestamp: log.timestamp
+                        userSubstanceId: userSubId,
+                        amount: String(format: "%.1f", log.amount ?? 0),
+                        unit: log.unit ?? .milligrams,
+                        timestamp: log.timestamp ?? Date()
                     )
                 )
             }
@@ -765,11 +528,11 @@ struct SubstanceInstancesView: View {
     }
 
     private func addInstance() {
-        let filteredInstances = takenSubstances.filter { $0.userSubstanceId == substance.id }
+        let filteredInstances = takenSubstances.filter { $0.userSubstanceId == substance.id ?? UUID() }
         let lastUnit = filteredInstances.last?.unit ?? substance.defaultUnit ?? .cups
 
         let newEntry = SubstanceEntry(
-            userSubstanceId: substance.id,
+            userSubstanceId: substance.id ?? UUID(),
             amount: "",
             unit: lastUnit,
             timestamp: Date()
@@ -783,13 +546,13 @@ struct SubstanceInstancesView: View {
 
     var body: some View {
         let filteredInstances = takenSubstances
-            .filter { $0.userSubstanceId == substance.id }
+            .filter { $0.userSubstanceId == substance.id ?? UUID() }
             .sorted { $0.timestamp < $1.timestamp }
 
         VStack(alignment: .leading, spacing: 8) {
             // Header with count
             HStack {
-                Text(substance.name)
+                Text(substance.name ?? "")
                     .font(.headline)
 
                 if !filteredInstances.isEmpty {
@@ -814,8 +577,8 @@ struct SubstanceInstancesView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
-                    .accessibilityLabel("Log first \(substance.name) instance")
-                    .accessibilityHint("Tap to add the first instance of \(substance.name) for today")
+                    .accessibilityLabel("Log first \(substance.name ?? "") instance")
+                    .accessibilityHint("Tap to add the first instance of \(substance.name ?? "") for today")
                 }
                 .padding(.vertical, 8)
             } else {
@@ -857,8 +620,8 @@ struct SubstanceInstancesView: View {
                 .buttonStyle(.bordered)
                 .controlSize(.small)
                 .padding(.top, 4)
-                .accessibilityLabel("Add another \(substance.name) instance")
-                .accessibilityHint("Tap to log another instance of \(substance.name)")
+                .accessibilityLabel("Add another \(substance.name ?? "") instance")
+                .accessibilityHint("Tap to log another instance of \(substance.name ?? "")")
             }
         }
         .padding(.vertical, 8)
@@ -963,6 +726,354 @@ struct SubstanceInstanceRow: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(isEditing ? Color.blue.opacity(0.3) : Color.clear, lineWidth: 1)
         )
+    }
+}
+
+// MARK: - Sub-views for AddSymptomView
+
+struct DateSelectionSection: View {
+    @Binding var selectedDate: Date
+    let hasEntryForSelectedDate: Bool
+
+    var body: some View {
+        Section("Date") {
+            DatePicker(
+                "Entry Date",
+                selection: $selectedDate,
+                in: ...Date(),
+                displayedComponents: [.date]
+            )
+
+            if hasEntryForSelectedDate {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                    Text("Entry already exists for this date")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
+            }
+        }
+    }
+}
+
+struct MoodSection: View {
+    @Binding var moodLevel: MoodLevel?
+
+    var body: some View {
+        Section("Mood") {
+            Picker("Mood Level", selection: $moodLevel) {
+                Text("Not Set").tag(nil as MoodLevel?)
+                ForEach(MoodLevel.allCases, id: \.self) { level in
+                    Text("\(level.emoji) \(level.displayName)").tag(level as MoodLevel?)
+                }
+            }
+        }
+    }
+}
+
+struct AnxietySection: View {
+    @Binding var anxietyLevel: AnxietyLevel?
+
+    var body: some View {
+        Section("Anxiety") {
+            Picker("Anxiety Level", selection: $anxietyLevel) {
+                Text("Not Set").tag(nil as AnxietyLevel?)
+                ForEach(AnxietyLevel.allCases, id: \.self) { level in
+                    Text(level.displayName).tag(level as AnxietyLevel?)
+                }
+            }
+        }
+    }
+}
+
+struct AnhedoniaSection: View {
+    @Binding var anhedoniaLevel: AnhedoniaLevel?
+
+    var body: some View {
+        Section("Anhedonia") {
+            Picker("Anhedonia Level", selection: $anhedoniaLevel) {
+                Text("Not Set").tag(nil as AnhedoniaLevel?)
+                ForEach(AnhedoniaLevel.allCases, id: \.self) { level in
+                    Text(level.displayName).tag(level as AnhedoniaLevel?)
+                }
+            }
+
+            if let anhedonia = anhedoniaLevel {
+                Text(anhedonia.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+struct SleepSection: View {
+    @Binding var sleepHours: String
+    @Binding var sleepQualityRating: Int?
+
+    var body: some View {
+        Section {
+            HStack {
+                TextField("Hours", text: $sleepHours)
+                    .keyboardType(.decimalPad)
+            }
+
+            if let rating = sleepQualityRating {
+                HStack {
+                    Text("Quality")
+                    Spacer()
+                    ForEach(1...5, id: \.self) { star in
+                        Image(systemName: star <= rating ? "star.fill" : "star")
+                            .foregroundStyle(star <= rating ? .yellow : .gray)
+                            .onTapGesture {
+                                sleepQualityRating = star
+                            }
+                    }
+                }
+            } else {
+                Button("Add Quality Rating") {
+                    sleepQualityRating = 3
+                }
+            }
+        } header: {
+            Text("Sleep")
+        }
+    }
+}
+
+struct ActivitySection: View {
+    @Binding var timeInDaylightMinutes: String
+    @Binding var exerciseMinutes: String
+
+    var body: some View {
+        Section("Activity") {
+            HStack {
+                Text("Daylight")
+                Spacer()
+                TextField("Minutes", text: $timeInDaylightMinutes)
+                    .keyboardType(.numberPad)
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                Text("min")
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack {
+                Text("Exercise")
+                Spacer()
+                TextField("Minutes", text: $exerciseMinutes)
+                    .keyboardType(.numberPad)
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                Text("min")
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+struct NotesSection: View {
+    @Binding var notes: String
+
+    var body: some View {
+        Section("Notes") {
+            TextField("Additional notes", text: $notes, axis: .vertical)
+                .lineLimit(3...6)
+        }
+    }
+}
+
+struct MedicationsSectionView: View {
+    @Binding var takenMedications: [UUID: Date]
+    @Binding var showingHealthKitImport: Bool
+    let userMedications: [UserMedication]
+    let healthKitManager: HealthKitManager
+
+    var body: some View {
+        Section("Medications") {
+            if userMedications.isEmpty {
+                EmptyMedicationsView(
+                    healthKitManager: healthKitManager,
+                    showingHealthKitImport: $showingHealthKitImport
+                )
+            } else {
+                ForEach(userMedications) { medication in
+                    MedicationRowView(
+                        medication: medication,
+                        takenMedications: $takenMedications
+                    )
+                }
+            }
+        }
+    }
+}
+
+struct EmptyMedicationsView: View {
+    let healthKitManager: HealthKitManager
+    @Binding var showingHealthKitImport: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("No medications in your library")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            if healthKitManager.isAuthorized {
+                Button {
+                    showingHealthKitImport = true
+                } label: {
+                    Label("Import from HealthKit", systemImage: "heart.text.square")
+                }
+            }
+
+            NavigationLink {
+                MedicationManagementView()
+            } label: {
+                Label("Add Medications in Settings", systemImage: "gear")
+                    .font(.caption)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct MedicationRowView: View {
+    let medication: UserMedication
+    @Binding var takenMedications: [UUID: Date]
+
+    private var isTaken: Bool {
+        guard let medId = medication.id else { return false }
+        return takenMedications[medId] != nil
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle(
+                isOn: Binding(
+                    get: { isTaken },
+                    set: { newValue in
+                        guard let medId = medication.id else { return }
+                        if newValue {
+                            takenMedications[medId] = Date()
+                        } else {
+                            takenMedications[medId] = nil
+                        }
+                    }
+                )
+            ) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(medication.name ?? "")
+                        .font(.headline)
+
+                    HStack(spacing: 8) {
+                        if let dosage = medication.dosage, !dosage.isEmpty {
+                            Text(dosage)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        if let frequency = medication.frequency {
+                            Text(frequency.shortName)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+
+            if isTaken, let medId = medication.id {
+                DatePicker(
+                    "Time Taken",
+                    selection: Binding(
+                        get: { takenMedications[medId] ?? Date() },
+                        set: { takenMedications[medId] = $0 }
+                    ),
+                    displayedComponents: [.hourAndMinute]
+                )
+                .padding(.leading)
+                .accessibilityLabel("Time taken for \(medication.name ?? "")")
+                .accessibilityHint("Select when you took this medication")
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct SubstancesSectionView: View {
+    @Binding var takenSubstances: [SubstanceEntry]
+    let userSubstances: [UserSubstance]
+
+    var body: some View {
+        Section("Substances") {
+            let uniqueSubstanceIds = Array(Set(takenSubstances.map { $0.userSubstanceId }))
+                .sorted(by: { id1, id2 in
+                    let name1 = userSubstances.first(where: { $0.id == id1 })?.name ?? ""
+                    let name2 = userSubstances.first(where: { $0.id == id2 })?.name ?? ""
+                    return name1 < name2
+                })
+
+            ForEach(uniqueSubstanceIds, id: \.self) { substanceId in
+                if let substance = userSubstances.first(where: { $0.id == substanceId }) {
+                    SubstanceInstancesView(
+                        substance: substance,
+                        takenSubstances: $takenSubstances
+                    )
+                }
+            }
+
+            SubstancePickerView(
+                userSubstances: userSubstances,
+                takenSubstances: $takenSubstances
+            )
+        }
+    }
+}
+
+struct SubstancePickerView: View {
+    let userSubstances: [UserSubstance]
+    @Binding var takenSubstances: [SubstanceEntry]
+
+    var body: some View {
+        if userSubstances.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("No substances in your library")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                NavigationLink {
+                    SubstanceManagementView()
+                } label: {
+                    Label("Add Substances in Settings", systemImage: "gear")
+                        .font(.caption)
+                }
+            }
+            .padding(.vertical, 4)
+        } else {
+            Menu {
+                ForEach(userSubstances) { substance in
+                    Button(substance.name ?? "") {
+                        withAnimation {
+                            takenSubstances.append(
+                                SubstanceEntry(
+                                    userSubstanceId: substance.id ?? UUID(),
+                                    amount: "",
+                                    unit: substance.defaultUnit ?? .cups,
+                                    timestamp: Date()
+                                )
+                            )
+                        }
+                    }
+                }
+            } label: {
+                Label("Add Substance", systemImage: "plus.circle.fill")
+            }
+            .buttonStyle(.bordered)
+        }
     }
 }
 

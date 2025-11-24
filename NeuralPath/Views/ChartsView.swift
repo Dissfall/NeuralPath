@@ -101,7 +101,7 @@ struct ChartsView: View {
 
     private var filteredEntries: [SymptomEntry] {
         let startDate = Calendar.current.date(byAdding: timeRange.dateComponent, value: -timeRange.value, to: Date()) ?? Date()
-        return entries.filter { $0.timestamp >= startDate }
+        return entries.filter { ($0.timestamp ?? Date.distantPast) >= startDate }
     }
 
     private var availableMetricsForComparison: [MetricType] {
@@ -212,13 +212,13 @@ struct ChartsView: View {
         Chart {
             ForEach(filteredEntries.filter { $0.moodLevel != nil }) { entry in
                 LineMark(
-                    x: .value("Date", entry.timestamp),
+                    x: .value("Date", entry.timestamp ?? Date()),
                     y: .value("Mood", entry.moodLevel?.rawValue ?? 0)
                 )
                 .foregroundStyle(.blue)
 
                 PointMark(
-                    x: .value("Date", entry.timestamp),
+                    x: .value("Date", entry.timestamp ?? Date()),
                     y: .value("Mood", entry.moodLevel?.rawValue ?? 0)
                 )
                 .foregroundStyle(.blue)
@@ -241,7 +241,7 @@ struct ChartsView: View {
         Chart {
             ForEach(filteredEntries.filter { $0.anxietyLevel != nil }) { entry in
                 BarMark(
-                    x: .value("Date", entry.timestamp, unit: .day),
+                    x: .value("Date", entry.timestamp ?? Date(), unit: .day),
                     y: .value("Anxiety", entry.anxietyLevel?.rawValue ?? 0)
                 )
                 .foregroundStyle(.orange)
@@ -254,13 +254,13 @@ struct ChartsView: View {
         Chart {
             ForEach(filteredEntries.filter { $0.anhedoniaLevel != nil }) { entry in
                 LineMark(
-                    x: .value("Date", entry.timestamp),
+                    x: .value("Date", entry.timestamp ?? Date()),
                     y: .value("Anhedonia", entry.anhedoniaLevel?.rawValue ?? 0)
                 )
                 .foregroundStyle(.purple)
 
                 AreaMark(
-                    x: .value("Date", entry.timestamp),
+                    x: .value("Date", entry.timestamp ?? Date()),
                     y: .value("Anhedonia", entry.anhedoniaLevel?.rawValue ?? 0)
                 )
                 .foregroundStyle(.purple.opacity(0.2))
@@ -273,7 +273,7 @@ struct ChartsView: View {
         Chart {
             ForEach(filteredEntries.filter { $0.sleepHours != nil }) { entry in
                 BarMark(
-                    x: .value("Date", entry.timestamp, unit: .day),
+                    x: .value("Date", entry.timestamp ?? Date(), unit: .day),
                     y: .value("Hours", entry.sleepHours ?? 0)
                 )
                 .foregroundStyle(.cyan)
@@ -289,7 +289,7 @@ struct ChartsView: View {
         Chart {
             ForEach(filteredEntries.filter { $0.timeInDaylightMinutes != nil }) { entry in
                 BarMark(
-                    x: .value("Date", entry.timestamp, unit: .day),
+                    x: .value("Date", entry.timestamp ?? Date(), unit: .day),
                     y: .value("Minutes", entry.timeInDaylightMinutes ?? 0)
                 )
                 .foregroundStyle(.yellow)
@@ -305,7 +305,7 @@ struct ChartsView: View {
         Chart {
             ForEach(filteredEntries.filter { $0.exerciseMinutes != nil }) { entry in
                 BarMark(
-                    x: .value("Date", entry.timestamp, unit: .day),
+                    x: .value("Date", entry.timestamp ?? Date(), unit: .day),
                     y: .value("Minutes", entry.exerciseMinutes ?? 0)
                 )
                 .foregroundStyle(.green)
@@ -335,8 +335,8 @@ struct ChartsView: View {
                 Chart {
                     ForEach(filteredSubstances, id: \.substance.id) { item in
                         BarMark(
-                            x: .value("Date", item.entry.timestamp, unit: .day),
-                            y: .value("Amount", item.substance.amount)
+                            x: .value("Date", item.entry.timestamp ?? Date(), unit: .day),
+                            y: .value("Amount", item.substance.amount ?? 0.0)
                         )
                         .foregroundStyle(.blue)
                     }
@@ -489,7 +489,7 @@ struct ChartsView: View {
     }
 
     private var uniqueSubstanceNames: [String] {
-        let names = Set(allSubstances.map { $0.substance.name })
+        let names = Set(allSubstances.compactMap { $0.substance.name })
         return names.sorted()
     }
 
@@ -503,12 +503,12 @@ struct ChartsView: View {
         return allSubstances.filter { item in
             guard let selectedName = selectedSubstance else { return false }
             return item.substance.name == selectedName &&
-                   item.entry.timestamp >= startDate
+                   (item.entry.timestamp ?? Date.distantPast) >= startDate
         }
     }
 
     private var totalSubstanceConsumption: Double {
-        filteredSubstances.reduce(0) { $0 + $1.substance.amount }
+        filteredSubstances.reduce(0) { $0 + ($1.substance.amount ?? 0.0) }
     }
 
     private var averageSubstanceConsumption: Double {
@@ -518,7 +518,7 @@ struct ChartsView: View {
 
     private var substanceUnit: String {
         guard let first = filteredSubstances.first else { return "" }
-        return first.substance.unit.abbreviation
+        return first.substance.unit?.abbreviation ?? ""
     }
 }
 

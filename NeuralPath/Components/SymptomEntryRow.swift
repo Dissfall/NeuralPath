@@ -13,7 +13,7 @@ struct SymptomEntryRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(entry.timestamp, style: .date)
+                Text(entry.timestamp ?? Date(), style: .date)
                     .font(.headline)
             }
 
@@ -43,7 +43,7 @@ struct SymptomEntryRow: View {
             if let substances = entry.substances, !substances.isEmpty {
                 WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
                     ForEach(substances) { substance in
-                        Label(substance.name, systemImage: "drop.triangle")
+                        Label(substance.name ?? "", systemImage: "drop.triangle")
                             .font(.caption)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
@@ -54,8 +54,8 @@ struct SymptomEntryRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            if !entry.notes.isEmpty {
-                Text(entry.notes)
+            if let notes = entry.notes, !notes.isEmpty {
+                Text(notes)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)

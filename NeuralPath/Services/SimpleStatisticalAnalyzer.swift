@@ -146,9 +146,9 @@ class SimpleStatisticalAnalyzer {
         let startDate = findMedicationStartDate(medication: medication, entries: entries)
 
         // Split entries into before/after
-        let beforeEntries = entries.filter { $0.timestamp < startDate }
+        let beforeEntries = entries.filter { ($0.timestamp ?? Date.distantPast) < startDate }
         let afterEntries = entries.filter {
-            $0.timestamp >= startDate &&
+            ($0.timestamp ?? Date.distantPast) >= startDate &&
             ($0.medications?.contains { $0.name == medication } ?? false)
         }
 
@@ -273,17 +273,17 @@ class SimpleStatisticalAnalyzer {
         }
 
         // Prepare data for linear regression
-        let sortedEntries = entries.sorted { $0.timestamp < $1.timestamp }
+        let sortedEntries = entries.sorted { ($0.timestamp ?? Date.distantPast) < ($1.timestamp ?? Date.distantPast) }
         var xValues: [Double] = []  // Days from start
         var yValues: [Double] = []  // Symptom scores
 
-        let startDate = sortedEntries[0].timestamp
+        let startDate = sortedEntries[0].timestamp ?? Date()
 
         for entry in sortedEntries {
             let daysSinceStart = Calendar.current.dateComponents(
                 [.day],
                 from: startDate,
-                to: entry.timestamp
+                to: entry.timestamp ?? Date()
             ).day ?? 0
 
             xValues.append(Double(daysSinceStart))
@@ -332,7 +332,7 @@ class SimpleStatisticalAnalyzer {
         var allFactors: [FactorImpact] = []
 
         // Analyze all medications
-        let uniqueMedications = Set(entries.flatMap { $0.medications ?? [] }.map { $0.name })
+        let uniqueMedications = Set(entries.flatMap { $0.medications ?? [] }.compactMap { $0.name })
         for medication in uniqueMedications {
             let effectiveness = analyzeMedicationEffectiveness(
                 medication: medication,
@@ -354,7 +354,7 @@ class SimpleStatisticalAnalyzer {
         }
 
         // Analyze all substances
-        let uniqueSubstances = Set(entries.flatMap { $0.substances ?? [] }.map { $0.name })
+        let uniqueSubstances = Set(entries.flatMap { $0.substances ?? [] }.compactMap { $0.name })
         for substance in uniqueSubstances {
             let impact = analyzeSubstanceImpact(
                 substance: substance,
@@ -701,11 +701,11 @@ class SimpleStatisticalAnalyzer {
     // MARK: - Helper Methods
 
     private func findMedicationStartDate(medication: String, entries: [SymptomEntry]) -> Date {
-        let sortedEntries = entries.sorted { $0.timestamp < $1.timestamp }
+        let sortedEntries = entries.sorted { ($0.timestamp ?? Date.distantPast) < ($1.timestamp ?? Date.distantPast) }
 
         for entry in sortedEntries {
             if entry.medications?.contains(where: { $0.name == medication }) ?? false {
-                return entry.timestamp
+                return entry.timestamp ?? Date()
             }
         }
 
@@ -743,7 +743,7 @@ class SimpleStatisticalAnalyzer {
     ) -> SymptomAverage {
 
         var dayAfterEntries: [SymptomEntry] = []
-        let sortedEntries = allEntries.sorted { $0.timestamp < $1.timestamp }
+        let sortedEntries = allEntries.sorted { ($0.timestamp ?? Date.distantPast) < ($1.timestamp ?? Date.distantPast) }
 
         for (index, entry) in sortedEntries.enumerated() {
             // Check if this was a substance day
@@ -754,7 +754,7 @@ class SimpleStatisticalAnalyzer {
 
                     // Verify it's actually the next day (not same day)
                     let calendar = Calendar.current
-                    if calendar.isDate(nextDay.timestamp, inSameDayAs: entry.timestamp) == false {
+                    if calendar.isDate(nextDay.timestamp ?? Date(), inSameDayAs: entry.timestamp ?? Date()) == false {
                         dayAfterEntries.append(nextDay)
                     }
                 }
@@ -846,7 +846,7 @@ struct StatisticalAnalysisView: View {
     @State private var trendAnalysis: SimpleStatisticalAnalyzer.TrendAnalysis?
 
     var uniqueMedications: [String] {
-        Set(entries.flatMap { $0.medications ?? [] }.map { $0.name }).sorted()
+        Set(entries.flatMap { $0.medications ?? [] }.compactMap { $0.name }).sorted()
     }
 
     var body: some View {
@@ -915,7 +915,7 @@ struct StatisticalAnalysisView: View {
                             Picker("Select Substance", selection: $selectedSubstance) {
                                 Text("Choose...").tag(nil as String?)
                                 ForEach(userSubstances) { substance in
-                                    Text(substance.name).tag(substance.name as String?)
+                                    Text(substance.name ?? "").tag(substance.name)
                                 }
                             }
                             .pickerStyle(.menu)

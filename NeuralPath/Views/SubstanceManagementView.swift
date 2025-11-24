@@ -10,7 +10,7 @@ import SwiftData
 
 struct SubstanceManagementView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(filter: #Predicate<UserSubstance> { $0.isActive }, sort: \UserSubstance.name) private var substances: [UserSubstance]
+    @Query(filter: #Predicate<UserSubstance> { $0.isActive == true }, sort: \UserSubstance.name) private var substances: [UserSubstance]
 
     @State private var showingAddSubstance = false
 
@@ -80,7 +80,7 @@ struct SubstanceRow: View {
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(substance.name)
+                Text(substance.name ?? "")
                     .font(.headline)
 
                 if let unit = substance.defaultUnit {

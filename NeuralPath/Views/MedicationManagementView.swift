@@ -11,7 +11,7 @@ import HealthKit
 
 struct MedicationManagementView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(filter: #Predicate<UserMedication> { $0.isActive }, sort: \UserMedication.name) private var medications: [UserMedication]
+    @Query(filter: #Predicate<UserMedication> { $0.isActive == true }, sort: \UserMedication.name) private var medications: [UserMedication]
 
     @State private var showingAddMedication = false
     @State private var showingImportSheet = false
@@ -121,19 +121,21 @@ struct MedicationRow: View {
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(medication.name)
+                Text(medication.name ?? "")
                     .font(.headline)
 
                 HStack(spacing: 8) {
-                    if !medication.dosage.isEmpty {
-                        Text(medication.dosage)
+                    if let dosage = medication.dosage, !dosage.isEmpty {
+                        Text(dosage)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
 
-                    Text(medication.frequency.shortName)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if let frequency = medication.frequency {
+                        Text(frequency.shortName)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
 
                     if let category = medication.category {
                         Text(category.displayName)

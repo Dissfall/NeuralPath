@@ -18,13 +18,13 @@ struct SymptomDetailView: View {
                 HStack {
                     Text("Date")
                     Spacer()
-                    Text(displayEntry.timestamp, style: .date)
+                    Text(displayEntry.timestamp ?? Date(), style: .date)
                         .foregroundStyle(.secondary)
                 }
                 HStack {
                     Text("Time")
                     Spacer()
-                    Text(displayEntry.timestamp, style: .time)
+                    Text(displayEntry.timestamp ?? Date(), style: .time)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -125,10 +125,10 @@ struct SymptomDetailView: View {
                     ForEach(medications) { medication in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
-                                Text(medication.name)
+                                Text(medication.name ?? "")
                                     .font(.headline)
                                 Spacer()
-                                if medication.taken {
+                                if medication.taken == true {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundStyle(.green)
                                 } else {
@@ -136,11 +136,11 @@ struct SymptomDetailView: View {
                                         .foregroundStyle(.red)
                                 }
                             }
-                            Text(medication.dosage)
+                            Text(medication.dosage ?? "")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            if !medication.notes.isEmpty {
-                                Text(medication.notes)
+                            if let notes = medication.notes, !notes.isEmpty {
+                                Text(notes)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -154,18 +154,18 @@ struct SymptomDetailView: View {
                 Section("Substances") {
                     ForEach(substances) { substance in
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(substance.name)
+                            Text(substance.name ?? "")
                                 .font(.headline)
                             HStack {
                                 Text("Amount")
                                     .font(.caption)
                                 Spacer()
-                                Text("\(String(format: "%.1f", substance.amount)) \(substance.unit.abbreviation)")
+                                Text("\(String(format: "%.1f", substance.amount ?? 0.0)) \(substance.unit?.abbreviation ?? "")")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
-                            if !substance.notes.isEmpty {
-                                Text(substance.notes)
+                            if let notes = substance.notes, !notes.isEmpty {
+                                Text(notes)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -175,9 +175,9 @@ struct SymptomDetailView: View {
                 }
             }
 
-            if !displayEntry.notes.isEmpty {
+            if let notes = displayEntry.notes, !notes.isEmpty {
                 Section("Notes") {
-                    Text(displayEntry.notes)
+                    Text(notes)
                 }
             }
         }
