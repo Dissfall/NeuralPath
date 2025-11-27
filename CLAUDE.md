@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData. It allows users to track mood, anxiety, anhedonia, sleep, and medications with HealthKit integration for automatic sleep data import and medication adherence tracking.
+NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData. It enables users to track mood, anxiety, anhedonia, sleep, exercise, daylight exposure, medications, and substances. Features include HealthKit integration for automatic sleep data import, CloudKit sync, and Core ML-powered predictions.
 
 ## Build & Run Commands
 
@@ -12,7 +12,7 @@ NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData
 # Open project in Xcode
 open NeuralPath.xcodeproj
 
-# Build from command line (requires selecting a scheme first)
+# Build from command line
 xcodebuild -project NeuralPath.xcodeproj -scheme NeuralPath -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15' build
 
 # Clean build folder
@@ -20,78 +20,127 @@ xcodebuild clean -project NeuralPath.xcodeproj -scheme NeuralPath
 ```
 
 **Requirements:**
-- iOS 17.0+ deployment target
-- Xcode 16.0+
+- iOS 26.0+ deployment target
+- Xcode 26.0+
 - HealthKit-capable device for full functionality
 
 ## Architecture
 
 ### SwiftData Model Layer
 
-The app uses SwiftData for persistence with a two-model schema:
+The app uses SwiftData for persistence with a seven-model schema:
 
-- **SymptomEntry** (`Models/SymptomEntry.swift`): Primary model containing timestamp, mood, anxiety, anhedonia, sleep data, notes, and medications relationship
-- **Medication** (`Models/Medication.swift`): Related model with cascade delete rule, tracks name, dosage, taken status, and notes
+**Core Models:**
+- **SymptomEntry** (`Models/SymptomEntry.swift`): Primary model with mood, anxiety, anhedonia, sleep data, exercise, daylight, notes, and relationships to medications/substances
+- **Medication** (`Models/Medication.swift`): Historical medication data tied to symptom entries (cascade delete)
+- **Substance** (`Models/Substance.swift`): Historical substance tracking tied to entries (cascade delete)
 
-**Model Container Setup:** Configured in `NeuralPathApp.swift:13-25` with persistent storage (not in-memory). The schema is injected via `.modelContainer()` modifier on the WindowGroup.
+**User Library Models:**
+- **UserMedication** (`Models/UserMedication.swift`): User-configured medication library with category, frequency, active status
+- **UserSubstance** (`Models/UserSubstance.swift`): User-configured substance library with default units
+- **MedicationLog** (`Models/MedicationLog.swift`): Quick medication logging records
+- **SubstanceLog** (`Models/SubstanceLog.swift`): Quick substance logging records
 
-**Important:** All SwiftData queries use `@Query` property wrapper and must be in SwiftUI views. The `@Environment(\.modelContext)` provides access for mutations (insert, delete, save).
+**Model Container Setup:** Configured in `NeuralPathApp.swift` with three-tier fallback:
+1. CloudKit-enabled configuration (if available)
+2. Local-only fallback (if CloudKit fails)
+3. In-memory fallback (last resort)
 
-### HealthKit Integration
+**Important:** All SwiftData queries use `@Query` property wrapper. The `@Environment(\.modelContext)` provides access for mutations.
 
-**HealthKitManager** (`Services/HealthKitManager.swift`) is a singleton Observable class handling all HealthKit operations:
+### Services Layer
 
-- Authorization is split into two methods:
-  - `requestAuthorization()`: Standard permissions (sleep, heart rate, activity, State of Mind for iOS 18+)
-  - `requestMedicationAuthorization()`: iOS 16+ per-object authorization for medication data
+**CloudKitManager** (`Services/CloudKitManager.swift`):
+- Singleton managing CloudKit availability and sync status
+- Automatic simulator detection (disables CloudKit)
+- Environment variable override: `DISABLE_CLOUDKIT`
+- Posts `CloudKitAvailabilityChanged` notifications
 
-- Sleep data fetching (`fetchSleepData()`) aggregates multiple sleep stages (core, deep, REM) and calculates a quality score (1-5) based on total hours and deep sleep ratio
+**HealthKitManager** (`Services/HealthKitManager.swift`):
+- Observable singleton for HealthKit operations
+- `requestAuthorization()`: Sleep, heart rate, activity, State of Mind (iOS 18+)
+- `requestMedicationAuthorization()`: iOS 16+ per-object authorization
+- `fetchSleepData()`: Aggregates sleep stages, calculates quality score (1-5)
 
-- Medication data is read-only from Health app (iOS 16+). App cannot write medication adherence to HealthKit directly
+**MLManager** (`Services/MLManager.swift`):
+- Loads 3 Core ML models: MoodPredictor, AnxietyPredictor, AnhedoniaPredictor
+- Inputs: sleep hours/quality, daylight, exercise, medication status, substance amount, day of week, previous day metrics
+- Optional return values with error handling
 
-**Version-specific APIs:**
-- iOS 16.0+: `HKUserAnnotatedMedicationType` for reading medications
-- iOS 18.0+: `HKStateOfMind` for mental state tracking
+**SimpleStatisticalAnalyzer** (`Services/SimpleStatisticalAnalyzer.swift`):
+- Mathematical insights without ML dependency
+- Factor impact analysis with confidence scoring
+- Trend detection and recommendations
+
+**TestDataGenerator** (`Services/TestDataGenerator.swift`):
+- Development utility for generating realistic test data
+- Configurable patterns: improving, worsening, stable, variable
 
 ### View Architecture
 
-**Navigation structure:** Single TabView with two tabs (Entries list + Charts visualization)
+**Navigation structure:** 3-tab TabView
 
-**Main views:**
-- `ContentView.swift`: Tab container and entries list using NavigationStack
-- `AddSymptomView.swift`: Form for creating new SymptomEntry with HealthKit sleep import
-- `SymptomDetailView.swift`: Read-only detail view of existing entries
-- `ChartsView.swift`: Time-series visualization using Swift Charts framework with multiple time ranges (week/month/3 months/year)
-- `SettingsView.swift`: App configuration, HealthKit connection, reminders, and export
-- `ExportView.swift`: CSV/JSON export functionality
-- `MedicationHistoryView.swift`: Displays medications from Health app with time range filtering
+**Tab 0 - Entries:**
+- `ContentView.swift`: Entries list with NavigationStack, add menu (medication/substance/full entry)
+- `SymptomEntryRow.swift`: List row component
+- `SymptomDetailView.swift`: Read-only detail view with edit capability
+- `AddSymptomView.swift`: Full entry form with HealthKit sleep import
 
-**Data flow:** Views use `@Environment(\.modelContext)` for mutations and `@Query` for fetching. HealthKitManager is accessed via `.shared` singleton.
+**Tab 1 - Charts:**
+- `ChartsView.swift`: Swift Charts visualization with time ranges (week/month/3 months/year), single or comparison mode
+
+**Tab 2 - Analysis:**
+- `ComprehensiveAnalysisView.swift`: Health score, trends, factor impacts using SimpleStatisticalAnalyzer
+
+**Management Views:**
+- `SettingsView.swift`: Reminders, medication/substance management, CloudKit status, export, hidden developer menu
+- `MedicationManagementView.swift` / `AddUserMedicationView.swift`: Medication library CRUD
+- `SubstanceManagementView.swift` / `AddUserSubstanceView.swift`: Substance library CRUD
+- `QuickLogMedicationView.swift` / `QuickLogSubstanceView.swift`: Quick logging interfaces
+
+**Utility Views:**
+- `CloudKitStatusView.swift`: Sync status display
+- `ExportView.swift`: CSV/JSON export
+- `InsightsView.swift`: ML-powered predictions (requires 30+ entries)
+- `DeveloperMenuView.swift`: Test data generation (Easter egg: 7 rapid taps in Settings)
 
 ### Type-safe Enums
 
-All symptom levels use custom enums (not raw integers):
-- `MoodLevel`: 5 levels with emoji representation
-- `AnxietyLevel`: 5 levels from None to Extreme
-- `AnhedoniaLevel`: 5 levels describing pleasure/interest loss
+**Symptom Levels:**
+- `MoodLevel`: 5 levels with emoji, iOS 18+ `stateOfMindValence` support
+- `AnxietyLevel`: 5 levels from None to Extreme with color coding
+- `AnhedoniaLevel`: 5 levels with detailed descriptions
 
-These enums provide `.displayName` and `.emoji` properties for UI display and should conform to Codable for persistence.
+**Medication/Substance:**
+- `MedicationCategory`: 9 categories (SSRI, SNRI, Benzodiazepine, etc.) with SF Symbol icons
+- `MedicationFrequency`: 7 options (daily, twice daily, weekly, as needed, etc.)
+- `SubstanceUnit`: 8 units (ml, oz, mg, g, cups, drinks, cigarettes, other)
 
 ## Required Permissions
 
 **Info.plist:**
-- `NSHealthShareUsageDescription`: Required for reading HealthKit data
-- `NSHealthUpdateUsageDescription`: Required for writing to HealthKit
+- `UIBackgroundModes`: remote-notification
 
 **Entitlements:**
-- `com.apple.developer.healthkit`: Must be enabled
-- CloudKit capabilities are configured but may not be actively used
+- `com.apple.developer.healthkit`: HealthKit access
+- `com.apple.developer.icloud-container-identifiers`: iCloud.NeuralPath
+- `com.apple.developer.icloud-services`: CloudKit
+- `aps-environment`: development (push notifications)
+
+## Core ML Models
+
+Three tabular regression models in project root:
+- `MoodPredictor.mlmodel`
+- `AnxietyPredictor.mlmodel`
+- `AnhedoniaPredictor.mlmodel`
+
+ML project at `NeuralPath.mlproj/` with training data.
 
 ## Code Style
 
 - Avoid `any` types - use `unknown` for uncertain data structures
 - Minimize comments - use markers like `NOTE:`, `HACK:`, `BUG:` when necessary
-- Keep JSDoc concise and informative
 - SwiftData models must be marked `@Model` and use `final class`
-- HealthKit operations should use async/await with proper error handling
+- HealthKit/CloudKit operations should use async/await with proper error handling
 - Version-specific APIs must use `@available` checks
+- Services use `@Observable` singleton pattern accessed via `.shared`
