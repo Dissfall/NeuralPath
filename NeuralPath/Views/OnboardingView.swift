@@ -7,6 +7,7 @@ import SwiftUI
 import SwiftData
 import HealthKit
 import Combine
+import UserNotifications
 
 // MARK: - Onboarding Manager
 
@@ -42,8 +43,9 @@ enum OnboardingStep: Int, CaseIterable {
     case healthKit = 1
     case medications = 2
     case substances = 3
-    case howToUse = 4
-    case complete = 5
+    case reminders = 4
+    case howToUse = 5
+    case complete = 6
 
     var title: String {
         switch self {
@@ -51,6 +53,7 @@ enum OnboardingStep: Int, CaseIterable {
         case .healthKit: return "Apple Health"
         case .medications: return "Medications"
         case .substances: return "Substances"
+        case .reminders: return "Reminders"
         case .howToUse: return "How to Use"
         case .complete: return "All Set!"
         }
@@ -102,6 +105,12 @@ struct OnboardingView: View {
                     onSkip: { nextStep() }
                 )
                 .tag(OnboardingStep.substances)
+
+                OnboardingRemindersStep(
+                    onContinue: { nextStep() },
+                    onSkip: { nextStep() }
+                )
+                .tag(OnboardingStep.reminders)
 
                 OnboardingHowToUseStep(onContinue: { nextStep() })
                     .tag(OnboardingStep.howToUse)
@@ -613,6 +622,252 @@ struct OnboardingSubstancesStep: View {
     private func deleteSubstances(at offsets: IndexSet) {
         for index in offsets {
             substances[index].isActive = false
+        }
+    }
+}
+
+// MARK: - Reminders Step
+
+struct OnboardingRemindersStep: View {
+    @Query(filter: #Predicate<UserMedication> { $0.isActive == true && $0.reminderEnabled == true })
+    private var medicationsWithReminders: [UserMedication]
+
+    let onContinue: () -> Void
+    let onSkip: () -> Void
+
+    @State private var dailyReminderEnabled = false
+    @State private var dailyReminderTime: Date
+    @State private var medicationReminderEnabled = false
+    @State private var notificationPermissionGranted = false
+    @State private var isRequestingPermission = false
+
+    private let dailyReminderEnabledKey = "dailyReminderEnabled"
+    private let dailyReminderTimeKey = "dailyReminderTime"
+    private let medicationReminderEnabledKey = "medicationReminderEnabled"
+
+    init(onContinue: @escaping () -> Void, onSkip: @escaping () -> Void) {
+        self.onContinue = onContinue
+        self.onSkip = onSkip
+
+        // Default to 9 PM for daily reminder
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+        components.hour = 21
+        components.minute = 0
+        _dailyReminderTime = State(initialValue: Calendar.current.date(from: components) ?? Date())
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 16) {
+                Image(systemName: "bell.badge.fill")
+                    .font(.system(size: 60))
+                    .foregroundStyle(.orange)
+
+                VStack(spacing: 8) {
+                    Text("Set Up Reminders")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+
+                    Text("Stay on track with daily notifications for logging and medications.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+            }
+            .padding(.top, 40)
+
+            // Reminder options
+            VStack(spacing: 16) {
+                // Daily Entry Reminder
+                VStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "square.and.pencil")
+                            .font(.title2)
+                            .foregroundStyle(.blue)
+                            .frame(width: 40)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Daily Entry Reminder")
+                                .font(.headline)
+                            Text("Get reminded to log your mood and symptoms")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        Toggle("", isOn: $dailyReminderEnabled)
+                            .labelsHidden()
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                    if dailyReminderEnabled {
+                        HStack {
+                            Text("Reminder Time")
+                                .font(.subheadline)
+                            Spacer()
+                            DatePicker("", selection: $dailyReminderTime, displayedComponents: .hourAndMinute)
+                                .labelsHidden()
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        Text("We recommend evening time to reflect on your whole day")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 4)
+                    }
+                }
+
+                // Medication Reminder
+                VStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "pills.fill")
+                            .font(.title2)
+                            .foregroundStyle(.green)
+                            .frame(width: 40)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Medication Reminders")
+                                .font(.headline)
+                            Text("Get reminded at times set for each medication")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        Toggle("", isOn: $medicationReminderEnabled)
+                            .labelsHidden()
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                    if medicationReminderEnabled {
+                        HStack(spacing: 8) {
+                            Image(systemName: "info.circle")
+                                .foregroundStyle(.blue)
+                            Text(medicationsWithReminders.isEmpty
+                                 ? "Set reminder times when editing each medication"
+                                 : "\(medicationsWithReminders.count) medication(s) have reminders configured")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 4)
+                    }
+                }
+            }
+            .padding(.horizontal, 32)
+            .padding(.top, 32)
+
+            Spacer()
+
+            // Action buttons
+            VStack(spacing: 12) {
+                Button(action: {
+                    saveRemindersAndContinue()
+                }) {
+                    HStack {
+                        if isRequestingPermission {
+                            ProgressView()
+                                .tint(.white)
+                        }
+                        Text(hasAnyReminderEnabled ? "Enable Reminders" : "Continue")
+                    }
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.blue)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .disabled(isRequestingPermission)
+
+                if hasAnyReminderEnabled {
+                    Button("Skip for Now", action: onSkip)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 32)
+            .padding(.bottom, 40)
+        }
+    }
+
+    private var hasAnyReminderEnabled: Bool {
+        dailyReminderEnabled || medicationReminderEnabled
+    }
+
+    private func saveRemindersAndContinue() {
+        guard hasAnyReminderEnabled else {
+            onContinue()
+            return
+        }
+
+        isRequestingPermission = true
+
+        Task {
+            let center = UNUserNotificationCenter.current()
+            do {
+                let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+
+                await MainActor.run {
+                    isRequestingPermission = false
+
+                    if granted {
+                        // Save daily reminder settings
+                        UserDefaults.standard.set(dailyReminderEnabled, forKey: dailyReminderEnabledKey)
+                        UserDefaults.standard.set(dailyReminderTime, forKey: dailyReminderTimeKey)
+
+                        if dailyReminderEnabled {
+                            scheduleDailyReminder()
+                        }
+
+                        // Save medication reminder settings
+                        UserDefaults.standard.set(medicationReminderEnabled, forKey: medicationReminderEnabledKey)
+
+                        if medicationReminderEnabled {
+                            MedicationReminderService.shared.scheduleMedicationRemindersFromContext()
+                        }
+                    }
+
+                    onContinue()
+                }
+            } catch {
+                await MainActor.run {
+                    isRequestingPermission = false
+                    onContinue()
+                }
+            }
+        }
+    }
+
+    private func scheduleDailyReminder() {
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: ["dailyEntryReminder"])
+
+        let content = UNMutableNotificationContent()
+        content.title = "Time to Check In"
+        content.body = "How are you feeling today? Take a moment to log your mood and symptoms."
+        content.sound = .default
+
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: dailyReminderTime)
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        let request = UNNotificationRequest(identifier: "dailyEntryReminder", content: content, trigger: trigger)
+
+        center.add(request) { error in
+            if let error = error {
+                print("Failed to schedule daily reminder: \(error)")
+            }
         }
     }
 }
