@@ -13,11 +13,12 @@ struct MedicationManagementView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(filter: #Predicate<UserMedication> { $0.isActive == true }, sort: \UserMedication.name) private var medications: [UserMedication]
 
-    @State private var showingAddMedication = false
+    @State private var showingMedicationPicker = false
     @State private var showingImportSheet = false
     @State private var healthKitMedications: [HKUserAnnotatedMedication] = []
     @State private var isImporting = false
     @State private var selectedMedication: UserMedication?
+    @State private var addMedicationState: AddMedicationState?
 
     private let healthKitManager = HealthKitManager.shared
 
@@ -69,14 +70,30 @@ struct MedicationManagementView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    showingAddMedication = true
+                    showingMedicationPicker = true
                 } label: {
                     Image(systemName: "plus")
                 }
             }
         }
-        .sheet(isPresented: $showingAddMedication) {
-            AddUserMedicationView()
+        .sheet(isPresented: $showingMedicationPicker) {
+            MedicationPickerView(
+                onSelect: { medication in
+                    showingMedicationPicker = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        addMedicationState = AddMedicationState(prefilled: medication)
+                    }
+                },
+                onCustom: {
+                    showingMedicationPicker = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        addMedicationState = AddMedicationState(prefilled: nil)
+                    }
+                }
+            )
+        }
+        .sheet(item: $addMedicationState) { state in
+            AddUserMedicationView(prefilledMedication: state.prefilled)
         }
         .sheet(isPresented: $showingImportSheet) {
             HealthKitImportView(onImport: importFromHealthKit)
@@ -251,6 +268,13 @@ struct HealthKitImportView: View {
             isLoading = false
         }
     }
+}
+
+// MARK: - Add Medication State
+
+struct AddMedicationState: Identifiable {
+    let id = UUID()
+    let prefilled: MedicationInfo?
 }
 
 #Preview {

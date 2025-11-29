@@ -24,20 +24,49 @@ struct AddUserMedicationView: View {
     private let medication: UserMedication?
     private var isEditing: Bool { medication != nil }
 
-    init(medication: UserMedication? = nil) {
+    init(medication: UserMedication? = nil, prefilledMedication: MedicationInfo? = nil) {
         self.medication = medication
-        _name = State(initialValue: medication?.name ?? "")
-        _dosage = State(initialValue: medication?.dosage ?? "")
-        _category = State(initialValue: medication?.category)
-        _frequency = State(initialValue: medication?.frequency ?? .onceDaily)
-        _notes = State(initialValue: medication?.notes ?? "")
-        _startDate = State(initialValue: medication?.startDate ?? Date())
-        _reminderEnabled = State(initialValue: medication?.reminderEnabled ?? false)
 
-        // Default reminder time to 8 AM if not set
-        if let existingTime = medication?.reminderTime {
-            _reminderTime = State(initialValue: existingTime)
+        // Priority: editing existing > prefilled from database > empty
+        if let existingMed = medication {
+            _name = State(initialValue: existingMed.name ?? "")
+            _dosage = State(initialValue: existingMed.dosage ?? "")
+            _category = State(initialValue: existingMed.category)
+            _frequency = State(initialValue: existingMed.frequency ?? .onceDaily)
+            _notes = State(initialValue: existingMed.notes ?? "")
+            _startDate = State(initialValue: existingMed.startDate ?? Date())
+            _reminderEnabled = State(initialValue: existingMed.reminderEnabled ?? false)
+
+            if let existingTime = existingMed.reminderTime {
+                _reminderTime = State(initialValue: existingTime)
+            } else {
+                var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+                components.hour = 8
+                components.minute = 0
+                _reminderTime = State(initialValue: Calendar.current.date(from: components) ?? Date())
+            }
+        } else if let prefilled = prefilledMedication {
+            _name = State(initialValue: prefilled.name)
+            _dosage = State(initialValue: "")
+            _category = State(initialValue: prefilled.category)
+            _frequency = State(initialValue: .onceDaily)
+            _notes = State(initialValue: "")
+            _startDate = State(initialValue: Date())
+            _reminderEnabled = State(initialValue: false)
+
+            var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+            components.hour = 8
+            components.minute = 0
+            _reminderTime = State(initialValue: Calendar.current.date(from: components) ?? Date())
         } else {
+            _name = State(initialValue: "")
+            _dosage = State(initialValue: "")
+            _category = State(initialValue: nil)
+            _frequency = State(initialValue: .onceDaily)
+            _notes = State(initialValue: "")
+            _startDate = State(initialValue: Date())
+            _reminderEnabled = State(initialValue: false)
+
             var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
             components.hour = 8
             components.minute = 0
