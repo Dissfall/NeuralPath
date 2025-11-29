@@ -12,10 +12,14 @@ struct QuickLogMedicationView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @Query(filter: #Predicate<UserMedication> { $0.isActive == true }, sort: \UserMedication.name) private var userMedications: [UserMedication]
+    @Query(filter: #Predicate<UserMedication> { $0.isActive == true }, sort: \UserMedication.name) private var allUserMedications: [UserMedication]
 
     @State private var selectedMedications: Set<UUID> = []
     @State private var logTime: Date = Date()
+
+    private var prnMedications: [UserMedication] {
+        allUserMedications.filter { $0.frequency == .asNeeded }
+    }
 
     var body: some View {
         NavigationStack {
@@ -27,14 +31,14 @@ struct QuickLogMedicationView: View {
                 }
 
                 Section {
-                    if userMedications.isEmpty {
+                    if prnMedications.isEmpty {
                         ContentUnavailableView(
-                            "No Medications",
+                            "No PRN Medications",
                             systemImage: "pills",
-                            description: Text("Add medications in Settings to log them")
+                            description: Text("Add \"As Needed\" medications in Settings")
                         )
                     } else {
-                        ForEach(userMedications) { medication in
+                        ForEach(prnMedications) { medication in
                             Toggle(isOn: Binding(
                                 get: {
                                     guard let medId = medication.id else { return false }
@@ -63,14 +67,14 @@ struct QuickLogMedicationView: View {
                         }
                     }
                 } header: {
-                    Text("Select Medications")
+                    Text("As Needed Medications")
                 } footer: {
                     if !selectedMedications.isEmpty {
                         Text("\(selectedMedications.count) medication(s) selected")
                     }
                 }
             }
-            .navigationTitle("Log Medications")
+            .navigationTitle("Log PRN Medication")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -91,7 +95,7 @@ struct QuickLogMedicationView: View {
 
     private func logMedications() {
         for medicationId in selectedMedications {
-            guard let medication = userMedications.first(where: { $0.id == medicationId }) else { continue }
+            guard let medication = prnMedications.first(where: { $0.id == medicationId }) else { continue }
 
             let log = MedicationLog(
                 userMedication: medication,
