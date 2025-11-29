@@ -8,7 +8,33 @@ class HealthKitManager {
     private let healthStore = HKHealthStore()
     private(set) var isAuthorized = false
 
-    private init() {}
+    private let authorizationKey = "healthKitAuthorizationRequested"
+
+    private init() {
+        // Check if we've previously requested authorization
+        if UserDefaults.standard.bool(forKey: authorizationKey) {
+            // Verify we still have access by checking a specific type
+            checkAuthorizationStatus()
+        }
+    }
+
+    private func checkAuthorizationStatus() {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            isAuthorized = false
+            return
+        }
+
+        // Check authorization for sleep analysis as a proxy for overall authorization
+        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
+            isAuthorized = false
+            return
+        }
+
+        // Note: HealthKit doesn't tell us if READ was granted, only WRITE.
+        // We rely on the stored flag that authorization was requested.
+        _ = healthStore.authorizationStatus(for: sleepType)
+        isAuthorized = UserDefaults.standard.bool(forKey: authorizationKey)
+    }
 
     func requestAuthorization() async throws {
         guard HKHealthStore.isHealthDataAvailable() else {
@@ -36,6 +62,7 @@ class HealthKitManager {
         }
 
         try await healthStore.requestAuthorization(toShare: typesToWrite, read: typesToRead)
+        UserDefaults.standard.set(true, forKey: authorizationKey)
         isAuthorized = true
     }
 

@@ -63,7 +63,9 @@ struct SettingsView: View {
 
                 Section {
                     HStack {
-                        Text("HealthKit")
+                        Image(systemName: "heart.fill")
+                            .foregroundStyle(.red)
+                        Text("Apple Health")
                         Spacer()
                         if healthKitAuthorized {
                             Image(systemName: "checkmark.circle.fill")
@@ -76,18 +78,10 @@ struct SettingsView: View {
                             }
                         }
                     }
-
-                    if #available(iOS 16.0, *), healthKitAuthorized {
-                        NavigationLink {
-                            MedicationHistoryView()
-                        } label: {
-                            Label("Medication History", systemImage: "pills")
-                        }
-                    }
                 } header: {
                     Text("Integrations")
                 } footer: {
-                    Text("Connect with HealthKit to automatically import sleep data and view medication adherence from the Health app")
+                    Text("Connect with Apple Health to automatically import sleep data, medications, exercise minutes and other")
                 }
 
                 Section {
