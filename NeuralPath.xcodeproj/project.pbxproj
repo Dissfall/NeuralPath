@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		897611622EDB8B5F00457644 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 897611612EDB8B5F00457644 /* StoreKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		890ED7F72ECA76A900150C7C /* NeuralPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		897611612EDB8B5F00457644 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				897611622EDB8B5F00457644 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				890ED7F92ECA76A900150C7C /* NeuralPath */,
+				897611602EDB8B5F00457644 /* Frameworks */,
 				890ED7F82ECA76A900150C7C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +63,14 @@
 				890ED7F72ECA76A900150C7C /* NeuralPath.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		897611602EDB8B5F00457644 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				897611612EDB8B5F00457644 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

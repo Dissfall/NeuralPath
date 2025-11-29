@@ -8,6 +8,7 @@ struct SettingsView: View {
     @State private var medicationReminderEnabled = false
     @State private var healthKitAuthorized = false
     @State private var showingExport = false
+    @State private var showingDonation = false
 
     // Developer menu states
     @State private var tapCount = 0
@@ -138,6 +139,46 @@ struct SettingsView: View {
                     Text("Data")
                 }
 
+                // Support Development
+                Section {
+                    Button {
+                        showingDonation = true
+                    } label: {
+                        HStack {
+                            Label("Support Development", systemImage: "heart.fill")
+                                .foregroundStyle(.pink)
+                            Spacer()
+                            if StoreKitManager.shared.hasActiveSubscription {
+                                Text("Subscribed")
+                                    .font(.caption)
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                    }
+
+                    if StoreKitManager.shared.hasActiveSubscription {
+                        Button {
+                            if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
+                                UIApplication.shared.open(url)
+                            }
+                        } label: {
+                            Label("Manage Subscription", systemImage: "creditcard")
+                        }
+                    }
+
+                    Button {
+                        Task {
+                            await StoreKitManager.shared.restorePurchases()
+                        }
+                    } label: {
+                        Label("Restore Purchases", systemImage: "arrow.clockwise")
+                    }
+                } header: {
+                    Text("Support")
+                } footer: {
+                    Text("Your support helps keep the app free and funds new features")
+                }
+
                 Section {
                     Link(destination: URL(string: "https://github.com")!) {
                         Label("Privacy Policy", systemImage: "hand.raised")
@@ -195,6 +236,12 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingExport) {
                 ExportView()
+            }
+            .sheet(isPresented: $showingDonation) {
+                DonationView(
+                    onDismiss: { showingDonation = false },
+                    onNeverShow: { showingDonation = false }
+                )
             }
             #if DEBUG
             .sheet(isPresented: $showDeveloperMenu) {

@@ -19,6 +19,7 @@ struct DeveloperMenuView: View {
     @State private var alertMessage = ""
     @State private var whatsNewReset = false
     @State private var onboardingReset = false
+    @State private var donationReset = false
 
     private let quickDayOptions = [7, 30, 90]
 
@@ -157,6 +158,23 @@ struct DeveloperMenuView: View {
                             Text("Reset What's New Popup")
                             Spacer()
                             if whatsNewReset {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                    }
+
+                    Button {
+                        let manager = DonationManager()
+                        manager.resetDonationPrompt()
+                        donationReset = true
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    } label: {
+                        HStack {
+                            Image(systemName: "heart.fill")
+                            Text("Reset Donation Prompt")
+                            Spacer()
+                            if donationReset {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundStyle(.green)
                             }

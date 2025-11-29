@@ -12,6 +12,7 @@ import SwiftData
 struct NeuralPathApp: App {
     @StateObject private var whatsNewManager = WhatsNewManager()
     @StateObject private var onboardingManager = OnboardingManager()
+    @StateObject private var donationManager = DonationManager()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -106,6 +107,8 @@ struct NeuralPathApp: App {
                     CloudKitManager.shared.checkCloudKitAvailability()
                     // Check onboarding status first
                     onboardingManager.checkOnboardingStatus()
+                    // Increment session count for donation prompt
+                    donationManager.incrementSessionAndCheck()
                 }
                 // Show onboarding first for new users
                 .fullScreenCover(isPresented: $onboardingManager.shouldShowOnboarding) {
@@ -121,6 +124,17 @@ struct NeuralPathApp: App {
                         features: whatsNewManager.currentFeatures,
                         onDismiss: {
                             whatsNewManager.markAsSeen()
+                        }
+                    )
+                }
+                // Show donation prompt (after onboarding and whatsNew)
+                .sheet(isPresented: $donationManager.shouldShowDonation) {
+                    DonationView(
+                        onDismiss: {
+                            donationManager.dismissForNow()
+                        },
+                        onNeverShow: {
+                            donationManager.dismissForever()
                         }
                     )
                 }
