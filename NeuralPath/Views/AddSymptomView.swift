@@ -51,7 +51,16 @@ struct AddSymptomView: View {
     @State private var substanceToAdd: UserSubstance?
     @State private var newSubstanceAmount: String = "1"
 
+    // Time-based warnings
+    @State private var showEarlyMorningAlert = false
+    @State private var showNotEndOfDayBanner = false
+
     private let healthKitManager = HealthKitManager.shared
+    private let neverShowTimeWarningKey = "neverShowEntryTimeWarning"
+
+    private var neverShowTimeWarning: Bool {
+        UserDefaults.standard.bool(forKey: neverShowTimeWarningKey)
+    }
 
     init(entryToEdit: SymptomEntry? = nil) {
         self.entryToEdit = entryToEdit
@@ -112,6 +121,18 @@ struct AddSymptomView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if showNotEndOfDayBanner {
+                    Section {
+                        TimeWarningBanner(
+                            onDismiss: { showNotEndOfDayBanner = false },
+                            onNeverShow: {
+                                UserDefaults.standard.set(true, forKey: neverShowTimeWarningKey)
+                                showNotEndOfDayBanner = false
+                            }
+                        )
+                    }
+                }
+
                 DateSelectionSection(
                     selectedDate: $selectedDate,
                     hasEntryForSelectedDate: hasEntryForSelectedDate
@@ -333,6 +354,9 @@ struct AddSymptomView: View {
                     await loadActivityData()
                 }
             }
+            .onAppear {
+                checkTimeAndShowWarnings()
+            }
             .sheet(isPresented: $showingHealthKitImport) {
                 HealthKitImportView(onImport: importMedicationsFromHealthKit)
             }
@@ -352,6 +376,15 @@ struct AddSymptomView: View {
                 Text(
                     "An entry for this date already exists. Please choose a different date or delete the existing entry first."
                 )
+            }
+            // Early morning alert
+            .alert("Entry for Yesterday?", isPresented: $showEarlyMorningAlert) {
+                Button("Yes, for yesterday") {
+                    selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
+                }
+                Button("No, today") { }
+            } message: {
+                Text("It's early morning. Are you logging for yesterday?")
             }
             // Edit medication time sheet
             .sheet(isPresented: Binding(
@@ -779,6 +812,20 @@ struct AddSymptomView: View {
 
         dismiss()
     }
+
+    private func checkTimeAndShowWarnings() {
+        guard !isEditMode else { return }
+
+        let hour = Calendar.current.component(.hour, from: Date())
+
+        if hour >= 0 && hour < 7 {
+            showEarlyMorningAlert = true
+        } else if hour >= 7 && hour < 19 {
+            if !neverShowTimeWarning {
+                showNotEndOfDayBanner = true
+            }
+        }
+    }
 }
 
 struct MedicationInput: Identifiable {
@@ -1172,6 +1219,51 @@ struct EmptyMedicationsView: View {
                 Label("Add Medications in Settings", systemImage: "gear")
                     .font(.caption)
             }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Time Warning Banner
+
+struct TimeWarningBanner: View {
+    let onDismiss: () -> Void
+    let onNeverShow: () -> Void
+
+    @State private var neverShowChecked = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
+                Image(systemName: "info.circle.fill")
+                    .foregroundStyle(.blue)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Best time to log")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    Text("We recommend logging entries at the end of the day for more accurate reflections on your mood and symptoms.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Button {
+                    if neverShowChecked {
+                        onNeverShow()
+                    } else {
+                        onDismiss()
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Toggle("Don't remind me again", isOn: $neverShowChecked)
+                .font(.caption)
         }
         .padding(.vertical, 4)
     }

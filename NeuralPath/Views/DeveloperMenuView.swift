@@ -20,6 +20,7 @@ struct DeveloperMenuView: View {
     @State private var whatsNewReset = false
     @State private var onboardingReset = false
     @State private var donationReset = false
+    @State private var timeWarningReset = false
 
     private let quickDayOptions = [7, 30, 90]
 
@@ -175,6 +176,22 @@ struct DeveloperMenuView: View {
                             Text("Reset Donation Prompt")
                             Spacer()
                             if donationReset {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                    }
+
+                    Button {
+                        UserDefaults.standard.removeObject(forKey: "neverShowEntryTimeWarning")
+                        timeWarningReset = true
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    } label: {
+                        HStack {
+                            Image(systemName: "clock.fill")
+                            Text("Reset Time Warning")
+                            Spacer()
+                            if timeWarningReset {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundStyle(.green)
                             }
