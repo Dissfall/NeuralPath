@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct NeuralPathApp: App {
+    @StateObject private var whatsNewManager = WhatsNewManager()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             SymptomEntry.self,
@@ -101,6 +103,16 @@ struct NeuralPathApp: App {
                 .onAppear {
                     // Check CloudKit availability asynchronously after app starts
                     CloudKitManager.shared.checkCloudKitAvailability()
+                    // Check if we should show What's New
+                    whatsNewManager.checkForWhatsNew()
+                }
+                .fullScreenCover(isPresented: $whatsNewManager.shouldShowWhatsNew) {
+                    WhatsNewView(
+                        features: whatsNewManager.currentFeatures,
+                        onDismiss: {
+                            whatsNewManager.markAsSeen()
+                        }
+                    )
                 }
         }
         .modelContainer(sharedModelContainer)
