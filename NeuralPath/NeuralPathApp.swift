@@ -11,6 +11,7 @@ import SwiftData
 @main
 struct NeuralPathApp: App {
     @StateObject private var whatsNewManager = WhatsNewManager()
+    @StateObject private var onboardingManager = OnboardingManager()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -103,9 +104,18 @@ struct NeuralPathApp: App {
                 .onAppear {
                     // Check CloudKit availability asynchronously after app starts
                     CloudKitManager.shared.checkCloudKitAvailability()
-                    // Check if we should show What's New
-                    whatsNewManager.checkForWhatsNew()
+                    // Check onboarding status first
+                    onboardingManager.checkOnboardingStatus()
                 }
+                // Show onboarding first for new users
+                .fullScreenCover(isPresented: $onboardingManager.shouldShowOnboarding) {
+                    OnboardingView(onComplete: {
+                        onboardingManager.completeOnboarding()
+                        // After onboarding, check for What's New
+                        whatsNewManager.checkForWhatsNew()
+                    })
+                }
+                // Show What's New for returning users on new version
                 .fullScreenCover(isPresented: $whatsNewManager.shouldShowWhatsNew) {
                     WhatsNewView(
                         features: whatsNewManager.currentFeatures,
@@ -113,6 +123,12 @@ struct NeuralPathApp: App {
                             whatsNewManager.markAsSeen()
                         }
                     )
+                }
+                .onChange(of: onboardingManager.shouldShowOnboarding) { _, showingOnboarding in
+                    // When onboarding is dismissed, check for What's New
+                    if !showingOnboarding && onboardingManager.hasCompletedOnboarding {
+                        whatsNewManager.checkForWhatsNew()
+                    }
                 }
         }
         .modelContainer(sharedModelContainer)

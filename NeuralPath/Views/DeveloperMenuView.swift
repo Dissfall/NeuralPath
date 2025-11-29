@@ -18,6 +18,7 @@ struct DeveloperMenuView: View {
     @State private var showSuccessAlert = false
     @State private var alertMessage = ""
     @State private var whatsNewReset = false
+    @State private var onboardingReset = false
 
     private let quickDayOptions = [7, 30, 90]
 
@@ -128,6 +129,23 @@ struct DeveloperMenuView: View {
 
                 // UI Debug
                 Section("UI Debug") {
+                    Button {
+                        let manager = OnboardingManager()
+                        manager.resetOnboarding()
+                        onboardingReset = true
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.badge.plus")
+                            Text("Reset Onboarding")
+                            Spacer()
+                            if onboardingReset {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                    }
+
                     Button {
                         let manager = WhatsNewManager()
                         manager.resetWhatsNew()
