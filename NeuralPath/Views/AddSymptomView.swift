@@ -37,6 +37,20 @@ struct AddSymptomView: View {
     @State private var isLoadingSleepData = false
     @State private var showingHealthKitImport = false
 
+    // Edit states for medications
+    @State private var medicationToEditTime: UserMedication?
+    @State private var editMedicationTime: Date = Date()
+
+    // Edit states for substances
+    @State private var substanceToEditTime: SubstanceEntry?
+    @State private var substanceToEditAmount: SubstanceEntry?
+    @State private var editSubstanceTime: Date = Date()
+    @State private var editSubstanceAmount: String = ""
+
+    // Add substance state
+    @State private var substanceToAdd: UserSubstance?
+    @State private var newSubstanceAmount: String = "1"
+
     private let healthKitManager = HealthKitManager.shared
 
     init(entryToEdit: SymptomEntry? = nil) {
@@ -46,6 +60,43 @@ struct AddSymptomView: View {
 
     private var isEditMode: Bool {
         entryToEdit != nil
+    }
+
+    private var scheduledMedications: [UserMedication] {
+        userMedications.filter { $0.frequency != .asNeeded }
+    }
+
+    private var prnMedications: [UserMedication] {
+        userMedications.filter { $0.frequency == .asNeeded }
+    }
+
+    private var medicationsTakenCount: Int {
+        scheduledMedications.filter { med in
+            guard let medId = med.id else { return false }
+            return takenMedications[medId] != nil
+        }.count
+    }
+
+    private var medicationsSummary: String {
+        if scheduledMedications.isEmpty {
+            let prnCount = takenMedications.filter { id, _ in
+                prnMedications.contains { $0.id == id }
+            }.count
+            return prnCount == 0 ? "None" : "\(prnCount) dose\(prnCount == 1 ? "" : "s")"
+        } else {
+            let prnCount = takenMedications.filter { id, _ in
+                prnMedications.contains { $0.id == id }
+            }.count
+            let prnSuffix = prnCount > 0 ? " + \(prnCount) PRN" : ""
+            return "\(medicationsTakenCount)/\(scheduledMedications.count)\(prnSuffix)"
+        }
+    }
+
+    private var substancesSummary: String {
+        if takenSubstances.isEmpty {
+            return "None"
+        }
+        return "\(takenSubstances.count) log\(takenSubstances.count == 1 ? "" : "s")"
     }
 
     private var hasEntryForSelectedDate: Bool {
@@ -75,17 +126,187 @@ struct AddSymptomView: View {
                     exerciseMinutes: $exerciseMinutes
                 )
 
-                MedicationsSectionView(
-                    takenMedications: $takenMedications,
-                    showingHealthKitImport: $showingHealthKitImport,
-                    userMedications: userMedications,
-                    healthKitManager: healthKitManager
-                )
+                // Medications Section
+                if !userMedications.isEmpty {
+                    Section {
+                        // Scheduled medications
+                        ForEach(scheduledMedications) { medication in
+                            let isTaken = medication.id.flatMap { takenMedications[$0] } != nil
+                            let takenTime = medication.id.flatMap { takenMedications[$0] }
 
-                SubstancesSectionView(
-                    takenSubstances: $takenSubstances,
-                    userSubstances: userSubstances
-                )
+                            EntryMedicationRow(
+                                medication: medication,
+                                taken: isTaken,
+                                time: takenTime,
+                                isPrn: false,
+                                onToggle: {
+                                    guard let medId = medication.id else { return }
+                                    if takenMedications[medId] == nil {
+                                        takenMedications[medId] = Date()
+                                    }
+                                }
+                            )
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                if isTaken {
+                                    Button {
+                                        guard let medId = medication.id else { return }
+                                        takenMedications[medId] = nil
+                                    } label: {
+                                        Label("Undo", systemImage: "arrow.uturn.backward")
+                                    }
+                                    .tint(.orange)
+
+                                    Button {
+                                        editMedicationTime = takenTime ?? Date()
+                                        medicationToEditTime = medication
+                                    } label: {
+                                        Label("Time", systemImage: "clock")
+                                    }
+                                    .tint(.blue)
+                                }
+                            }
+                        }
+
+                        // PRN medications taken
+                        ForEach(prnMedications.filter { med in
+                            guard let medId = med.id else { return false }
+                            return takenMedications[medId] != nil
+                        }) { medication in
+                            let takenTime = medication.id.flatMap { takenMedications[$0] }
+
+                            EntryPrnRow(medication: medication, time: takenTime)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        guard let medId = medication.id else { return }
+                                        takenMedications[medId] = nil
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+
+                                    Button {
+                                        editMedicationTime = takenTime ?? Date()
+                                        medicationToEditTime = medication
+                                    } label: {
+                                        Label("Time", systemImage: "clock")
+                                    }
+                                    .tint(.blue)
+                                }
+                        }
+
+                        // Take As-Needed button
+                        if !prnMedications.isEmpty {
+                            Menu {
+                                ForEach(prnMedications) { medication in
+                                    Button {
+                                        guard let medId = medication.id else { return }
+                                        takenMedications[medId] = Date()
+                                    } label: {
+                                        Label(medication.name ?? "Unknown", systemImage: "pills")
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(.blue)
+                                    Text("Take As-Needed")
+                                        .foregroundStyle(.blue)
+                                    Spacer()
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Label("Medications", systemImage: "pills.fill")
+                            Spacer()
+                            Text(medicationsSummary)
+                                .font(.subheadline)
+                                .foregroundStyle(medicationsTakenCount == scheduledMedications.count ? .green : .secondary)
+                        }
+                    }
+                } else {
+                    Section("Medications") {
+                        EmptyMedicationsView(
+                            healthKitManager: healthKitManager,
+                            showingHealthKitImport: $showingHealthKitImport
+                        )
+                    }
+                }
+
+                // Substances Section
+                if !userSubstances.isEmpty || !takenSubstances.isEmpty {
+                    Section {
+                        ForEach(takenSubstances) { entry in
+                            EntrySubstanceRow(entry: entry, userSubstances: userSubstances)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        takenSubstances.removeAll { $0.id == entry.id }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+
+                                    Button {
+                                        editSubstanceTime = entry.timestamp
+                                        substanceToEditTime = entry
+                                    } label: {
+                                        Label("Time", systemImage: "clock")
+                                    }
+                                    .tint(.blue)
+
+                                    Button {
+                                        editSubstanceAmount = entry.amount
+                                        substanceToEditAmount = entry
+                                    } label: {
+                                        Label("Amount", systemImage: "number")
+                                    }
+                                    .tint(.purple)
+                                }
+                        }
+
+                        if !userSubstances.isEmpty {
+                            Menu {
+                                ForEach(userSubstances) { substance in
+                                    Button {
+                                        newSubstanceAmount = "1"
+                                        substanceToAdd = substance
+                                    } label: {
+                                        Label(substance.name ?? "Unknown", systemImage: "drop.triangle")
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(.blue)
+                                    Text("Log Substance")
+                                        .foregroundStyle(.blue)
+                                    Spacer()
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Label("Substances", systemImage: "drop.triangle.fill")
+                            Spacer()
+                            Text(substancesSummary)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } else {
+                    Section("Substances") {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("No substances in your library")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            NavigationLink {
+                                SubstanceManagementView()
+                            } label: {
+                                Label("Add Substances in Settings", systemImage: "gear")
+                                    .font(.caption)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
 
                 NotesSection(notes: $notes)
             }
@@ -131,6 +352,97 @@ struct AddSymptomView: View {
                 Text(
                     "An entry for this date already exists. Please choose a different date or delete the existing entry first."
                 )
+            }
+            // Edit medication time sheet
+            .sheet(isPresented: Binding(
+                get: { medicationToEditTime != nil },
+                set: { if !$0 { medicationToEditTime = nil } }
+            )) {
+                if let medication = medicationToEditTime {
+                    EntryEditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: medication.name ?? "Medication",
+                        time: $editMedicationTime,
+                        onSave: {
+                            if let medId = medication.id {
+                                takenMedications[medId] = editMedicationTime
+                            }
+                            medicationToEditTime = nil
+                        },
+                        onCancel: { medicationToEditTime = nil }
+                    )
+                }
+            }
+            // Edit substance time sheet
+            .sheet(isPresented: Binding(
+                get: { substanceToEditTime != nil },
+                set: { if !$0 { substanceToEditTime = nil } }
+            )) {
+                if let entry = substanceToEditTime {
+                    EntryEditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: userSubstances.first { $0.id == entry.userSubstanceId }?.name ?? "Substance",
+                        time: $editSubstanceTime,
+                        onSave: {
+                            if let index = takenSubstances.firstIndex(where: { $0.id == entry.id }) {
+                                takenSubstances[index].timestamp = editSubstanceTime
+                            }
+                            substanceToEditTime = nil
+                        },
+                        onCancel: { substanceToEditTime = nil }
+                    )
+                }
+            }
+            // Edit substance amount alert
+            .alert("Edit Amount", isPresented: Binding(
+                get: { substanceToEditAmount != nil },
+                set: { if !$0 { substanceToEditAmount = nil } }
+            )) {
+                TextField("Amount", text: $editSubstanceAmount)
+                    .keyboardType(.decimalPad)
+                Button("Cancel", role: .cancel) {
+                    substanceToEditAmount = nil
+                }
+                Button("Save") {
+                    if let entry = substanceToEditAmount,
+                       let index = takenSubstances.firstIndex(where: { $0.id == entry.id }) {
+                        takenSubstances[index].amount = editSubstanceAmount
+                    }
+                    substanceToEditAmount = nil
+                }
+            } message: {
+                if let entry = substanceToEditAmount {
+                    Text(userSubstances.first { $0.id == entry.userSubstanceId }?.name ?? "Substance")
+                }
+            }
+            // Add substance alert
+            .alert("Log Substance", isPresented: Binding(
+                get: { substanceToAdd != nil },
+                set: { if !$0 { substanceToAdd = nil } }
+            )) {
+                TextField("Amount", text: $newSubstanceAmount)
+                    .keyboardType(.decimalPad)
+                Button("Cancel", role: .cancel) {
+                    substanceToAdd = nil
+                }
+                Button("Log") {
+                    if let substance = substanceToAdd,
+                       let substanceId = substance.id {
+                        takenSubstances.append(
+                            SubstanceEntry(
+                                userSubstanceId: substanceId,
+                                amount: newSubstanceAmount,
+                                unit: substance.defaultUnit ?? .other,
+                                timestamp: Date()
+                            )
+                        )
+                    }
+                    substanceToAdd = nil
+                }
+            } message: {
+                if let substance = substanceToAdd {
+                    Text("\(substance.name ?? "Unknown") (\(substance.defaultUnit?.abbreviation ?? ""))")
+                }
             }
         }
     }
@@ -507,228 +819,6 @@ struct SubstanceEntry: Identifiable {
     }
 }
 
-struct SubstanceInstancesView: View {
-    let substance: UserSubstance
-    @Binding var takenSubstances: [SubstanceEntry]
-
-    @State private var editingInstanceId: UUID?
-
-    private var timeFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter
-    }
-
-    private func deleteInstance(_ instanceId: UUID) {
-        if let index = takenSubstances.firstIndex(where: { $0.id == instanceId }) {
-            withAnimation(.easeOut(duration: 0.2)) {
-                _ = takenSubstances.remove(at: index)
-            }
-        }
-    }
-
-    private func addInstance() {
-        let filteredInstances = takenSubstances.filter { $0.userSubstanceId == substance.id ?? UUID() }
-        let lastUnit = filteredInstances.last?.unit ?? substance.defaultUnit ?? .cups
-
-        let newEntry = SubstanceEntry(
-            userSubstanceId: substance.id ?? UUID(),
-            amount: "",
-            unit: lastUnit,
-            timestamp: Date()
-        )
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            takenSubstances.append(newEntry)
-            editingInstanceId = newEntry.id
-        }
-    }
-
-    var body: some View {
-        let filteredInstances = takenSubstances
-            .filter { $0.userSubstanceId == substance.id ?? UUID() }
-            .sorted { $0.timestamp < $1.timestamp }
-
-        VStack(alignment: .leading, spacing: 8) {
-            // Header with count
-            HStack {
-                Text(substance.name ?? "")
-                    .font(.headline)
-
-                if !filteredInstances.isEmpty {
-                    Text("(\(filteredInstances.count))")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-            }
-
-            if filteredInstances.isEmpty {
-                VStack(spacing: 12) {
-                    Text("No instances logged")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-
-                    Button(action: addInstance) {
-                        Label("Log First Instance", systemImage: "plus.circle.fill")
-                            .font(.subheadline)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .accessibilityLabel("Log first \(substance.name ?? "") instance")
-                    .accessibilityHint("Tap to add the first instance of \(substance.name ?? "") for today")
-                }
-                .padding(.vertical, 8)
-            } else {
-                // Instance list
-                ForEach(filteredInstances) { instance in
-                    SubstanceInstanceRow(
-                        instance: instance,
-                        isEditing: editingInstanceId == instance.id,
-                        timeFormatter: timeFormatter,
-                        onUpdateAmount: { newValue in
-                            if let index = takenSubstances.firstIndex(where: { $0.id == instance.id }) {
-                                takenSubstances[index].amount = newValue
-                            }
-                        },
-                        onUpdateUnit: { newValue in
-                            if let index = takenSubstances.firstIndex(where: { $0.id == instance.id }) {
-                                takenSubstances[index].unit = newValue
-                            }
-                        },
-                        onUpdateTime: { newValue in
-                            if let index = takenSubstances.firstIndex(where: { $0.id == instance.id }) {
-                                takenSubstances[index].timestamp = newValue
-                            }
-                        },
-                        onDelete: { deleteInstance(instance.id) },
-                        onTap: {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                editingInstanceId = editingInstanceId == instance.id ? nil : instance.id
-                            }
-                        }
-                    )
-                }
-
-                Button(action: addInstance) {
-                    Label("Add Another", systemImage: "plus.circle")
-                        .font(.caption)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .padding(.top, 4)
-                .accessibilityLabel("Add another \(substance.name ?? "") instance")
-                .accessibilityHint("Tap to log another instance of \(substance.name ?? "")")
-            }
-        }
-        .padding(.vertical, 8)
-    }
-}
-
-struct SubstanceInstanceRow: View {
-    let instance: SubstanceEntry
-    let isEditing: Bool
-    let timeFormatter: DateFormatter
-    let onUpdateAmount: (String) -> Void
-    let onUpdateUnit: (SubstanceUnit) -> Void
-    let onUpdateTime: (Date) -> Void
-    let onDelete: () -> Void
-    let onTap: () -> Void
-
-    var body: some View {
-        VStack(spacing: 6) {
-            HStack(spacing: 12) {
-                // Time label
-                Text(timeFormatter.string(from: instance.timestamp))
-                    .font(.system(.subheadline, design: .monospaced))
-                    .foregroundStyle(.blue)
-                    .frame(minWidth: 60, alignment: .leading)
-                    .accessibilityLabel("Time: \(timeFormatter.string(from: instance.timestamp))")
-
-                // Amount and unit
-                HStack(spacing: 4) {
-                    TextField("0", text: Binding(
-                        get: { instance.amount },
-                        set: onUpdateAmount
-                    ))
-                    .keyboardType(.decimalPad)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 60)
-                    .disabled(!isEditing)
-                    .accessibilityLabel("Amount")
-                    .accessibilityValue(instance.amount.isEmpty ? "Not set" : instance.amount)
-                    .accessibilityHint(isEditing ? "Enter the amount" : "Tap edit to change")
-
-                    Picker("Unit", selection: Binding(
-                        get: { instance.unit },
-                        set: onUpdateUnit
-                    )) {
-                        ForEach(SubstanceUnit.allCases, id: \.self) { unit in
-                            Text(unit.displayName).tag(unit)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .disabled(!isEditing)
-                    .frame(minWidth: 50)
-                    .accessibilityLabel("Unit")
-                    .accessibilityValue(instance.unit.displayName)
-                    .accessibilityHint(isEditing ? "Select a unit of measurement" : "Tap edit to change")
-                }
-
-                Spacer()
-
-                // Actions
-                HStack(spacing: 8) {
-                    Button(action: onTap) {
-                        Image(systemName: isEditing ? "checkmark.circle.fill" : "pencil.circle")
-                            .foregroundStyle(isEditing ? .green : .blue)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(isEditing ? "Save changes" : "Edit instance")
-                    .accessibilityHint(isEditing ? "Tap to save your changes" : "Tap to edit this instance")
-
-                    Button(action: onDelete) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.red.opacity(0.7))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Delete instance")
-                    .accessibilityHint("Tap to remove this instance")
-                }
-            }
-
-            // Expanded time picker when editing
-            if isEditing {
-                DatePicker(
-                    "Time",
-                    selection: Binding(
-                        get: { instance.timestamp },
-                        set: onUpdateTime
-                    ),
-                    displayedComponents: [.hourAndMinute]
-                )
-                .datePickerStyle(.compact)
-                .padding(.top, 4)
-                .accessibilityLabel("Instance time")
-                .accessibilityHint("Select when this instance was taken")
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(isEditing ? Color.blue.opacity(0.08) : Color.gray.opacity(0.08))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(isEditing ? Color.blue.opacity(0.3) : Color.clear, lineWidth: 1)
-        )
-    }
-}
-
 // MARK: - Sub-views for AddSymptomView
 
 struct DateSelectionSection: View {
@@ -889,28 +979,172 @@ struct NotesSection: View {
     }
 }
 
-struct MedicationsSectionView: View {
-    @Binding var takenMedications: [UUID: Date]
-    @Binding var showingHealthKitImport: Bool
-    let userMedications: [UserMedication]
-    let healthKitManager: HealthKitManager
+// MARK: - Entry Medication Row
+
+struct EntryMedicationRow: View {
+    let medication: UserMedication
+    let taken: Bool
+    let time: Date?
+    let isPrn: Bool
+    let onToggle: () -> Void
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
 
     var body: some View {
-        Section("Medications") {
-            if userMedications.isEmpty {
-                EmptyMedicationsView(
-                    healthKitManager: healthKitManager,
-                    showingHealthKitImport: $showingHealthKitImport
-                )
-            } else {
-                ForEach(userMedications) { medication in
-                    MedicationRowView(
-                        medication: medication,
-                        takenMedications: $takenMedications
-                    )
+        HStack(spacing: 12) {
+            Button(action: onToggle) {
+                Image(systemName: taken ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(taken ? .green : .secondary)
+                    .font(.title3)
+            }
+            .buttonStyle(.plain)
+            .disabled(taken)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(medication.name ?? "Unknown")
+                    .font(.subheadline)
+                if let dosage = medication.dosage, !dosage.isEmpty {
+                    Text(dosage)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+
+            if let time = time {
+                Text(timeFormatter.string(from: time))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Entry PRN Row
+
+struct EntryPrnRow: View {
+    let medication: UserMedication
+    let time: Date?
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .font(.title3)
+
+            HStack(spacing: 6) {
+                Text(medication.name ?? "Unknown")
+                    .font(.subheadline)
+                Text("PRN")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Color.orange.opacity(0.2))
+                    .foregroundStyle(.orange)
+                    .clipShape(Capsule())
+            }
+
+            Spacer()
+
+            if let time = time {
+                Text(timeFormatter.string(from: time))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Entry Substance Row
+
+struct EntrySubstanceRow: View {
+    let entry: SubstanceEntry
+    let userSubstances: [UserSubstance]
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
+
+    private var substanceName: String {
+        userSubstances.first { $0.id == entry.userSubstanceId }?.name ?? "Unknown"
+    }
+
+    private var formattedAmount: String {
+        guard let amount = Double(entry.amount), amount > 0 else { return "" }
+        let formattedAmount = amount.truncatingRemainder(dividingBy: 1) == 0
+            ? String(format: "%.0f", amount)
+            : String(format: "%.1f", amount)
+        return "\(formattedAmount) \(entry.unit.abbreviation)"
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .font(.title3)
+
+            Text(substanceName)
+                .font(.subheadline)
+
+            Spacer()
+
+            if !formattedAmount.isEmpty {
+                Text(formattedAmount)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Text(timeFormatter.string(from: entry.timestamp))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+// MARK: - Entry Edit Time Sheet
+
+struct EntryEditTimeSheet: View {
+    let title: String
+    let subtitle: String
+    @Binding var time: Date
+    let onSave: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    DatePicker("Time", selection: $time, displayedComponents: [.hourAndMinute])
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                }
+            }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", action: onCancel)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save", action: onSave)
                 }
             }
         }
+        .presentationDetents([.medium])
     }
 }
 
@@ -940,140 +1174,6 @@ struct EmptyMedicationsView: View {
             }
         }
         .padding(.vertical, 4)
-    }
-}
-
-struct MedicationRowView: View {
-    let medication: UserMedication
-    @Binding var takenMedications: [UUID: Date]
-
-    private var isTaken: Bool {
-        guard let medId = medication.id else { return false }
-        return takenMedications[medId] != nil
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Toggle(
-                isOn: Binding(
-                    get: { isTaken },
-                    set: { newValue in
-                        guard let medId = medication.id else { return }
-                        if newValue {
-                            takenMedications[medId] = Date()
-                        } else {
-                            takenMedications[medId] = nil
-                        }
-                    }
-                )
-            ) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(medication.name ?? "")
-                        .font(.headline)
-
-                    HStack(spacing: 8) {
-                        if let dosage = medication.dosage, !dosage.isEmpty {
-                            Text(dosage)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        if let frequency = medication.frequency {
-                            Text(frequency.shortName)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-            }
-
-            if isTaken, let medId = medication.id {
-                DatePicker(
-                    "Time Taken",
-                    selection: Binding(
-                        get: { takenMedications[medId] ?? Date() },
-                        set: { takenMedications[medId] = $0 }
-                    ),
-                    displayedComponents: [.hourAndMinute]
-                )
-                .padding(.leading)
-                .accessibilityLabel("Time taken for \(medication.name ?? "")")
-                .accessibilityHint("Select when you took this medication")
-            }
-        }
-        .padding(.vertical, 4)
-    }
-}
-
-struct SubstancesSectionView: View {
-    @Binding var takenSubstances: [SubstanceEntry]
-    let userSubstances: [UserSubstance]
-
-    var body: some View {
-        Section("Substances") {
-            let uniqueSubstanceIds = Array(Set(takenSubstances.map { $0.userSubstanceId }))
-                .sorted(by: { id1, id2 in
-                    let name1 = userSubstances.first(where: { $0.id == id1 })?.name ?? ""
-                    let name2 = userSubstances.first(where: { $0.id == id2 })?.name ?? ""
-                    return name1 < name2
-                })
-
-            ForEach(uniqueSubstanceIds, id: \.self) { substanceId in
-                if let substance = userSubstances.first(where: { $0.id == substanceId }) {
-                    SubstanceInstancesView(
-                        substance: substance,
-                        takenSubstances: $takenSubstances
-                    )
-                }
-            }
-
-            SubstancePickerView(
-                userSubstances: userSubstances,
-                takenSubstances: $takenSubstances
-            )
-        }
-    }
-}
-
-struct SubstancePickerView: View {
-    let userSubstances: [UserSubstance]
-    @Binding var takenSubstances: [SubstanceEntry]
-
-    var body: some View {
-        if userSubstances.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("No substances in your library")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                NavigationLink {
-                    SubstanceManagementView()
-                } label: {
-                    Label("Add Substances in Settings", systemImage: "gear")
-                        .font(.caption)
-                }
-            }
-            .padding(.vertical, 4)
-        } else {
-            Menu {
-                ForEach(userSubstances) { substance in
-                    Button(substance.name ?? "") {
-                        withAnimation {
-                            takenSubstances.append(
-                                SubstanceEntry(
-                                    userSubstanceId: substance.id ?? UUID(),
-                                    amount: "",
-                                    unit: substance.defaultUnit ?? .cups,
-                                    timestamp: Date()
-                                )
-                            )
-                        }
-                    }
-                }
-            } label: {
-                Label("Add Substance", systemImage: "plus.circle.fill")
-            }
-            .buttonStyle(.bordered)
-        }
     }
 }
 
