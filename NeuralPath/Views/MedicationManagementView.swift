@@ -113,6 +113,14 @@ struct MedicationManagementView: View {
 struct MedicationRow: View {
     let medication: UserMedication
 
+    private var reminderTimeString: String? {
+        guard medication.reminderEnabled == true,
+              let time = medication.reminderTime else { return nil }
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: time)
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: medication.category?.icon ?? "pills.fill")
@@ -144,6 +152,16 @@ struct MedicationRow: View {
                             .padding(.vertical, 2)
                             .background(Color.blue.opacity(0.1))
                             .cornerRadius(4)
+                    }
+
+                    if let timeStr = reminderTimeString {
+                        HStack(spacing: 2) {
+                            Image(systemName: "bell.fill")
+                                .font(.caption2)
+                            Text(timeStr)
+                                .font(.caption)
+                        }
+                        .foregroundStyle(.orange)
                     }
                 }
             }

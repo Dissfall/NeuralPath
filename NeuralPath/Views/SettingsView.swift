@@ -3,8 +3,9 @@ import UserNotifications
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var notificationsEnabled = false
-    @State private var reminderTime = Date()
+    @State private var dailyReminderEnabled = false
+    @State private var dailyReminderTime = Date()
+    @State private var medicationReminderEnabled = false
     @State private var healthKitAuthorized = false
     @State private var showingExport = false
 
@@ -15,29 +16,72 @@ struct SettingsView: View {
 
     private let healthKitManager = HealthKitManager.shared
 
+    // UserDefaults keys for reminders
+    private let dailyReminderEnabledKey = "dailyReminderEnabled"
+    private let dailyReminderTimeKey = "dailyReminderTime"
+    private let medicationReminderEnabledKey = "medicationReminderEnabled"
+
     var body: some View {
         NavigationStack {
             Form {
+                // Daily Entry Reminder
                 Section {
-                    Toggle("Daily Reminders", isOn: $notificationsEnabled)
-                        .onChange(of: notificationsEnabled) { _, newValue in
+                    Toggle("Daily Entry Reminder", isOn: $dailyReminderEnabled)
+                        .onChange(of: dailyReminderEnabled) { _, newValue in
                             if newValue {
-                                requestNotificationPermission()
+                                requestNotificationPermission {
+                                    scheduleDailyReminder()
+                                    saveDailyReminderSettings()
+                                }
                             } else {
-                                cancelNotifications()
+                                cancelDailyReminder()
+                                saveDailyReminderSettings()
                             }
                         }
 
-                    if notificationsEnabled {
-                        DatePicker("Reminder Time", selection: $reminderTime, displayedComponents: .hourAndMinute)
-                            .onChange(of: reminderTime) { _, newValue in
-                                scheduleNotification(at: newValue)
+                    if dailyReminderEnabled {
+                        DatePicker("Reminder Time", selection: $dailyReminderTime, displayedComponents: .hourAndMinute)
+                            .onChange(of: dailyReminderTime) { _, _ in
+                                scheduleDailyReminder()
+                                saveDailyReminderSettings()
                             }
                     }
                 } header: {
-                    Text("Notifications")
+                    Label("Daily Entry", systemImage: "square.and.pencil")
                 } footer: {
-                    Text("Get a daily reminder to log your symptoms")
+                    Text("Get reminded to log your mood and symptoms. We recommend setting this to the evening so you can reflect on your entire day.")
+                }
+
+                // Medication Reminder
+                Section {
+                    Toggle("Medication Reminders", isOn: $medicationReminderEnabled)
+                        .onChange(of: medicationReminderEnabled) { _, newValue in
+                            if newValue {
+                                requestNotificationPermission {
+                                    MedicationReminderService.shared.scheduleMedicationRemindersFromContext()
+                                    saveMedicationReminderSettings()
+                                }
+                            } else {
+                                MedicationReminderService.shared.cancelAllMedicationReminders()
+                                saveMedicationReminderSettings()
+                            }
+                        }
+
+                    NavigationLink {
+                        MedicationManagementView()
+                    } label: {
+                        HStack {
+                            Text("Configure Times")
+                            Spacer()
+                            Text("Per medication")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                } header: {
+                    Label("Medications", systemImage: "pills.fill")
+                } footer: {
+                    Text("Enable reminders and set individual times for each medication in Manage Medications.")
                 }
 
                 Section {
@@ -164,51 +208,77 @@ struct SettingsView: View {
     }
 
     private func checkPermissions() async {
-        let center = UNUserNotificationCenter.current()
-        let settings = await center.notificationSettings()
-        notificationsEnabled = settings.authorizationStatus == .authorized
-
         healthKitAuthorized = healthKitManager.isAuthorized
+        loadReminderSettings()
     }
 
-    private func requestNotificationPermission() {
+    private func loadReminderSettings() {
+        dailyReminderEnabled = UserDefaults.standard.bool(forKey: dailyReminderEnabledKey)
+        medicationReminderEnabled = UserDefaults.standard.bool(forKey: medicationReminderEnabledKey)
+
+        if let dailyTime = UserDefaults.standard.object(forKey: dailyReminderTimeKey) as? Date {
+            dailyReminderTime = dailyTime
+        } else {
+            // Default to 9 PM for daily entry
+            var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+            components.hour = 21
+            components.minute = 0
+            dailyReminderTime = Calendar.current.date(from: components) ?? Date()
+        }
+    }
+
+    private func saveDailyReminderSettings() {
+        UserDefaults.standard.set(dailyReminderEnabled, forKey: dailyReminderEnabledKey)
+        UserDefaults.standard.set(dailyReminderTime, forKey: dailyReminderTimeKey)
+    }
+
+    private func saveMedicationReminderSettings() {
+        UserDefaults.standard.set(medicationReminderEnabled, forKey: medicationReminderEnabledKey)
+    }
+
+    private func requestNotificationPermission(onSuccess: @escaping () -> Void) {
         Task {
             let center = UNUserNotificationCenter.current()
             do {
-                try await center.requestAuthorization(options: [.alert, .sound, .badge])
-                scheduleNotification(at: reminderTime)
+                let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+                if granted {
+                    await MainActor.run {
+                        onSuccess()
+                    }
+                }
             } catch {
                 print("Failed to request notification permission: \(error)")
-                notificationsEnabled = false
             }
         }
     }
 
-    private func scheduleNotification(at time: Date) {
+    private func scheduleDailyReminder() {
         let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
+        center.removePendingNotificationRequests(withIdentifiers: ["dailyEntryReminder"])
+
+        guard dailyReminderEnabled else { return }
 
         let content = UNMutableNotificationContent()
         content.title = "Time to Check In"
-        content.body = "How are you feeling today? Take a moment to log your symptoms."
+        content.body = "How are you feeling today? Take a moment to log your mood and symptoms."
         content.sound = .default
 
         let calendar = Calendar.current
-        let components = calendar.dateComponents([.hour, .minute], from: time)
+        let components = calendar.dateComponents([.hour, .minute], from: dailyReminderTime)
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-        let request = UNNotificationRequest(identifier: "dailyReminder", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: "dailyEntryReminder", content: content, trigger: trigger)
 
         center.add(request) { error in
             if let error = error {
-                print("Failed to schedule notification: \(error)")
+                print("Failed to schedule daily reminder: \(error)")
             }
         }
     }
 
-    private func cancelNotifications() {
+    private func cancelDailyReminder() {
         let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
+        center.removePendingNotificationRequests(withIdentifiers: ["dailyEntryReminder"])
     }
 
     private func requestHealthKitAuthorization() async {

@@ -20,6 +20,8 @@ final class UserMedication {
     var createdDate: Date?
     var startDate: Date?
     var endDate: Date?
+    var reminderTime: Date?
+    var reminderEnabled: Bool?
 
     @Relationship(deleteRule: .cascade, inverse: \MedicationLog.userMedication)
     var logs: [MedicationLog]?
@@ -34,7 +36,9 @@ final class UserMedication {
         isActive: Bool? = true,
         createdDate: Date? = Date(),
         startDate: Date? = nil,
-        endDate: Date? = nil
+        endDate: Date? = nil,
+        reminderTime: Date? = nil,
+        reminderEnabled: Bool? = false
     ) {
         self.id = id
         self.name = name
@@ -46,5 +50,7 @@ final class UserMedication {
         self.createdDate = createdDate
         self.startDate = startDate
         self.endDate = endDate
+        self.reminderTime = reminderTime
+        self.reminderEnabled = reminderEnabled
     }
 }
