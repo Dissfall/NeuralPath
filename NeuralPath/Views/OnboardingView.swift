@@ -172,6 +172,10 @@ struct OnboardingProgressBar: View {
 struct OnboardingWelcomeStep: View {
     let onContinue: () -> Void
 
+    var languageManager = LanguageManager.shared
+    @State private var showRestartAlert = false
+    @State private var showLanguagePicker = false
+
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
@@ -192,6 +196,33 @@ struct OnboardingWelcomeStep: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
+                }
+
+                // Language selector
+                Button {
+                    showLanguagePicker = true
+                } label: {
+                    HStack(spacing: 8) {
+                        if languageManager.currentLanguage.isSystemFlag {
+                            Image(systemName: languageManager.currentLanguage.flagImageName)
+                                .font(.title3)
+                        } else {
+                            Image(languageManager.currentLanguage.flagImageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 16)
+                                .clipShape(RoundedRectangle(cornerRadius: 2))
+                        }
+                        Text(languageManager.currentLanguage.displayName)
+                            .font(.subheadline)
+                        Image(systemName: "chevron.down")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(Capsule())
                 }
 
                 // Privacy notice
@@ -229,6 +260,87 @@ struct OnboardingWelcomeStep: View {
             .padding(.horizontal, 32)
             .padding(.bottom, 40)
         }
+        .sheet(isPresented: $showLanguagePicker) {
+            OnboardingLanguagePickerSheet(
+                showRestartAlert: $showRestartAlert,
+                isPresented: $showLanguagePicker
+            )
+        }
+        .alert("Restart Required", isPresented: $showRestartAlert) {
+            Button("Restart Now") {
+                exit(0)
+            }
+            Button("Continue Setup", role: .cancel) { }
+        } message: {
+            Text("The app will restart to apply the new language. You'll continue the setup where you left off.")
+        }
+    }
+}
+
+// MARK: - Language Picker Sheet for Onboarding
+
+struct OnboardingLanguagePickerSheet: View {
+    var languageManager = LanguageManager.shared
+    @Binding var showRestartAlert: Bool
+    @Binding var isPresented: Bool
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    ForEach(LanguageManager.AppLanguage.allCases) { language in
+                        Button {
+                            if languageManager.selectLanguage(language) {
+                                isPresented = false
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    showRestartAlert = true
+                                }
+                            } else {
+                                isPresented = false
+                            }
+                        } label: {
+                            HStack(spacing: 12) {
+                                if language.isSystemFlag {
+                                    Image(systemName: language.flagImageName)
+                                        .font(.title2)
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: 28, height: 20)
+                                } else {
+                                    Image(language.flagImageName)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 28, height: 20)
+                                        .clipShape(RoundedRectangle(cornerRadius: 2))
+                                }
+
+                                Text(language.displayName)
+                                    .foregroundStyle(.primary)
+
+                                Spacer()
+
+                                if languageManager.currentLanguage == language {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.blue)
+                                        .fontWeight(.semibold)
+                                }
+                            }
+                        }
+                    }
+                } footer: {
+                    Text("You can change this later in Settings.")
+                }
+            }
+            .navigationTitle("Choose Language")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }
 

@@ -147,6 +147,9 @@ struct SettingsView: View {
                 // ML Analysis Section
                 MLSettingsSection()
 
+                // Language Section
+                LanguageSettingsSection()
+
                 Section {
                     Button {
                         showingExport = true
@@ -607,6 +610,42 @@ struct MLDataRequirementInfoRow: View {
             Text(feature)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+        }
+    }
+}
+
+// MARK: - Language Settings Section
+
+struct LanguageSettingsSection: View {
+    var languageManager = LanguageManager.shared
+
+    var body: some View {
+        Section {
+            NavigationLink {
+                LanguageSettingsView()
+            } label: {
+                HStack {
+                    Label("Language", systemImage: "globe")
+                    Spacer()
+                    HStack(spacing: 6) {
+                        if languageManager.currentLanguage.isSystemFlag {
+                            Image(systemName: languageManager.currentLanguage.flagImageName)
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Image(languageManager.currentLanguage.flagImageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 14)
+                                .clipShape(RoundedRectangle(cornerRadius: 2))
+                        }
+                        Text(languageManager.currentLanguage.displayName)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        } header: {
+            Label("Language", systemImage: "character.bubble")
         }
     }
 }

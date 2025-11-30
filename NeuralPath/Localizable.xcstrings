@@ -1,0 +1,4322 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ • %lld min" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ • %2$lld хвілін"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ • %2$lld min"
+          }
+        }
+      }
+    },
+    "%@ appears to improve symptoms" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здаецца, %@ паляпшае сімптомы."
+          }
+        }
+      }
+    },
+    "%@ appears to worsen symptoms" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здаецца, %@ пагаршае сімптомы."
+          }
+        }
+      }
+    },
+    "%@ hours" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ гадзін"
+          }
+        }
+      }
+    },
+    "%@ minutes" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ хвілін"
+          }
+        }
+      }
+    },
+    "%@ Self-Care" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ клапота пра сябе"
+          }
+        }
+      }
+    },
+    "%@ worsens symptoms, especially next day" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ пагаршае сімптомы, асабліва на наступны дзень"
+          }
+        }
+      }
+    },
+    "%lld" : {
+
+    },
+    "%lld active medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld актыўных лекаў"
+          }
+        }
+      }
+    },
+    "%lld active practices" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld актыўных практык"
+          }
+        }
+      }
+    },
+    "%lld active substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld актыўных рэчываў"
+          }
+        }
+      }
+    },
+    "%lld Days" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld дзён"
+          }
+        }
+      }
+    },
+    "%lld days analyzed" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld дзён прааналізавана"
+          }
+        }
+      }
+    },
+    "%lld entries needed" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патрэбна %lld запісаў"
+          }
+        }
+      }
+    },
+    "%lld medication(s) from Health app" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld лекавых сродкаў з дадатка «Здароўе»"
+          }
+        }
+      }
+    },
+    "%lld medication(s) have reminders configured" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для %lld лекаў наладжаны напаміны."
+          }
+        }
+      }
+    },
+    "%lld medication(s) selected" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld лекаў выбрана"
+          }
+        }
+      }
+    },
+    "%lld min" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld хв"
+          }
+        }
+      }
+    },
+    "%lld of %lld" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld з %2$lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld"
+          }
+        }
+      }
+    },
+    "%lld practice(s) selected" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld практык выбрана"
+          }
+        }
+      }
+    },
+    "%lld substance(s) selected" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld рэчываў выбранаы"
+          }
+        }
+      }
+    },
+    "%lld." : {
+
+    },
+    "%lld%%" : {
+
+    },
+    "%lld%% confidence" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%% упэуненасць"
+          }
+        }
+      }
+    },
+    "%lld%% similar" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%% падобны"
+          }
+        }
+      }
+    },
+    "%lld+ entries" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld+ запісау"
+          }
+        }
+      }
+    },
+    "%lldm" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldm"
+          }
+        }
+      }
+    },
+    "1 active medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 актыўны прэпарат"
+          }
+        }
+      }
+    },
+    "1 active practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 актыўная практыка"
+          }
+        }
+      }
+    },
+    "1 active substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 актыўная рэчыва"
+          }
+        }
+      }
+    },
+    "7-Day Forecast" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прагноз на 7 дзён"
+          }
+        }
+      }
+    },
+    "About" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пра"
+          }
+        }
+      }
+    },
+    "About AI Analysis" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пра ШІ Аналіз"
+          }
+        }
+      }
+    },
+    "Active Medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актыўныя лекі"
+          }
+        }
+      }
+    },
+    "Active Practices" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актыўныя практыкі"
+          }
+        }
+      }
+    },
+    "Active Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актыўныя рэчывы"
+          }
+        }
+      }
+    },
+    "Activity" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актыунасць"
+          }
+        }
+      }
+    },
+    "Add" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць"
+          }
+        }
+      }
+    },
+    "Add \"As Needed\" medications in Settings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць лекі «Па меры неабходнасці» ў наладах"
+          }
+        }
+      }
+    },
+    "Add any instructions or notes about this practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце любыя інструкцыі або заўвагі адносна гэтай практыкі"
+          }
+        }
+      }
+    },
+    "Add any instructions, side effects, or other notes" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце любыя інструкцыі, пабочныя эфекты або іншыя заўвагі"
+          }
+        }
+      }
+    },
+    "Add any relevant information or reminders" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце любую адпаведную інфармацыю або напаміны"
+          }
+        }
+      }
+    },
+    "Add at least 7 entries to see analysis" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце прынамсі 7 запісаў, каб убачыць аналіз."
+          }
+        }
+      }
+    },
+    "Add Custom Medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць уласнаы лекаваы сродак"
+          }
+        }
+      }
+    },
+    "Add Custom Practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць уласную практыку"
+          }
+        }
+      }
+    },
+    "Add Custom Substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць уласную рэчыва"
+          }
+        }
+      }
+    },
+    "Add Entry" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць запіс"
+          }
+        }
+      }
+    },
+    "Add Manually" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць уручную"
+          }
+        }
+      }
+    },
+    "Add Medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць лекі"
+          }
+        }
+      }
+    },
+    "Add Medications in Settings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць лекі ў наладках"
+          }
+        }
+      }
+    },
+    "Add medications in the Health app first" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спачатку дадайце лекі ў прыладзе «Здароўе»"
+          }
+        }
+      }
+    },
+    "Add medications in the Health app to see them here" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце лекі ў прыладзе «Здароўе», каб бачыць іх тут"
+          }
+        }
+      }
+    },
+    "Add medications to track your adherence and effectiveness" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадавайце лекі, каб адсочваць прыхільнасць і эфектыўнасць."
+          }
+        }
+      }
+    },
+    "Add mindfulness practices in Settings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць практыкі ўважлівасці ў Наладах"
+          }
+        }
+      }
+    },
+    "Add mindfulness practices to track your wellness journey" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце практыкі ўважлівасці, каб адсочваць свой шлях да добрага самаадчування"
+          }
+        }
+      }
+    },
+    "Add Practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць практыку"
+          }
+        }
+      }
+    },
+    "Add Practices in Settings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць практыкі ў наладах"
+          }
+        }
+      }
+    },
+    "Add Quality Rating" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць рэйтынг якасці"
+          }
+        }
+      }
+    },
+    "Add self-care practices in Settings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць практыкі клопату за сабой у Наладах"
+          }
+        }
+      }
+    },
+    "Add self-care practices to build healthy daily routines" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце практыкі клопату пра сябе, каб стварыць здаровыя штодзённыя звычкі"
+          }
+        }
+      }
+    },
+    "Add some entries to see charts" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце некалькі запісаў, каб убачыць графікі"
+          }
+        }
+      }
+    },
+    "Add Substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць Рэчыва"
+          }
+        }
+      }
+    },
+    "Add Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць Рэчывы"
+          }
+        }
+      }
+    },
+    "Add Substances in Settings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць Рэчывы ў Наладках"
+          }
+        }
+      }
+    },
+    "Add substances in Settings to log them" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць рэчывы ў Наладках каб адсочваць"
+          }
+        }
+      }
+    },
+    "Add substances to track your consumption patterns" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць рэчывы каб адсочваць карыстанне"
+          }
+        }
+      }
+    },
+    "Add Your Medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць Вашы Лекі"
+          }
+        }
+      }
+    },
+    "Additional notes" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадатковыя Заўвагі"
+          }
+        }
+      }
+    },
+    "After" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пасля"
+          }
+        }
+      }
+    },
+    "Afternoon" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поудзень"
+          }
+        }
+      }
+    },
+    "Afternoon Reminder" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напамін на поўдзень"
+          }
+        }
+      }
+    },
+    "AI Analysis" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ШІ Аналіз"
+          }
+        }
+      }
+    },
+    "AI analysis uses on-device machine learning to identify patterns and predict mood trends. All processing happens locally on your device." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ШІ Аналіз выкарыстоўвае машыннае вывучанне для выяўлення заканамернасцей і прагназавання тэндэнцый настрою. Уся апрацоўка адбываецца лакальна на вашым дэвайсе."
+          }
+        }
+      }
+    },
+    "All done for today!" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На сёння ўсё!"
+          }
+        }
+      }
+    },
+    "All Factors Analysis" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аналіз усіх фактараў"
+          }
+        }
+      }
+    },
+    "Amount" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Колькасцб"
+          }
+        }
+      }
+    },
+    "An entry for this date already exists. Please choose a different date or delete the existing entry first." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запіс на гэту дату ўжо існуе. Калі ласка, абярыце іншую дату або спачатку выдаліце існуючы запіс."
+          }
+        }
+      }
+    },
+    "Analysis" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аналіз"
+          }
+        }
+      }
+    },
+    "Analysis Confidence" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дакладнасць Аналізу"
+          }
+        }
+      }
+    },
+    "Analyze %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пааналізаваць %@"
+          }
+        }
+      }
+    },
+    "Analyzing your data..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аналізуюцца вашы даныя..."
+          }
+        }
+      }
+    },
+    "Anhedonia" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ангедонія"
+          }
+        }
+      }
+    },
+    "Anhedonia Level" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зровень Ангедоніі"
+          }
+        }
+      }
+    },
+    "Anxiety" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трывожнасць"
+          }
+        }
+      }
+    },
+    "Anxiety Level" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зровень Трывожнасці"
+          }
+        }
+      }
+    },
+    "Apple Health" : {
+
+    },
+    "Archived" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Архівавана"
+          }
+        }
+      }
+    },
+    "As Needed Medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лекі па меры неабходнасці"
+          }
+        }
+      }
+    },
+    "Automatically import sleep data and sync your health information." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аўтаматычна імпартуйце даныя сну і сінхранізуйце інфармацыю пра сваё здароўе."
+          }
+        }
+      }
+    },
+    "Based on today's patterns" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На аснове сённяшніх узораў"
+          }
+        }
+      }
+    },
+    "Basic Information" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Асноўная інфармацыя"
+          }
+        }
+      }
+    },
+    "Before" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перад"
+          }
+        }
+      }
+    },
+    "Best time to log" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найлепшы час для запісу"
+          }
+        }
+      }
+    },
+    "Build" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пабудаваць"
+          }
+        }
+      }
+    },
+    "Build healthy daily habits with morning, afternoon, and evening routines." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стварыце здаровыя штодзённыя звычкі з дапамогай ранішніх, дзённых і вечаровых рытуалаў."
+          }
+        }
+      }
+    },
+    "Calculating..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вылічэнне…"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасаваць"
+          }
+        }
+      }
+    },
+    "Category" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Катыгорыя"
+          }
+        }
+      }
+    },
+    "Change" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Змена"
+          }
+        }
+      }
+    },
+    "Charts" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Графікі"
+          }
+        }
+      }
+    },
+    "Choose a substance from the menu above" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце рэчыва з меню вышэй"
+          }
+        }
+      }
+    },
+    "Choose Language" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце мову"
+          }
+        }
+      }
+    },
+    "Choose..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце…"
+          }
+        }
+      }
+    },
+    "Clear" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасаваць"
+          }
+        }
+      }
+    },
+    "Clear All Test Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вычысціць усе тэставыя дадзенныя"
+          }
+        }
+      }
+    },
+    "Clear Test Data?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вычысціць тэставыя дадзенныя?"
+          }
+        }
+      }
+    },
+    "Compare Metrics" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Параўнаць Паказчыкі"
+          }
+        }
+      }
+    },
+    "Confidence" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Упэуненасць"
+          }
+        }
+      }
+    },
+    "Configure Times" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наладзіць Час"
+          }
+        }
+      }
+    },
+    "Connect" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Далучыць"
+          }
+        }
+      }
+    },
+    "Connect Apple Health" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Далучыць прыладу “Здароўе”"
+          }
+        }
+      }
+    },
+    "Connect to HealthKit in Settings first" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спачатку падключыцеся да “Здароўе” у наладках."
+          }
+        }
+      }
+    },
+    "Connect with Apple Health to automatically import sleep data, medications, exercise minutes and other" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Злучыцеся да “Здароўе”, каб аўтаматычна імпартаваць дадзенныя пра сон, лекі, хвіліны фізічных практыкаванняў і іншае"
+          }
+        }
+      }
+    },
+    "Connected to Apple Health" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Далучыць прыладу “Здароўе”"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Працягнуць"
+          }
+        }
+      }
+    },
+    "Continue Setup" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Працягнуць Наладку"
+          }
+        }
+      }
+    },
+    "Create Entry for Another Day" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стварыць Запіс для Іншага Дню"
+          }
+        }
+      }
+    },
+    "Daily Entry" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Штодзённы Запіс"
+          }
+        }
+      }
+    },
+    "Daily Entry Reminder" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напамін пра Штодзённы Запіс"
+          }
+        }
+      }
+    },
+    "Daily Reminder" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Штодзённы Напамін"
+          }
+        }
+      }
+    },
+    "Danger Zone" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Небяспечная зона"
+          }
+        }
+      }
+    },
+    "Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадзенныя"
+          }
+        }
+      }
+    },
+    "Data Pattern" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заканамернасць Дадзенных"
+          }
+        }
+      }
+    },
+    "Data Quality" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Якасць Дадзенных"
+          }
+        }
+      }
+    },
+    "Data Requirements" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патрабаванні да Дадзенных"
+          }
+        }
+      }
+    },
+    "Data Summary" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зводка Дадзенных"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата"
+          }
+        }
+      }
+    },
+    "Date & Time" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дада й Час"
+          }
+        }
+      }
+    },
+    "Date Range" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дыяпазон Дат"
+          }
+        }
+      }
+    },
+    "Daylight" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дзённае Святло"
+          }
+        }
+      }
+    },
+    "Daylight (15-90 min)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дзённае Святло (15-90 хв)"
+          }
+        }
+      }
+    },
+    "Days: %lld" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дзён: %lld"
+          }
+        }
+      }
+    },
+    "Default Unit" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стандартная Адзінка"
+          }
+        }
+      }
+    },
+    "Default unit: %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стандартная Адзінка: %@"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выдаліць"
+          }
+        }
+      }
+    },
+    "Delete All Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выдаліць Усе Дадзенныя"
+          }
+        }
+      }
+    },
+    "Delete Everything" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выдаліць Усё"
+          }
+        }
+      }
+    },
+    "Deleting..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выдаляецца…"
+          }
+        }
+      }
+    },
+    "Details" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падрабязнасці"
+          }
+        }
+      }
+    },
+    "Detected Patterns" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выяўленыя Заканамернасці"
+          }
+        }
+      }
+    },
+    "Developer Menu" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Меню Распрацоўшчыка"
+          }
+        }
+      }
+    },
+    "Developer Tools" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інструманты Распрацоўшчыка"
+          }
+        }
+      }
+    },
+    "Don't remind me again" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не нагадваць мне болей"
+          }
+        }
+      }
+    },
+    "Don't Show Again" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не паказваць зноў"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Гатова"
+          }
+        }
+      }
+    },
+    "Dosage (e.g., 20mg, 1 tablet)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доза (напрыклад, 20мг, 1 таблетка)"
+          }
+        }
+      }
+    },
+    "Duration" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Працягласць"
+          }
+        }
+      }
+    },
+    "e.g., Brush Teeth, Shower, Take Vitamins" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "напрыклад, Чысціць Зубы, Прымаць Душ, Прымаць Вітаміны"
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэдактаваць"
+          }
+        }
+      }
+    },
+    "Edit Amount" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Змяніць Колькасць"
+          }
+        }
+      }
+    },
+    "Edit Entry" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэдактаваць Запіс"
+          }
+        }
+      }
+    },
+    "Edit Medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэдактаваць Лекі"
+          }
+        }
+      }
+    },
+    "Edit Practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэдактаваць Практыку"
+          }
+        }
+      }
+    },
+    "Edit Substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэдактаваць Рэчывы"
+          }
+        }
+      }
+    },
+    "Edit Today's Entry" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэдагаваць Запіс Дня"
+          }
+        }
+      }
+    },
+    "Enable AI analysis for mood predictions, pattern detection, and personalized insights. Requires at least 30 entries." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уключыць ШІ аналіз для прагназавання настрою, выяўлення заканамернасцей і атрымання персаналізаванай інфармацыі. Патрабуецца не менш за 30 запісаў."
+          }
+        }
+      }
+    },
+    "Enable Reminders" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уключыць Напаміны"
+          }
+        }
+      }
+    },
+    "Enable reminders and set individual times for each medication in Manage Medications." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уключыце напаміны і ўсталюйце індывідуальны час для кожнаых лекаў  ў раздзеле «Кіраванне лекамі»."
+          }
+        }
+      }
+    },
+    "Entry Already Exists" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запіс Ужо Існуе"
+          }
+        }
+      }
+    },
+    "Entry already exists for this date" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запіс ужо існуе на гэты дзень"
+          }
+        }
+      }
+    },
+    "Entry Date" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата Запісу"
+          }
+        }
+      }
+    },
+    "Entry Details" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падрабязнасці Запісу"
+          }
+        }
+      }
+    },
+    "Entry Exists" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запіс Існуе"
+          }
+        }
+      }
+    },
+    "Entry for Yesterday?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запіс на Ўчтора?"
+          }
+        }
+      }
+    },
+    "Error" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Памылка"
+          }
+        }
+      }
+    },
+    "Estimated %lld days to reach good level" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прыкладна %lld дзён для дасягнення добрага ўзроўню"
+          }
+        }
+      }
+    },
+    "Evening" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вечар"
+          }
+        }
+      }
+    },
+    "Evening Reminder" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вячэрні Напамін"
+          }
+        }
+      }
+    },
+    "Exercise" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкаванне"
+          }
+        }
+      }
+    },
+    "Exercise (0-60 min)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкаванне (0-60 хв)"
+          }
+        }
+      }
+    },
+    "Export Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспарт Дадзенных"
+          }
+        }
+      }
+    },
+    "Export Format" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фармат Экспарту"
+          }
+        }
+      }
+    },
+    "Features" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свойствы"
+          }
+        }
+      }
+    },
+    "Feelings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачуцці"
+          }
+        }
+      }
+    },
+    "Format" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фармат"
+          }
+        }
+      }
+    },
+    "Frequency" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частата"
+          }
+        }
+      }
+    },
+    "Generate Test Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Згенераваць Тэставыя Дадзенныя"
+          }
+        }
+      }
+    },
+    "Generating %lld days of data..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Генерацыя дадзенных на %lld дней..."
+          }
+        }
+      }
+    },
+    "Get a daily notification to practice mindfulness at your chosen time" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Атрымлівайце штодзённы напамін, каб практыкаваць усвядомленасць у выбраны вамі час."
+          }
+        }
+      }
+    },
+    "Get a daily notification to take this medication at your chosen time" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Атрымлівайце штодзённы напамін, каб прымаць гэты прэпарат у выбраны вамі час."
+          }
+        }
+      }
+    },
+    "Get reminded at times set for each medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Атрымлівайце напаміны ў вызначаны час для кожных лекаў."
+          }
+        }
+      }
+    },
+    "Get reminded to log your mood and symptoms" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Атрымліваць напамін каб запісаць ваш настрой й сімптомы"
+          }
+        }
+      }
+    },
+    "Get reminded to log your mood and symptoms. We recommend setting this to the evening so you can reflect on your entire day." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Атрымлівайце напаміны запісваць свой настрой і сімптомы. Мы прапануем наладжваць гэта на вечар, каб вы маглі асэнсаваць увесь свой дзень."
+          }
+        }
+      }
+    },
+    "Get Started" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачаць"
+          }
+        }
+      }
+    },
+    "Goal" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мэта"
+          }
+        }
+      }
+    },
+    "Grant Access" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прадаставіць Доступ"
+          }
+        }
+      }
+    },
+    "Has schedule" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ёсць Расклад"
+          }
+        }
+      }
+    },
+    "Health Analysis" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аналіз Здароўя"
+          }
+        }
+      }
+    },
+    "HealthKit Not Connected" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Здароўе” не Далучанна"
+          }
+        }
+      }
+    },
+    "Hide" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Схаваць"
+          }
+        }
+      }
+    },
+    "Hide All Factors" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Схаваць Усе Фактары"
+          }
+        }
+      }
+    },
+    "High" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Высокая"
+          }
+        }
+      }
+    },
+    "Highly effective - significant improvement (%lld%% better)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Высокаэфектыўна - значнае паляпшэнне (на %lld%% лепш)"
+          }
+        }
+      }
+    },
+    "History" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Гісторыя"
+          }
+        }
+      }
+    },
+    "Hours" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Гадзін"
+          }
+        }
+      }
+    },
+    "How It Works" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Як гэта Працуе"
+          }
+        }
+      }
+    },
+    "How to Use NeuralPath" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Як Карыставацца NeuralPath"
+          }
+        }
+      }
+    },
+    "iCloud Sync" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сінхранізацыя з iCloud"
+          }
+        }
+      }
+    },
+    "Impact Score" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паказчык Уздзеяння"
+          }
+        }
+      }
+    },
+    "Import" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імпартыраваць"
+          }
+        }
+      }
+    },
+    "Import from HealthKit" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імпартыраваць са “Здароўе”"
+          }
+        }
+      }
+    },
+    "Import Medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імпартыраваць Лекі"
+          }
+        }
+      }
+    },
+    "Import medications from the Health app as a one-time setup" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імпартыраваць лекі са “Здароўе” для адначасовай наладкі"
+          }
+        }
+      }
+    },
+    "Improving" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паляпшэнне"
+          }
+        }
+      }
+    },
+    "in NeuralPath" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "у NeuralPath"
+          }
+        }
+      }
+    },
+    "Include Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уключыць Дадзенныя"
+          }
+        }
+      }
+    },
+    "Insufficient data (need at least 7 days before and after)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недастаткова дадзенных (патрэбна не менш за 7 дзён да і пасля)"
+          }
+        }
+      }
+    },
+    "Insufficient data for correlation" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недастаткова даных для карэляцыі"
+          }
+        }
+      }
+    },
+    "Integrations" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інтыграцыі"
+          }
+        }
+      }
+    },
+    "It's early morning. Are you logging for yesterday?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ранняя раніца. Вы робіце запіс за ўчарашні дзень?"
+          }
+        }
+      }
+    },
+    "Key factors:" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Асноуныя Фактары:"
+          }
+        }
+      }
+    },
+    "Key Insights" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ключавыя Высновы"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мова"
+          }
+        }
+      }
+    },
+    "Last Trained" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Апошняе Вывучэнне"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паздней"
+          }
+        }
+      }
+    },
+    "Let's get you set up in just a few steps" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Давайце наладзім усё ўсяго за некалькі крокаў"
+          }
+        }
+      }
+    },
+    "Level" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зровень"
+          }
+        }
+      }
+    },
+    "Loading medications..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка лекаў..."
+          }
+        }
+      }
+    },
+    "Loading options..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка опцый..."
+          }
+        }
+      }
+    },
+    "Log" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запісаць"
+          }
+        }
+      }
+    },
+    "Log Mindfulness" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запісаць Уважлівасць"
+          }
+        }
+      }
+    },
+    "Log Practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запісаць Практыку"
+          }
+        }
+      }
+    },
+    "Log PRN Medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запісаць Лекі па Меры Неабходнасці "
+          }
+        }
+      }
+    },
+    "Log Self-Care" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запісаць Самаклопат"
+          }
+        }
+      }
+    },
+    "Log Substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запісаць Рэчыва"
+          }
+        }
+      }
+    },
+    "Log Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запісаць Рэчывы"
+          }
+        }
+      }
+    },
+    "Log Today's Entry" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зрабіць Запіс Дня"
+          }
+        }
+      }
+    },
+    "Low" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нізкі"
+          }
+        }
+      }
+    },
+    "Manage Medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кіраванне Лекамі"
+          }
+        }
+      }
+    },
+    "Manage Mindfulness" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кіраванне Уважлівасьцю"
+          }
+        }
+      }
+    },
+    "Manage Self-Care" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кіраванне Самаклопатам"
+          }
+        }
+      }
+    },
+    "Manage Subscription" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кіраваць Падпіскай"
+          }
+        }
+      }
+    },
+    "Manage Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кіраванне Рэчавамі"
+          }
+        }
+      }
+    },
+    "Manage your medications, substances, mindfulness, and self-care practices for easy tracking" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кіруйце сваімі лекамі, рэчывамі, практыкамі ўважлівасці і самаклопату для лёгкага адсочвання"
+          }
+        }
+      }
+    },
+    "May be worsening symptoms (%lld%% worse)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Магчыма пагаршэнне сімптомаў (%lld%% горш)"
+          }
+        }
+      }
+    },
+    "Maybe Later" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мабыць Паздней"
+          }
+        }
+      }
+    },
+    "Measurement" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Памер"
+          }
+        }
+      }
+    },
+    "Medication Access Required" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патрэбен Доступ да Лекау"
+          }
+        }
+      }
+    },
+    "Medication Effectiveness" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эфектыўнасць Лекаў"
+          }
+        }
+      }
+    },
+    "Medication Name" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назва Прэпарату"
+          }
+        }
+      }
+    },
+    "Medication Reminders" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напамін пра Прэпарат"
+          }
+        }
+      }
+    },
+    "Medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лекі"
+          }
+        }
+      }
+    },
+    "Medications (2 test meds)" : {
+
+    },
+    "Metric" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Метрыка"
+          }
+        }
+      }
+    },
+    "min" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "хв"
+          }
+        }
+      }
+    },
+    "Mindfulness" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уважлівасць"
+          }
+        }
+      }
+    },
+    "Mindfulness Practices" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкі Уважлівасці"
+          }
+        }
+      }
+    },
+    "Minimal improvement - consider discussing with provider" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мінімальнае паляпшэнне - разгледзець магчымасць абмеркавання з лекарам"
+          }
+        }
+      }
+    },
+    "Minutes" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хвілін"
+          }
+        }
+      }
+    },
+    "ML" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ШІ"
+          }
+        }
+      }
+    },
+    "Model Version" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версія Мадэлі"
+          }
+        }
+      }
+    },
+    "Moderately effective - noticeable improvement (%lld%% better)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Даволі эфектыўна - заўважнае паляпшэнне (на %lld%% лепш)"
+          }
+        }
+      }
+    },
+    "Monitor caffeine, alcohol, and other substances that affect your wellbeing." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сачыце за спажываннем кафеіну, алкаголю і іншых рэчываў, якія ўплываюць на ваша самаадчуванне"
+          }
+        }
+      }
+    },
+    "Mood" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настрой"
+          }
+        }
+      }
+    },
+    "Mood Level" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зровень Настрою"
+          }
+        }
+      }
+    },
+    "Morning" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Раніца"
+          }
+        }
+      }
+    },
+    "Morning Reminder" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ранішні Напамін"
+          }
+        }
+      }
+    },
+    "Name" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імя"
+          }
+        }
+      }
+    },
+    "NeuralPath uses on-device machine learning to analyze your mental health patterns. All processing happens locally on your device - your data never leaves your phone." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NeuralPath выкарыстоўвае машыннае навучанне для аналізу вашых заканамернасцей псіхічнага здароўя. Уся апрацоўка адбываецца лакальна на вашым дэвайсе — вашы даныя ніколі не пакідаюць ваш дэвайс."
+          }
+        }
+      }
+    },
+    "New Entry" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новы Запіс"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Далей"
+          }
+        }
+      }
+    },
+    "Next: %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заступны: %@"
+          }
+        }
+      }
+    },
+    "No Analysis Available" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аналіз Недаступны"
+          }
+        }
+      }
+    },
+    "No consumption data for this time period" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма дадзенных аб карыстанні за гэты перыяд часу"
+          }
+        }
+      }
+    },
+    "No data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма дадзенных"
+          }
+        }
+      }
+    },
+    "No Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма Дадзенных"
+          }
+        }
+      }
+    },
+    "No Data Available" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадзенныя не Даступны"
+          }
+        }
+      }
+    },
+    "No Entries Yet" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пакуль Няма Запісаў"
+          }
+        }
+      }
+    },
+    "No Medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма Лекаў"
+          }
+        }
+      }
+    },
+    "No medications added yet" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пакуль Няма Лекаў"
+          }
+        }
+      }
+    },
+    "No Medications Found" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лекі не Знойдзены"
+          }
+        }
+      }
+    },
+    "No medications found in the Health app" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лекі не знойдзены ў “Здароўе”"
+          }
+        }
+      }
+    },
+    "No medications in your library" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма лекау у вашай бібліятэке"
+          }
+        }
+      }
+    },
+    "No medications tracked yet" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лекі пакуль не адсочваюцца"
+          }
+        }
+      }
+    },
+    "No mindfulness practices in your library" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма практык увагі ў вашай бібліятэке"
+          }
+        }
+      }
+    },
+    "No Practices" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма Практык"
+          }
+        }
+      }
+    },
+    "No PRN Medications" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма Лекау па Меры Неабходнасьці"
+          }
+        }
+      }
+    },
+    "No Self-Care Practices" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма Практык Самаклопату"
+          }
+        }
+      }
+    },
+    "No self-care practices in your library" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма практык самаклопату ў вашай бібліятэке"
+          }
+        }
+      }
+    },
+    "No significant effect detected" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Значнага эфекту не выяўлена"
+          }
+        }
+      }
+    },
+    "No similar days found yet" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падобных дзён пакуль не знойдзена"
+          }
+        }
+      }
+    },
+    "No Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма Рэчывау"
+          }
+        }
+      }
+    },
+    "No substances in your library" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма рэчывау ў вашай бібліятэке"
+          }
+        }
+      }
+    },
+    "No substances tracked yet" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пакуль рэчывы не адсочваюцца"
+          }
+        }
+      }
+    },
+    "No, today" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не сёдня"
+          }
+        }
+      }
+    },
+    "None" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пуста"
+          }
+        }
+      }
+    },
+    "Not enough data for forecasting" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недастаткова даных для прагназавання"
+          }
+        }
+      }
+    },
+    "Not Set" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не Усталяваны"
+          }
+        }
+      }
+    },
+    "Notes" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нататкі"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добра"
+          }
+        }
+      }
+    },
+    "Optional default unit for quick entry" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадатковая стандартная адзінка для хуткага ўводу"
+          }
+        }
+      }
+    },
+    "out of 100" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ад 100"
+          }
+        }
+      }
+    },
+    "Overall Health Score" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Агульная Адзнака Здароўя"
+          }
+        }
+      }
+    },
+    "Overall Trend" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Агульны Трэнд"
+          }
+        }
+      }
+    },
+    "Pattern" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патэрн"
+          }
+        }
+      }
+    },
+    "Per medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За Прэпарат"
+          }
+        }
+      }
+    },
+    "per month" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "за месяц"
+          }
+        }
+      }
+    },
+    "Please restart the app for the language change to take effect." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Калі ласка, перазапусціце прыладу, каб змены мовы ўступілі ў сілу."
+          }
+        }
+      }
+    },
+    "Practice Name" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назва Практыкі"
+          }
+        }
+      }
+    },
+    "Practices" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкі"
+          }
+        }
+      }
+    },
+    "Predicted: %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прагназуецца: %@"
+          }
+        }
+      }
+    },
+    "Primary Metric" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Асноўны Паказчык"
+          }
+        }
+      }
+    },
+    "Primary:" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Асноуны:"
+          }
+        }
+      }
+    },
+    "Primary: %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Асноуны: %@"
+          }
+        }
+      }
+    },
+    "Privacy" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Канфідэнцыяльнасць"
+          }
+        }
+      }
+    },
+    "Privacy Policy" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Палітыка Канфідэнцыяльнасці"
+          }
+        }
+      }
+    },
+    "PRN" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Па Меры Неабходнасці"
+          }
+        }
+      }
+    },
+    "Quality" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Якасць"
+          }
+        }
+      }
+    },
+    "Quick Add" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць Хутка"
+          }
+        }
+      }
+    },
+    "Quick Generate" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хуткая Генерацыя"
+          }
+        }
+      }
+    },
+    "Recommendations" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прапановы"
+          }
+        }
+      }
+    },
+    "Recommended" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прапанавана"
+          }
+        }
+      }
+    },
+    "Refresh" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Абнавіць"
+          }
+        }
+      }
+    },
+    "Reminder" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напамін"
+          }
+        }
+      }
+    },
+    "Reminder Time" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час Напаміну"
+          }
+        }
+      }
+    },
+    "Reminders" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напаміны"
+          }
+        }
+      }
+    },
+    "Report a Bug" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паведаміць пра Памылку"
+          }
+        }
+      }
+    },
+    "Reset Donation Prompt" : {
+
+    },
+    "Reset Onboarding" : {
+
+    },
+    "Reset Time Warning" : {
+
+    },
+    "Reset What's New Popup" : {
+
+    },
+    "Restart Now" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перазапусціць Зараз"
+          }
+        }
+      }
+    },
+    "Restart Required" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патрабуецца Перазапуск"
+          }
+        }
+      }
+    },
+    "Restore Purchases" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аднавіць Набыткі"
+          }
+        }
+      }
+    },
+    "Running AI analysis..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Працуе ШІ аналіз…"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Захаваць"
+          }
+        }
+      }
+    },
+    "Schedule" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schedule"
+          }
+        }
+      }
+    },
+    "Scheduled" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запланавана"
+          }
+        }
+      }
+    },
+    "Score" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адзнака"
+          }
+        }
+      }
+    },
+    "Search by name or brand..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пошук па назве або брэндзе..."
+          }
+        }
+      }
+    },
+    "Secondary Metric" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другі Паказчык"
+          }
+        }
+      }
+    },
+    "Secondary:" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другі:"
+          }
+        }
+      }
+    },
+    "Secondary: %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другі: %@"
+          }
+        }
+      }
+    },
+    "Select a Substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце Рэчыва"
+          }
+        }
+      }
+    },
+    "Select all emotions that describe how you felt today" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце ўсе эмоцыі, якія апісваюць, як вы сябе адчувалі сёння."
+          }
+        }
+      }
+    },
+    "Select Medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце Прэпарат"
+          }
+        }
+      }
+    },
+    "Select Substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце Рэчыва"
+          }
+        }
+      }
+    },
+    "Select Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберыце Рэчывы"
+          }
+        }
+      }
+    },
+    "Self-Care" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Самаклопат"
+          }
+        }
+      }
+    },
+    "Self-Care Routines" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкі Самаклопату"
+          }
+        }
+      }
+    },
+    "Set reminder times when editing each medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усталёўвайце час напаміну пры рэдагаванні кожнага лекавага сродку"
+          }
+        }
+      }
+    },
+    "Set reminders for each part of your day" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Задайце напаміны для кожнай часткі вашага дня"
+          }
+        }
+      }
+    },
+    "Set Up Reminders" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наладзіць Напаміны"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наладкі"
+          }
+        }
+      }
+    },
+    "Share Feedback" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падзяліцца Водгукам"
+          }
+        }
+      }
+    },
+    "Show All Factors" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паказаць Усе Фактары"
+          }
+        }
+      }
+    },
+    "Similar Past Days" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падобныя Мінулыя Дні"
+          }
+        }
+      }
+    },
+    "Skip" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прапусціць"
+          }
+        }
+      }
+    },
+    "Skip for Now" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пакуль Прапусціць"
+          }
+        }
+      }
+    },
+    "Skip Tutorial" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прапусціць Інструкцыі"
+          }
+        }
+      }
+    },
+    "Sleep" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сон"
+          }
+        }
+      }
+    },
+    "Sleep Data (5-9 hours)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадзенныя Сну (5-9 гадзін)"
+          }
+        }
+      }
+    },
+    "Stable" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стабільны"
+          }
+        }
+      }
+    },
+    "Start Date" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата Пачатку"
+          }
+        }
+      }
+    },
+    "Start Tracking" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачаць Адсочванне"
+          }
+        }
+      }
+    },
+    "Start tracking your mental health journey. Remember, consistency is key." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачніце адсочваць свой шлях да псіхічнага здароўя. Памятайце, паслядоўнасць — ключ да поспеху."
+          }
+        }
+      }
+    },
+    "Statistical" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статістычны"
+          }
+        }
+      }
+    },
+    "Statistical Analysis" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статістычны Аналіз"
+          }
+        }
+      }
+    },
+    "Statistics" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статыстыка"
+          }
+        }
+      }
+    },
+    "Status" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статус"
+          }
+        }
+      }
+    },
+    "Stay on track with daily notifications for logging and medications." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не выйходзьце з рэчышча з дапамогай штодзённых напамінаў пра запісы і прыём лекаў."
+          }
+        }
+      }
+    },
+    "Subscribe" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падпісацца"
+          }
+        }
+      }
+    },
+    "Subscribed" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падпісаны"
+          }
+        }
+      }
+    },
+    "Substance" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэчыва"
+          }
+        }
+      }
+    },
+    "Substance Impact" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уплыў Рэчыва"
+          }
+        }
+      }
+    },
+    "Substance Name (e.g., Coffee, Alcohol)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назва рэчыва (напрыклад, Кава, Алкаголь)"
+          }
+        }
+      }
+    },
+    "Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэчывы"
+          }
+        }
+      }
+    },
+    "Substances (Coffee, Alcohol)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэчывы (Кава, Алкоголь)"
+          }
+        }
+      }
+    },
+    "Success" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поспех"
+          }
+        }
+      }
+    },
+    "Suggest a Feature" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прапанаваць Ідэю"
+          }
+        }
+      }
+    },
+    "Suggestions" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прапановы"
+          }
+        }
+      }
+    },
+    "Support" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падтрымка"
+          }
+        }
+      }
+    },
+    "Support Development" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падтрымка Разпрацоўкі"
+          }
+        }
+      }
+    },
+    "Support NeuralPath" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падтрымаць NeuralPath"
+          }
+        }
+      }
+    },
+    "Sync Status" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статус Сінхранізацыі"
+          }
+        }
+      }
+    },
+    "System Default" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сістэмная"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System Default"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Системна"
+          }
+        }
+      }
+    },
+    "Take As-Needed" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выкарыстаць Лекі па Меры Неабходнасьці"
+          }
+        }
+      }
+    },
+    "Tap to add a suggested practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Націсніце, каб дадаць прапанаваную практыку"
+          }
+        }
+      }
+    },
+    "Test data generation for development" : {
+
+    },
+    "Thank You!" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дзякуй!"
+          }
+        }
+      }
+    },
+    "The app will restart to apply the new language." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прылада перазапусціцца, каб прымяніць новую мову."
+          }
+        }
+      }
+    },
+    "The app will restart to apply the new language. You'll continue the setup where you left off." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прылада перазапусціцца, каб прымяніць новую мову. Вы працягнеце наладжванне з таго месца, дзе спыніліся."
+          }
+        }
+      }
+    },
+    "This will delete all entries marked as test data, including [TEST] medications and substances." : {
+
+    },
+    "This will permanently delete all your entries, medications, substances, mindfulness practices, and self-care routines from this device and iCloud. This cannot be undone." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Гэта назаўсёды выдаліць усе вашыя запісы, лекі, рэчывы, практыкі ўважлівасці і руціны самаклопату з гэтагй прылады і iCloud. Гэтага нельга будзе вярнуць назад."
+          }
+        }
+      }
+    },
+    "Time" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час"
+          }
+        }
+      }
+    },
+    "Time Completed" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час Завершання"
+          }
+        }
+      }
+    },
+    "Time Consumed" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час Карыстання"
+          }
+        }
+      }
+    },
+    "Time in Daylight" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час на Солнцы"
+          }
+        }
+      }
+    },
+    "Time of Day" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час Дню"
+          }
+        }
+      }
+    },
+    "Time Range" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дыяпазон Часу"
+          }
+        }
+      }
+    },
+    "Time Taken" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час Карыстання"
+          }
+        }
+      }
+    },
+    "Timeline" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Храналогія"
+          }
+        }
+      }
+    },
+    "to" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "да"
+          }
+        }
+      }
+    },
+    "To view your medications from the Health app, please grant access." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каб праглядаць вашыя лекі ў прыладзе «Здароўе», калі ласка, дазвольце доступ."
+          }
+        }
+      }
+    },
+    "Today" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сёння"
+          }
+        }
+      }
+    },
+    "Tomorrow's Outlook" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прагноз на заўтра"
+          }
+        }
+      }
+    },
+    "Too early to determine (need at least 2 weeks of data)" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Занадта рана каб вызначыць (патрэбны дадзенныя як мінімум за 2 тыдні)"
+          }
+        }
+      }
+    },
+    "Total Entries" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усяго Запісаў"
+          }
+        }
+      }
+    },
+    "Track daily medications and as-needed doses." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вядзіце ўлік штодзённых лекаў і лекаў па меры неабходнасці."
+          }
+        }
+      }
+    },
+    "Track meditation, breathing exercises, yoga, and other wellness practices." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вядзенне ўліку медытацый, дыхальных практыкаванняў, ёгі і іншых практык для добрага самаадчування."
+          }
+        }
+      }
+    },
+    "Track Substances" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адсочваць Рэчывы"
+          }
+        }
+      }
+    },
+    "Track your mental health journey with mood, sleep, medications, and more." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адсочвайце свой шлях да добрага псіхічнага здароўя: настрой, сон, лекі і іншае."
+          }
+        }
+      }
+    },
+    "Track your mood, sleep & symptoms" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сачыце за сваім настроем, сном і сімптомамі"
+          }
+        }
+      }
+    },
+    "Tracking" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сачыць"
+          }
+        }
+      }
+    },
+    "Try a different search term or add a custom medication" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спрабуйце іншы пошукавы тэрмін або дадайце ўласнае лекавае сродак"
+          }
+        }
+      }
+    },
+    "Try Again" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паспрабаваць Зноў"
+          }
+        }
+      }
+    },
+    "UI Debug" : {
+
+    },
+    "Unable to Load Data" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Немагчыма Загрузіць Дадзенныя"
+          }
+        }
+      }
+    },
+    "Unable to load donation options" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Немагчыма загрузіць варыянты падтрымкі"
+          }
+        }
+      }
+    },
+    "Undo" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасаваць"
+          }
+        }
+      }
+    },
+    "Unit" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адзінка"
+          }
+        }
+      }
+    },
+    "Unlocked features:" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разблакаваныя функцыі:"
+          }
+        }
+      }
+    },
+    "Updated %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Абноўлена %@"
+          }
+        }
+      }
+    },
+    "Variable" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зменная"
+          }
+        }
+      }
+    },
+    "Version" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версія"
+          }
+        }
+      }
+    },
+    "View All %lld Patterns" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прагледзець Усе %lld Патырнаў"
+          }
+        }
+      }
+    },
+    "We recommend evening time to reflect on your whole day" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мы прапануем вечаровы час, каб асэнсаваць увесь свой дзень"
+          }
+        }
+      }
+    },
+    "We recommend logging entries at the end of the day for more accurate reflections on your mood and symptoms." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мы рэкамендуем весці запісы ў канцы дня, каб больш дакладна адлюстраваць ваш настрой і сімптомы."
+          }
+        }
+      }
+    },
+    "Welcome to NeuralPath" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вітаем у NeuralPath"
+          }
+        }
+      }
+    },
+    "Well Done!" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добрая Праца!"
+          }
+        }
+      }
+    },
+    "What's New" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Што Новага"
+          }
+        }
+      }
+    },
+    "When" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Калі"
+          }
+        }
+      }
+    },
+    "When during the day do you typically do this practice?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Калі на працягу дня вы звычайна займаецеся гэтай практыкай?"
+          }
+        }
+      }
+    },
+    "Worsening" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пагаршэнне"
+          }
+        }
+      }
+    },
+    "Yes, for yesterday" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Так, на ўчора"
+          }
+        }
+      }
+    },
+    "You already have an entry for today." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У вас ужо ёсць запіс на сёння."
+          }
+        }
+      }
+    },
+    "You can change this later in Settings." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы можаце змяніць гэта пазней у наладках."
+          }
+        }
+      }
+    },
+    "You're All Set!" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усё Гатова!"
+          }
+        }
+      }
+    },
+    "Your data stays on your device. ML models are trained locally using Apple's CoreML framework. No data is ever sent to external servers for analysis." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вашы дадзенныя застаюцца на вашым дэвайсе. ШІ-мадэлі навучаюцца лакальна з дапамогай фрэймворка CoreML ад Apple. Ніякія дадзенныя ніколі не адпраўляюцца на знешнія серверы для аналізу."
+          }
+        }
+      }
+    },
+    "Your data stays on your device. We don't collect any personal information." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вашы даныя застаюцца на вашым дэвайсе. Мы не збіраем ніякай асобавай інфармацыі."
+          }
+        }
+      }
+    },
+    "Your donation helps keep the app free and supports ongoing development of new features." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша ахвяраванне дапамагае захаваць дадатак бясплатным і падтрымлівае распрацоўку новых функцый."
+          }
+        }
+      }
+    },
+    "Your support helps keep the app free and funds new features" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша падтрымка дапамагае пакінуць дадатак бясплатным і фінансаваць новыя функцыі."
+          }
+        }
+      }
+    },
+    "Your support means the world to us. Thank you for helping NeuralPath grow!" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша падтрымка для нас вельмі важная. Дзякуй, што дапамагаеце NeuralPath расці!"
+          }
+        }
+      }
+    },
+    "Your symptom entries will appear here" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вашы запісы сімптомаў з'явяцца тут"
+          }
+        }
+      }
+    },
+    "􀅽 %@ has minimal impact on symptoms" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "􀅽 %@ аказвае мінімальны ўплыу на сімптомы"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
