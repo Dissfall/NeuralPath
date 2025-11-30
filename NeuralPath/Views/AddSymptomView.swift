@@ -19,12 +19,18 @@ struct AddSymptomView: View {
         filter: #Predicate<UserMindfulness> { $0.isActive == true },
         sort: \UserMindfulness.name
     ) private var userMindfulness: [UserMindfulness]
+    @Query(
+        filter: #Predicate<UserSelfCare> { $0.isActive == true },
+        sort: \UserSelfCare.name
+    ) private var userSelfCare: [UserSelfCare]
     @Query(sort: \MedicationLog.timestamp, order: .forward) private
         var allMedicationLogs: [MedicationLog]
     @Query(sort: \SubstanceLog.timestamp, order: .forward) private
         var allSubstanceLogs: [SubstanceLog]
     @Query(sort: \MindfulnessLog.timestamp, order: .forward) private
         var allMindfulnessLogs: [MindfulnessLog]
+    @Query(sort: \SelfCareLog.timestamp, order: .forward) private
+        var allSelfCareLogs: [SelfCareLog]
 
     let entryToEdit: SymptomEntry?
 
@@ -42,6 +48,7 @@ struct AddSymptomView: View {
     @State private var takenMedications: [UUID: Date] = [:]
     @State private var takenSubstances: [SubstanceEntry] = []
     @State private var loggedMindfulness: [MindfulnessLogEntry] = []
+    @State private var loggedSelfCare: [SelfCareLogEntry] = []
     @State private var isLoadingSleepData = false
     @State private var showingHealthKitImport = false
 
@@ -62,6 +69,10 @@ struct AddSymptomView: View {
     // Edit states for mindfulness
     @State private var mindfulnessToEditTime: MindfulnessLogEntry?
     @State private var editMindfulnessTime: Date = Date()
+
+    // Edit states for self-care
+    @State private var selfCareToEditTime: SelfCareLogEntry?
+    @State private var editSelfCareTime: Date = Date()
 
     // Time-based warnings
     @State private var showEarlyMorningAlert = false
@@ -127,6 +138,13 @@ struct AddSymptomView: View {
         return "\(loggedMindfulness.count) session\(loggedMindfulness.count == 1 ? "" : "s")"
     }
 
+    private var selfCareSummary: String {
+        if loggedSelfCare.isEmpty {
+            return "None"
+        }
+        return "\(loggedSelfCare.count) practice\(loggedSelfCare.count == 1 ? "" : "s")"
+    }
+
     private var hasEntryForSelectedDate: Bool {
         allEntries.contains { entry in
             entry.id != entryToEdit?.id
@@ -167,260 +185,10 @@ struct AddSymptomView: View {
                     exerciseMinutes: $exerciseMinutes
                 )
 
-                // Medications Section
-                if !userMedications.isEmpty {
-                    Section {
-                        // Scheduled medications
-                        ForEach(scheduledMedications) { medication in
-                            let isTaken = medication.id.flatMap { takenMedications[$0] } != nil
-                            let takenTime = medication.id.flatMap { takenMedications[$0] }
-
-                            EntryMedicationRow(
-                                medication: medication,
-                                taken: isTaken,
-                                time: takenTime,
-                                isPrn: false,
-                                onToggle: {
-                                    guard let medId = medication.id else { return }
-                                    if takenMedications[medId] == nil {
-                                        takenMedications[medId] = Date()
-                                    }
-                                }
-                            )
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                if isTaken {
-                                    Button {
-                                        guard let medId = medication.id else { return }
-                                        takenMedications[medId] = nil
-                                    } label: {
-                                        Label("Undo", systemImage: "arrow.uturn.backward")
-                                    }
-                                    .tint(.orange)
-
-                                    Button {
-                                        editMedicationTime = takenTime ?? Date()
-                                        medicationToEditTime = medication
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-                                }
-                            }
-                        }
-
-                        // PRN medications taken
-                        ForEach(prnMedications.filter { med in
-                            guard let medId = med.id else { return false }
-                            return takenMedications[medId] != nil
-                        }) { medication in
-                            let takenTime = medication.id.flatMap { takenMedications[$0] }
-
-                            EntryPrnRow(medication: medication, time: takenTime)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        guard let medId = medication.id else { return }
-                                        takenMedications[medId] = nil
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-
-                                    Button {
-                                        editMedicationTime = takenTime ?? Date()
-                                        medicationToEditTime = medication
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-                                }
-                        }
-
-                        // Take As-Needed button
-                        if !prnMedications.isEmpty {
-                            Menu {
-                                ForEach(prnMedications) { medication in
-                                    Button {
-                                        guard let medId = medication.id else { return }
-                                        takenMedications[medId] = Date()
-                                    } label: {
-                                        Label(medication.name ?? "Unknown", systemImage: "pills")
-                                    }
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.blue)
-                                    Text("Take As-Needed")
-                                        .foregroundStyle(.blue)
-                                    Spacer()
-                                }
-                            }
-                        }
-                    } header: {
-                        HStack {
-                            Label("Medications", systemImage: "pills.fill")
-                            Spacer()
-                            Text(medicationsSummary)
-                                .font(.subheadline)
-                                .foregroundStyle(medicationsTakenCount == scheduledMedications.count ? .green : .secondary)
-                        }
-                    }
-                } else {
-                    Section("Medications") {
-                        EmptyMedicationsView(
-                            healthKitManager: healthKitManager,
-                            showingHealthKitImport: $showingHealthKitImport
-                        )
-                    }
-                }
-
-                // Substances Section
-                if !userSubstances.isEmpty || !takenSubstances.isEmpty {
-                    Section {
-                        ForEach(takenSubstances) { entry in
-                            EntrySubstanceRow(entry: entry, userSubstances: userSubstances)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        takenSubstances.removeAll { $0.id == entry.id }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-
-                                    Button {
-                                        editSubstanceTime = entry.timestamp
-                                        substanceToEditTime = entry
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-
-                                    Button {
-                                        editSubstanceAmount = entry.amount
-                                        substanceToEditAmount = entry
-                                    } label: {
-                                        Label("Amount", systemImage: "number")
-                                    }
-                                    .tint(.purple)
-                                }
-                        }
-
-                        if !userSubstances.isEmpty {
-                            Menu {
-                                ForEach(userSubstances) { substance in
-                                    Button {
-                                        newSubstanceAmount = "1"
-                                        substanceToAdd = substance
-                                    } label: {
-                                        Label(substance.name ?? "Unknown", systemImage: "drop.triangle")
-                                    }
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.blue)
-                                    Text("Log Substance")
-                                        .foregroundStyle(.blue)
-                                    Spacer()
-                                }
-                            }
-                        }
-                    } header: {
-                        HStack {
-                            Label("Substances", systemImage: "drop.triangle.fill")
-                            Spacer()
-                            Text(substancesSummary)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                } else {
-                    Section("Substances") {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("No substances in your library")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            NavigationLink {
-                                SubstanceManagementView()
-                            } label: {
-                                Label("Add Substances in Settings", systemImage: "gear")
-                                    .font(.caption)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-
-                // Mindfulness Section
-                if !userMindfulness.isEmpty || !loggedMindfulness.isEmpty {
-                    Section {
-                        ForEach(loggedMindfulness) { entry in
-                            EntryMindfulnessRow(entry: entry, userMindfulness: userMindfulness)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        loggedMindfulness.removeAll { $0.id == entry.id }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-
-                                    Button {
-                                        editMindfulnessTime = entry.timestamp
-                                        mindfulnessToEditTime = entry
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-                                }
-                        }
-
-                        if !userMindfulness.isEmpty {
-                            Menu {
-                                ForEach(userMindfulness) { practice in
-                                    Button {
-                                        guard let practiceId = practice.id else { return }
-                                        loggedMindfulness.append(
-                                            MindfulnessLogEntry(
-                                                userMindfulnessId: practiceId,
-                                                timestamp: Date()
-                                            )
-                                        )
-                                    } label: {
-                                        Label(practice.name ?? "Unknown", systemImage: practice.category?.icon ?? "brain.head.profile")
-                                    }
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.blue)
-                                    Text("Log Practice")
-                                        .foregroundStyle(.blue)
-                                    Spacer()
-                                }
-                            }
-                        }
-                    } header: {
-                        HStack {
-                            Label("Mindfulness", systemImage: "brain.head.profile")
-                            Spacer()
-                            Text(mindfulnessSummary)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                } else {
-                    Section("Mindfulness") {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("No mindfulness practices in your library")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            NavigationLink {
-                                MindfulnessManagementView()
-                            } label: {
-                                Label("Add Practices in Settings", systemImage: "gear")
-                                    .font(.caption)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
+                medicationsSection
+                substancesSection
+                mindfulnessSection
+                selfCareSection
 
                 NotesSection(notes: $notes)
             }
@@ -590,6 +358,374 @@ struct AddSymptomView: View {
                     )
                 }
             }
+            // Edit self-care time sheet
+            .sheet(isPresented: Binding(
+                get: { selfCareToEditTime != nil },
+                set: { if !$0 { selfCareToEditTime = nil } }
+            )) {
+                if let entry = selfCareToEditTime {
+                    EntryEditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: userSelfCare.first { $0.id == entry.userSelfCareId }?.name ?? "Practice",
+                        time: $editSelfCareTime,
+                        onSave: {
+                            if let index = loggedSelfCare.firstIndex(where: { $0.id == entry.id }) {
+                                loggedSelfCare[index].timestamp = editSelfCareTime
+                            }
+                            selfCareToEditTime = nil
+                        },
+                        onCancel: { selfCareToEditTime = nil }
+                    )
+                }
+            }
+        }
+    }
+
+    // MARK: - Section Builders
+
+    @ViewBuilder
+    private var medicationsSection: some View {
+        if !userMedications.isEmpty {
+            Section {
+                // Scheduled medications
+                ForEach(scheduledMedications) { medication in
+                    let isTaken = medication.id.flatMap { takenMedications[$0] } != nil
+                    let takenTime = medication.id.flatMap { takenMedications[$0] }
+
+                    EntryMedicationRow(
+                        medication: medication,
+                        taken: isTaken,
+                        time: takenTime,
+                        isPrn: false,
+                        onToggle: {
+                            guard let medId = medication.id else { return }
+                            if takenMedications[medId] == nil {
+                                takenMedications[medId] = Date()
+                            }
+                        }
+                    )
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        if isTaken {
+                            Button {
+                                guard let medId = medication.id else { return }
+                                takenMedications[medId] = nil
+                            } label: {
+                                Label("Undo", systemImage: "arrow.uturn.backward")
+                            }
+                            .tint(.orange)
+
+                            Button {
+                                editMedicationTime = takenTime ?? Date()
+                                medicationToEditTime = medication
+                            } label: {
+                                Label("Time", systemImage: "clock")
+                            }
+                            .tint(.blue)
+                        }
+                    }
+                }
+
+                // PRN medications taken
+                ForEach(prnMedications.filter { med in
+                    guard let medId = med.id else { return false }
+                    return takenMedications[medId] != nil
+                }) { medication in
+                    let takenTime = medication.id.flatMap { takenMedications[$0] }
+
+                    EntryPrnRow(medication: medication, time: takenTime)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                guard let medId = medication.id else { return }
+                                takenMedications[medId] = nil
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+
+                            Button {
+                                editMedicationTime = takenTime ?? Date()
+                                medicationToEditTime = medication
+                            } label: {
+                                Label("Time", systemImage: "clock")
+                            }
+                            .tint(.blue)
+                        }
+                }
+
+                // Take As-Needed button
+                if !prnMedications.isEmpty {
+                    Menu {
+                        ForEach(prnMedications) { medication in
+                            Button {
+                                guard let medId = medication.id else { return }
+                                takenMedications[medId] = Date()
+                            } label: {
+                                Label(medication.name ?? "Unknown", systemImage: "pills")
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(.blue)
+                            Text("Take As-Needed")
+                                .foregroundStyle(.blue)
+                            Spacer()
+                        }
+                    }
+                }
+            } header: {
+                HStack {
+                    Label("Medications", systemImage: "pills.fill")
+                    Spacer()
+                    Text(medicationsSummary)
+                        .font(.subheadline)
+                        .foregroundStyle(medicationsTakenCount == scheduledMedications.count ? .green : .secondary)
+                }
+            }
+        } else {
+            Section("Medications") {
+                EmptyMedicationsView(
+                    healthKitManager: healthKitManager,
+                    showingHealthKitImport: $showingHealthKitImport
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var substancesSection: some View {
+        if !userSubstances.isEmpty || !takenSubstances.isEmpty {
+            Section {
+                ForEach(takenSubstances) { entry in
+                    EntrySubstanceRow(entry: entry, userSubstances: userSubstances)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                takenSubstances.removeAll { $0.id == entry.id }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+
+                            Button {
+                                editSubstanceTime = entry.timestamp
+                                substanceToEditTime = entry
+                            } label: {
+                                Label("Time", systemImage: "clock")
+                            }
+                            .tint(.blue)
+
+                            Button {
+                                editSubstanceAmount = entry.amount
+                                substanceToEditAmount = entry
+                            } label: {
+                                Label("Amount", systemImage: "number")
+                            }
+                            .tint(.purple)
+                        }
+                }
+
+                if !userSubstances.isEmpty {
+                    Menu {
+                        ForEach(userSubstances) { substance in
+                            Button {
+                                newSubstanceAmount = "1"
+                                substanceToAdd = substance
+                            } label: {
+                                Label(substance.name ?? "Unknown", systemImage: "drop.triangle")
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(.blue)
+                            Text("Log Substance")
+                                .foregroundStyle(.blue)
+                            Spacer()
+                        }
+                    }
+                }
+            } header: {
+                HStack {
+                    Label("Substances", systemImage: "drop.triangle.fill")
+                    Spacer()
+                    Text(substancesSummary)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } else {
+            Section("Substances") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("No substances in your library")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    NavigationLink {
+                        SubstanceManagementView()
+                    } label: {
+                        Label("Add Substances in Settings", systemImage: "gear")
+                            .font(.caption)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var mindfulnessSection: some View {
+        if !userMindfulness.isEmpty || !loggedMindfulness.isEmpty {
+            Section {
+                ForEach(loggedMindfulness) { entry in
+                    EntryMindfulnessRow(entry: entry, userMindfulness: userMindfulness)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                loggedMindfulness.removeAll { $0.id == entry.id }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+
+                            Button {
+                                editMindfulnessTime = entry.timestamp
+                                mindfulnessToEditTime = entry
+                            } label: {
+                                Label("Time", systemImage: "clock")
+                            }
+                            .tint(.blue)
+                        }
+                }
+
+                if !userMindfulness.isEmpty {
+                    Menu {
+                        ForEach(userMindfulness) { practice in
+                            Button {
+                                guard let practiceId = practice.id else { return }
+                                loggedMindfulness.append(
+                                    MindfulnessLogEntry(
+                                        userMindfulnessId: practiceId,
+                                        timestamp: Date()
+                                    )
+                                )
+                            } label: {
+                                Label(practice.name ?? "Unknown", systemImage: practice.category?.icon ?? "brain.head.profile")
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(.blue)
+                            Text("Log Practice")
+                                .foregroundStyle(.blue)
+                            Spacer()
+                        }
+                    }
+                }
+            } header: {
+                HStack {
+                    Label("Mindfulness", systemImage: "brain.head.profile")
+                    Spacer()
+                    Text(mindfulnessSummary)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } else {
+            Section("Mindfulness") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("No mindfulness practices in your library")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    NavigationLink {
+                        MindfulnessManagementView()
+                    } label: {
+                        Label("Add Practices in Settings", systemImage: "gear")
+                            .font(.caption)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var selfCareSection: some View {
+        if !userSelfCare.isEmpty || !loggedSelfCare.isEmpty {
+            Section {
+                ForEach(loggedSelfCare) { entry in
+                    EntrySelfCareRow(entry: entry, userSelfCare: userSelfCare)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                loggedSelfCare.removeAll { $0.id == entry.id }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+
+                            Button {
+                                editSelfCareTime = entry.timestamp
+                                selfCareToEditTime = entry
+                            } label: {
+                                Label("Time", systemImage: "clock")
+                            }
+                            .tint(.blue)
+                        }
+                }
+
+                if !userSelfCare.isEmpty {
+                    Menu {
+                        ForEach(SelfCareTimeOfDay.allCases) { timeOfDay in
+                            let practicesForTime = userSelfCare.filter { $0.timeOfDay == timeOfDay }
+                            if !practicesForTime.isEmpty {
+                                Menu {
+                                    ForEach(practicesForTime) { practice in
+                                        Button {
+                                            guard let practiceId = practice.id else { return }
+                                            loggedSelfCare.append(
+                                                SelfCareLogEntry(
+                                                    userSelfCareId: practiceId,
+                                                    timeOfDay: practice.timeOfDay,
+                                                    timestamp: Date()
+                                                )
+                                            )
+                                        } label: {
+                                            Label(practice.name ?? "Unknown", systemImage: timeOfDay.icon)
+                                        }
+                                    }
+                                } label: {
+                                    Label(timeOfDay.displayName, systemImage: timeOfDay.icon)
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(.blue)
+                            Text("Log Practice")
+                                .foregroundStyle(.blue)
+                            Spacer()
+                        }
+                    }
+                }
+            } header: {
+                HStack {
+                    Label("Self-Care", systemImage: "sparkles")
+                    Spacer()
+                    Text(selfCareSummary)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } else {
+            Section("Self-Care") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("No self-care practices in your library")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    NavigationLink {
+                        SelfCareManagementView()
+                    } label: {
+                        Label("Add Practices in Settings", systemImage: "gear")
+                            .font(.caption)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
         }
     }
 
@@ -751,6 +887,28 @@ struct AddSymptomView: View {
             }
         }
         loggedMindfulness = mindfulnessEntries
+
+        // Load self-care logs for the selected date
+        let selfCareLogsForDate = allSelfCareLogs.filter { log in
+            (log.timestamp ?? Date.distantPast) >= startOfDay && (log.timestamp ?? Date.distantFuture) < endOfDay
+        }
+
+        var selfCareEntries: [SelfCareLogEntry] = []
+        for log in selfCareLogsForDate {
+            if let userPractice = userSelfCare.first(where: {
+                $0.name == log.practiceName
+            }),
+            let practiceId = userPractice.id {
+                selfCareEntries.append(
+                    SelfCareLogEntry(
+                        userSelfCareId: practiceId,
+                        timeOfDay: log.timeOfDay,
+                        timestamp: log.timestamp ?? Date()
+                    )
+                )
+            }
+        }
+        loggedSelfCare = selfCareEntries
     }
 
     private func importMedicationsFromHealthKit(
@@ -852,6 +1010,18 @@ struct AddSymptomView: View {
                 userMindfulness: practice,
                 practiceName: practice.name ?? "",
                 timestamp: mindfulnessEntry.timestamp
+            )
+            modelContext.insert(log)
+        }
+
+        // Save self-care logs
+        for selfCareEntry in loggedSelfCare {
+            guard let practice = userSelfCare.first(where: { $0.id == selfCareEntry.userSelfCareId }) else { continue }
+            let log = SelfCareLog(
+                userSelfCare: practice,
+                practiceName: practice.name ?? "",
+                timeOfDay: practice.timeOfDay,
+                timestamp: selfCareEntry.timestamp
             )
             modelContext.insert(log)
         }
@@ -966,6 +1136,25 @@ struct AddSymptomView: View {
             modelContext.insert(log)
         }
 
+        // Delete old self-care logs for this day and create new ones
+        let existingSelfCareLogs = allSelfCareLogs.filter { log in
+            guard let timestamp = log.timestamp else { return false }
+            return timestamp >= startOfDayForMindfulness && timestamp < endOfDayForMindfulness
+        }
+        existingSelfCareLogs.forEach { modelContext.delete($0) }
+
+        // Create new self-care logs
+        for selfCareEntry in loggedSelfCare {
+            guard let practice = userSelfCare.first(where: { $0.id == selfCareEntry.userSelfCareId }) else { continue }
+            let log = SelfCareLog(
+                userSelfCare: practice,
+                practiceName: practice.name ?? "",
+                timeOfDay: practice.timeOfDay,
+                timestamp: selfCareEntry.timestamp
+            )
+            modelContext.insert(log)
+        }
+
         if healthKitManager.isAuthorized, let mood = moodLevel {
             Task {
                 if #available(iOS 18.0, *) {
@@ -1043,6 +1232,20 @@ struct MindfulnessLogEntry: Identifiable {
     init(id: UUID = UUID(), userMindfulnessId: UUID, timestamp: Date) {
         self.id = id
         self.userMindfulnessId = userMindfulnessId
+        self.timestamp = timestamp
+    }
+}
+
+struct SelfCareLogEntry: Identifiable {
+    var id: UUID
+    var userSelfCareId: UUID
+    var timeOfDay: SelfCareTimeOfDay
+    var timestamp: Date
+
+    init(id: UUID = UUID(), userSelfCareId: UUID, timeOfDay: SelfCareTimeOfDay, timestamp: Date) {
+        self.id = id
+        self.userSelfCareId = userSelfCareId
+        self.timeOfDay = timeOfDay
         self.timestamp = timestamp
     }
 }
@@ -1405,6 +1608,48 @@ struct EntryMindfulnessRow: View {
             HStack(spacing: 8) {
                 Image(systemName: practice?.category?.icon ?? "brain.head.profile")
                     .foregroundStyle(.purple)
+                Text(practiceName)
+                    .font(.subheadline)
+            }
+
+            Spacer()
+
+            Text(timeFormatter.string(from: entry.timestamp))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+// MARK: - Entry Self-Care Row
+
+struct EntrySelfCareRow: View {
+    let entry: SelfCareLogEntry
+    let userSelfCare: [UserSelfCare]
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
+
+    private var practice: UserSelfCare? {
+        userSelfCare.first { $0.id == entry.userSelfCareId }
+    }
+
+    private var practiceName: String {
+        practice?.name ?? "Unknown"
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .font(.title3)
+
+            HStack(spacing: 8) {
+                Image(systemName: entry.timeOfDay.icon)
+                    .foregroundStyle(entry.timeOfDay.color)
                 Text(practiceName)
                     .font(.subheadline)
             }

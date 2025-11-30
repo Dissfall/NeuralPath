@@ -16,9 +16,12 @@ struct TodayView: View {
            sort: \UserSubstance.name) private var userSubstances: [UserSubstance]
     @Query(filter: #Predicate<UserMindfulness> { $0.isActive == true },
            sort: \UserMindfulness.name) private var userMindfulness: [UserMindfulness]
+    @Query(filter: #Predicate<UserSelfCare> { $0.isActive == true },
+           sort: \UserSelfCare.name) private var userSelfCare: [UserSelfCare]
     @Query(sort: \MedicationLog.timestamp) private var allMedicationLogs: [MedicationLog]
     @Query(sort: \SubstanceLog.timestamp) private var allSubstanceLogs: [SubstanceLog]
     @Query(sort: \MindfulnessLog.timestamp) private var allMindfulnessLogs: [MindfulnessLog]
+    @Query(sort: \SelfCareLog.timestamp) private var allSelfCareLogs: [SelfCareLog]
 
     @State private var showingAddEntry = false
     @State private var showingEditEntry = false
@@ -33,8 +36,15 @@ struct TodayView: View {
     @State private var substanceLogToEditTime: SubstanceLog?
     @State private var substanceLogToEditAmount: SubstanceLog?
     @State private var mindfulnessLogToEditTime: MindfulnessLog?
+    @State private var selfCareLogToEditTime: SelfCareLog?
     @State private var editTime: Date = Date()
     @State private var editAmount: String = ""
+
+    // Completion celebration states
+    @State private var showMorningCompletion = false
+    @State private var showAfternoonCompletion = false
+    @State private var showEveningCompletion = false
+    @State private var completedTimeOfDay: SelfCareTimeOfDay?
 
     private var scheduledMedications: [UserMedication] {
         userMedications.filter { $0.frequency != .asNeeded }
@@ -94,6 +104,44 @@ struct TodayView: View {
             guard let timestamp = log.timestamp else { return false }
             return timestamp >= startOfDay && timestamp < endOfDay
         }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+    }
+
+    private var todaySelfCareLogs: [SelfCareLog] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
+            return []
+        }
+        return allSelfCareLogs.filter { log in
+            guard let timestamp = log.timestamp else { return false }
+            return timestamp >= startOfDay && timestamp < endOfDay
+        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+    }
+
+    // Self-care practices by time of day
+    private var morningSelfCare: [UserSelfCare] {
+        userSelfCare.filter { $0.timeOfDay == .morning }
+    }
+
+    private var afternoonSelfCare: [UserSelfCare] {
+        userSelfCare.filter { $0.timeOfDay == .afternoon }
+    }
+
+    private var eveningSelfCare: [UserSelfCare] {
+        userSelfCare.filter { $0.timeOfDay == .evening }
+    }
+
+    // Today's self-care logs by time of day
+    private var todayMorningSelfCareLogs: [SelfCareLog] {
+        todaySelfCareLogs.filter { $0.timeOfDay == .morning }
+    }
+
+    private var todayAfternoonSelfCareLogs: [SelfCareLog] {
+        todaySelfCareLogs.filter { $0.timeOfDay == .afternoon }
+    }
+
+    private var todayEveningSelfCareLogs: [SelfCareLog] {
+        todaySelfCareLogs.filter { $0.timeOfDay == .evening }
     }
 
     private func medicationStatus(_ medication: UserMedication) -> (taken: Bool, time: Date?) {
@@ -228,6 +276,100 @@ struct TodayView: View {
         mindfulnessLogToEditTime = nil
     }
 
+    // Self-care functions
+    private func selfCareStatus(_ practice: UserSelfCare) -> (completed: Bool, time: Date?) {
+        let log = todaySelfCareLogs.first { $0.userSelfCare?.id == practice.id }
+        return (log != nil, log?.timestamp)
+    }
+
+    private func logSelfCare(_ practice: UserSelfCare) {
+        let log = SelfCareLog(
+            userSelfCare: practice,
+            practiceName: practice.name ?? "",
+            timeOfDay: practice.timeOfDay,
+            timestamp: Date()
+        )
+        modelContext.insert(log)
+
+        // Check for completion after logging
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            checkForCategoryCompletion(practice.timeOfDay)
+        }
+    }
+
+    private func deleteSelfCareLog(_ log: SelfCareLog) {
+        modelContext.delete(log)
+    }
+
+    private func startEditSelfCareTime(_ log: SelfCareLog) {
+        editTime = log.timestamp ?? Date()
+        selfCareLogToEditTime = log
+    }
+
+    private func saveSelfCareTime() {
+        if let log = selfCareLogToEditTime {
+            log.timestamp = editTime
+        }
+        selfCareLogToEditTime = nil
+    }
+
+    private func selfCareSummary(for timeOfDay: SelfCareTimeOfDay) -> String {
+        let practices: [UserSelfCare]
+        let logs: [SelfCareLog]
+
+        switch timeOfDay {
+        case .morning:
+            practices = morningSelfCare
+            logs = todayMorningSelfCareLogs
+        case .afternoon:
+            practices = afternoonSelfCare
+            logs = todayAfternoonSelfCareLogs
+        case .evening:
+            practices = eveningSelfCare
+            logs = todayEveningSelfCareLogs
+        }
+
+        if practices.isEmpty {
+            return "None"
+        }
+
+        let completed = practices.filter { practice in
+            logs.contains { $0.userSelfCare?.id == practice.id }
+        }.count
+
+        return "\(completed)/\(practices.count)"
+    }
+
+    private func isCategoryComplete(_ timeOfDay: SelfCareTimeOfDay) -> Bool {
+        let practices: [UserSelfCare]
+        let logs: [SelfCareLog]
+
+        switch timeOfDay {
+        case .morning:
+            practices = morningSelfCare
+            logs = todayMorningSelfCareLogs
+        case .afternoon:
+            practices = afternoonSelfCare
+            logs = todayAfternoonSelfCareLogs
+        case .evening:
+            practices = eveningSelfCare
+            logs = todayEveningSelfCareLogs
+        }
+
+        guard !practices.isEmpty else { return false }
+
+        let completed = practices.filter { practice in
+            logs.contains { $0.userSelfCare?.id == practice.id }
+        }.count
+
+        return completed == practices.count
+    }
+
+    private func checkForCategoryCompletion(_ timeOfDay: SelfCareTimeOfDay) {
+        guard isCategoryComplete(timeOfDay) else { return }
+        completedTimeOfDay = timeOfDay
+    }
+
     private var medicationsSummary: String {
         if scheduledMedications.isEmpty {
             let prnCount = todayPrnLogs.count
@@ -278,6 +420,21 @@ struct TodayView: View {
                             .padding(.vertical, 8)
                         }
                     }
+                }
+
+                // Morning Self-Care Section
+                if !morningSelfCare.isEmpty {
+                    selfCareSection(for: .morning, practices: morningSelfCare, logs: todayMorningSelfCareLogs)
+                }
+
+                // Afternoon Self-Care Section
+                if !afternoonSelfCare.isEmpty {
+                    selfCareSection(for: .afternoon, practices: afternoonSelfCare, logs: todayAfternoonSelfCareLogs)
+                }
+
+                // Evening Self-Care Section
+                if !eveningSelfCare.isEmpty {
+                    selfCareSection(for: .evening, practices: eveningSelfCare, logs: todayEveningSelfCareLogs)
                 }
 
                 // Medications Section
@@ -605,6 +762,101 @@ struct TodayView: View {
                     )
                 }
             }
+            // Edit time for self-care log
+            .sheet(isPresented: Binding(
+                get: { selfCareLogToEditTime != nil },
+                set: { if !$0 { selfCareLogToEditTime = nil } }
+            )) {
+                if let log = selfCareLogToEditTime {
+                    EditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: log.practiceName ?? "Practice",
+                        time: $editTime,
+                        onSave: saveSelfCareTime,
+                        onCancel: { selfCareLogToEditTime = nil }
+                    )
+                }
+            }
+            // Self-care completion celebration
+            .alert("Well Done!", isPresented: Binding(
+                get: { completedTimeOfDay != nil },
+                set: { if !$0 { completedTimeOfDay = nil } }
+            )) {
+                Button("OK") {
+                    completedTimeOfDay = nil
+                }
+            } message: {
+                if let timeOfDay = completedTimeOfDay {
+                    Text(timeOfDay.completionMessage)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func selfCareSection(for timeOfDay: SelfCareTimeOfDay, practices: [UserSelfCare], logs: [SelfCareLog]) -> some View {
+        Section {
+            ForEach(practices) { practice in
+                let status = selfCareStatus(practice)
+                TodaySelfCareRow(
+                    practice: practice,
+                    completed: status.completed,
+                    time: status.time,
+                    onToggle: { logSelfCare(practice) }
+                )
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    if status.completed {
+                        if let log = todaySelfCareLogs.first(where: { $0.userSelfCare?.id == practice.id }) {
+                            Button(role: .destructive) {
+                                deleteSelfCareLog(log)
+                            } label: {
+                                Label("Undo", systemImage: "arrow.uturn.backward")
+                            }
+                            .tint(.orange)
+
+                            Button {
+                                startEditSelfCareTime(log)
+                            } label: {
+                                Label("Time", systemImage: "clock")
+                            }
+                            .tint(.blue)
+                        }
+                    }
+                }
+            }
+
+            // Log Practice menu for practices not yet logged
+            let unloggedPractices = practices.filter { practice in
+                !logs.contains { $0.userSelfCare?.id == practice.id }
+            }
+            if !unloggedPractices.isEmpty {
+                Menu {
+                    ForEach(unloggedPractices) { practice in
+                        Button {
+                            logSelfCare(practice)
+                        } label: {
+                            Label(practice.name ?? "Unknown", systemImage: timeOfDay.icon)
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(.blue)
+                        Text("Log Practice")
+                            .foregroundStyle(.blue)
+                        Spacer()
+                    }
+                }
+            }
+        } header: {
+            HStack {
+                Label("\(timeOfDay.displayName) Self-Care", systemImage: timeOfDay.icon)
+                    .foregroundStyle(timeOfDay.color)
+                Spacer()
+                Text(selfCareSummary(for: timeOfDay))
+                    .font(.subheadline)
+                    .foregroundStyle(isCategoryComplete(timeOfDay) ? .green : .secondary)
+            }
         }
     }
 }
@@ -868,6 +1120,44 @@ private struct MindfulnessLogRow: View {
     }
 }
 
+// MARK: - Self-Care Row
+
+private struct TodaySelfCareRow: View {
+    let practice: UserSelfCare
+    let completed: Bool
+    let time: Date?
+    let onToggle: () -> Void
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button(action: onToggle) {
+                Image(systemName: completed ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(completed ? .green : .secondary)
+                    .font(.title3)
+            }
+            .buttonStyle(.plain)
+            .disabled(completed)
+
+            Text(practice.name ?? "Unknown")
+                .font(.subheadline)
+
+            Spacer()
+
+            if let time = time {
+                Text(timeFormatter.string(from: time))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
 // MARK: - Edit Time Sheet
 
 private struct EditTimeSheet: View {
@@ -903,5 +1193,5 @@ private struct EditTimeSheet: View {
 
 #Preview {
     TodayView()
-        .modelContainer(for: [SymptomEntry.self, UserMedication.self, UserSubstance.self, UserMindfulness.self, MedicationLog.self, SubstanceLog.self, MindfulnessLog.self], inMemory: true)
+        .modelContainer(for: [SymptomEntry.self, UserMedication.self, UserSubstance.self, UserMindfulness.self, UserSelfCare.self, MedicationLog.self, SubstanceLog.self, MindfulnessLog.self, SelfCareLog.self], inMemory: true)
 }

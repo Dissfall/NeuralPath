@@ -44,9 +44,10 @@ enum OnboardingStep: Int, CaseIterable {
     case medications = 2
     case substances = 3
     case mindfulness = 4
-    case reminders = 5
-    case howToUse = 6
-    case complete = 7
+    case selfCare = 5
+    case reminders = 6
+    case howToUse = 7
+    case complete = 8
 
     var title: String {
         switch self {
@@ -55,6 +56,7 @@ enum OnboardingStep: Int, CaseIterable {
         case .medications: return "Medications"
         case .substances: return "Substances"
         case .mindfulness: return "Mindfulness"
+        case .selfCare: return "Self-Care"
         case .reminders: return "Reminders"
         case .howToUse: return "How to Use"
         case .complete: return "All Set!"
@@ -113,6 +115,12 @@ struct OnboardingView: View {
                     onSkip: { nextStep() }
                 )
                 .tag(OnboardingStep.mindfulness)
+
+                OnboardingSelfCareStep(
+                    onContinue: { nextStep() },
+                    onSkip: { nextStep() }
+                )
+                .tag(OnboardingStep.selfCare)
 
                 OnboardingRemindersStep(
                     onContinue: { nextStep() },
@@ -801,6 +809,207 @@ struct OnboardingMindfulnessStep: View {
     }
 }
 
+// MARK: - Self-Care Step
+
+struct OnboardingSelfCareStep: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(filter: #Predicate<UserSelfCare> { $0.isActive == true },
+           sort: \UserSelfCare.name) private var practices: [UserSelfCare]
+
+    let onContinue: () -> Void
+    let onSkip: () -> Void
+
+    @State private var showingAddPractice = false
+
+    private let morningPractices: [(name: String, icon: String)] = [
+        ("Brush Teeth", "mouth.fill"),
+        ("Shower", "drop.fill"),
+        ("Skincare", "face.smiling.fill"),
+        ("Breakfast", "fork.knife")
+    ]
+
+    private let afternoonPractices: [(name: String, icon: String)] = [
+        ("Hydrate", "drop.fill"),
+        ("Take Vitamins", "pills.fill"),
+        ("Stretch Break", "figure.flexibility"),
+        ("Healthy Snack", "carrot.fill")
+    ]
+
+    private let eveningPractices: [(name: String, icon: String)] = [
+        ("Dinner", "fork.knife"),
+        ("Evening Skincare", "face.smiling.fill"),
+        ("Brush Teeth", "mouth.fill"),
+        ("Sleep Prep", "bed.double.fill")
+    ]
+
+    private var morningPracticesList: [UserSelfCare] {
+        practices.filter { $0.timeOfDay == .morning }
+    }
+
+    private var afternoonPracticesList: [UserSelfCare] {
+        practices.filter { $0.timeOfDay == .afternoon }
+    }
+
+    private var eveningPracticesList: [UserSelfCare] {
+        practices.filter { $0.timeOfDay == .evening }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 16) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 60))
+                    .foregroundStyle(.cyan)
+
+                VStack(spacing: 8) {
+                    Text("Self-Care Routines")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+
+                    Text("Build healthy daily habits with morning, afternoon, and evening routines.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+            }
+            .padding(.top, 40)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Morning section
+                    selfCareTimeSection(
+                        title: "Morning",
+                        icon: SelfCareTimeOfDay.morning.icon,
+                        color: SelfCareTimeOfDay.morning.color,
+                        timeOfDay: .morning,
+                        suggestions: morningPractices,
+                        added: morningPracticesList
+                    )
+
+                    // Afternoon section
+                    selfCareTimeSection(
+                        title: "Afternoon",
+                        icon: SelfCareTimeOfDay.afternoon.icon,
+                        color: SelfCareTimeOfDay.afternoon.color,
+                        timeOfDay: .afternoon,
+                        suggestions: afternoonPractices,
+                        added: afternoonPracticesList
+                    )
+
+                    // Evening section
+                    selfCareTimeSection(
+                        title: "Evening",
+                        icon: SelfCareTimeOfDay.evening.icon,
+                        color: SelfCareTimeOfDay.evening.color,
+                        timeOfDay: .evening,
+                        suggestions: eveningPractices,
+                        added: eveningPracticesList
+                    )
+                }
+                .padding(.top, 24)
+            }
+
+            // Action buttons
+            VStack(spacing: 12) {
+                Button {
+                    showingAddPractice = true
+                } label: {
+                    Label("Add Custom Practice", systemImage: "plus")
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.bordered)
+
+                Button(action: onContinue) {
+                    Text(practices.isEmpty ? "Skip" : "Continue")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(practices.isEmpty ? Color.gray.opacity(0.3) : Color.blue)
+                        .foregroundColor(practices.isEmpty ? .primary : .white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+            }
+            .padding(.horizontal, 32)
+            .padding(.bottom, 40)
+        }
+        .sheet(isPresented: $showingAddPractice) {
+            AddUserSelfCareView()
+        }
+    }
+
+    @ViewBuilder
+    private func selfCareTimeSection(
+        title: String,
+        icon: String,
+        color: Color,
+        timeOfDay: SelfCareTimeOfDay,
+        suggestions: [(name: String, icon: String)],
+        added: [UserSelfCare]
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(.headline)
+            }
+            .padding(.horizontal, 32)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(suggestions, id: \.name) { practice in
+                        let isAdded = added.contains { $0.name == practice.name }
+
+                        Button {
+                            if !isAdded {
+                                addPractice(name: practice.name, timeOfDay: timeOfDay)
+                            }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: practice.icon)
+                                Text(practice.name)
+                                if isAdded {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.green)
+                                }
+                            }
+                            .font(.subheadline)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(isAdded ? Color.green.opacity(0.1) : color.opacity(0.1))
+                            .foregroundStyle(isAdded ? .green : .primary)
+                            .clipShape(Capsule())
+                        }
+                        .disabled(isAdded)
+                    }
+                }
+                .padding(.horizontal, 32)
+            }
+        }
+    }
+
+    private func addPractice(name: String, timeOfDay: SelfCareTimeOfDay) {
+        let practice = UserSelfCare(
+            name: name,
+            timeOfDay: timeOfDay,
+            notes: nil
+        )
+        modelContext.insert(practice)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func deletePractices(at offsets: IndexSet) {
+        let allPractices = Array(practices)
+        for index in offsets {
+            allPractices[index].isActive = false
+        }
+    }
+}
+
 // MARK: - Reminders Step
 
 struct OnboardingRemindersStep: View {
@@ -1257,5 +1466,5 @@ struct TipRow: View {
 
 #Preview {
     OnboardingView(onComplete: {})
-        .modelContainer(for: [UserMedication.self, UserSubstance.self], inMemory: true)
+        .modelContainer(for: [UserMedication.self, UserSubstance.self, UserMindfulness.self, UserSelfCare.self], inMemory: true)
 }

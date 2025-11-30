@@ -103,10 +103,16 @@ struct SettingsView: View {
                     } label: {
                         Label("Manage Mindfulness", systemImage: "brain.head.profile")
                     }
+
+                    NavigationLink {
+                        SelfCareManagementView()
+                    } label: {
+                        Label("Manage Self-Care", systemImage: "sparkles")
+                    }
                 } header: {
                     Text("Tracking")
                 } footer: {
-                    Text("Manage your medications, substances, and mindfulness practices for easy tracking")
+                    Text("Manage your medications, substances, mindfulness, and self-care practices for easy tracking")
                 }
 
                 // CloudKit sync status

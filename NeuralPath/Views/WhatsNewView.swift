@@ -33,8 +33,14 @@ enum WhatsNewContent {
                     description: "Track meditation, breathing exercises, yoga, journaling, and other wellness practices with daily logging and reminders."
                 ),
                 WhatsNewFeature(
-                    icon: "cloud.fill",
+                    icon: "sparkles",
                     iconColor: .cyan,
+                    title: "Self-Care Routines",
+                    description: "Build healthy daily habits with morning, afternoon, and evening self-care practices. Set category reminders and celebrate completions."
+                ),
+                WhatsNewFeature(
+                    icon: "cloud.fill",
+                    iconColor: .blue,
                     title: "Emotion Cloud",
                     description: "Track your feelings with a beautiful cloud of emotions. Select multiple feelings colored by type: positive, negative, or neutral."
                 ),
