@@ -24,7 +24,7 @@ struct WhatsNewVersion {
 enum WhatsNewContent {
     static let versions: [WhatsNewVersion] = [
         WhatsNewVersion(
-            version: "1.1",
+            version: "1.1.0",
             features: [
                 WhatsNewFeature(
                     icon: "cpu",
