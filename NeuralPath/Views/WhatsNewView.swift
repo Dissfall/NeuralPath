@@ -27,6 +27,12 @@ enum WhatsNewContent {
             version: "1.1.0",
             features: [
                 WhatsNewFeature(
+                    icon: "calendar",
+                    iconColor: .blue,
+                    title: "Today View",
+                    description: "New dashboard showing your daily medications, substances, and entry status at a glance."
+                ),
+                WhatsNewFeature(
                     icon: "cpu",
                     iconColor: .purple,
                     title: "AI-Powered Analysis",
@@ -54,32 +60,8 @@ enum WhatsNewContent {
                     icon: "cloud.fill",
                     iconColor: .blue,
                     title: "Emotion Cloud",
-                    description: "Track your feelings with a beautiful cloud of emotions. Select multiple feelings colored by type: positive, negative, or neutral."
+                    description: "Track your feelings. Select multiple feelings colored by type: positive, negative, or neutral."
                 ),
-                WhatsNewFeature(
-                    icon: "calendar",
-                    iconColor: .blue,
-                    title: "Today View",
-                    description: "New dashboard showing your daily medications, substances, and entry status at a glance."
-                ),
-                WhatsNewFeature(
-                    icon: "hand.draw",
-                    iconColor: .orange,
-                    title: "Swipe Actions",
-                    description: "Swipe on medications and substances to quickly undo, delete, or adjust time and amount."
-                ),
-                WhatsNewFeature(
-                    icon: "pills",
-                    iconColor: .green,
-                    title: "PRN Medications",
-                    description: "Track as-needed medications separately with support for multiple daily doses."
-                ),
-                WhatsNewFeature(
-                    icon: "lock.shield.fill",
-                    iconColor: .teal,
-                    title: "Your Privacy Matters",
-                    description: "All your data stays on your device. We don't collect any personal information."
-                )
             ]
         )
     ]
