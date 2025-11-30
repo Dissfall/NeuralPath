@@ -144,6 +144,9 @@ struct SettingsView: View {
                     Text("Connect with Apple Health to automatically import sleep data, medications, exercise minutes and other")
                 }
 
+                // ML Analysis Section
+                MLSettingsSection()
+
                 Section {
                     Button {
                         showingExport = true
@@ -428,6 +431,183 @@ extension Bundle {
 
     var appBuild: String {
         object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
+    }
+}
+
+// MARK: - ML Settings Section
+
+struct MLSettingsSection: View {
+    private var modelManager: MLModelManager { MLModelManager.shared }
+
+    var body: some View {
+        Section {
+            Toggle(isOn: Binding(
+                get: { modelManager.isMLEnabled },
+                set: { modelManager.isMLEnabled = $0 }
+            )) {
+                HStack {
+                    Image(systemName: "cpu")
+                        .foregroundStyle(.purple)
+                    Text("AI Analysis")
+                }
+            }
+
+            if modelManager.isMLEnabled {
+                HStack {
+                    Text("Status")
+                    Spacer()
+                    MLStatusIndicator(state: modelManager.overallState)
+                }
+
+                HStack {
+                    Text("Model Version")
+                    Spacer()
+                    Text(modelManager.modelVersion)
+                        .foregroundStyle(.secondary)
+                }
+
+                if let lastTrained = modelManager.lastTrainingDate {
+                    HStack {
+                        Text("Last Trained")
+                        Spacer()
+                        Text(lastTrained, format: .relative(presentation: .named))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                NavigationLink {
+                    MLInfoView()
+                } label: {
+                    Label("About AI Analysis", systemImage: "info.circle")
+                }
+            }
+        } header: {
+            Label("AI Analysis", systemImage: "brain")
+        } footer: {
+            if modelManager.isMLEnabled {
+                Text("AI analysis uses on-device machine learning to identify patterns and predict mood trends. All processing happens locally on your device.")
+            } else {
+                Text("Enable AI analysis for mood predictions, pattern detection, and personalized insights. Requires at least 30 entries.")
+            }
+        }
+    }
+}
+
+struct MLStatusIndicator: View {
+    let state: MLModelManager.ModelState
+
+    var statusColor: Color {
+        switch state {
+        case .ready: return .green
+        case .initializing: return .orange
+        case .needsRetraining: return .yellow
+        case .notInitialized: return .gray
+        case .error: return .red
+        }
+    }
+
+    var statusText: String {
+        switch state {
+        case .ready: return "Ready"
+        case .initializing: return "Initializing..."
+        case .needsRetraining: return "Needs Update"
+        case .notInitialized: return "Not Initialized"
+        case .error(let message): return "Error: \(message)"
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(statusColor)
+                .frame(width: 8, height: 8)
+            Text(statusText)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+struct MLInfoView: View {
+    var body: some View {
+        List {
+            Section {
+                Text("NeuralPath uses on-device machine learning to analyze your mental health patterns. All processing happens locally on your device - your data never leaves your phone.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Label("How It Works", systemImage: "cpu")
+            }
+
+            Section {
+                MLFeatureInfoRow(icon: "sun.horizon.fill", title: "Mood Prediction", description: "Predicts tomorrow's mood based on today's factors")
+                MLFeatureInfoRow(icon: "waveform.path.ecg", title: "Pattern Detection", description: "Identifies recurring patterns in your data")
+                MLFeatureInfoRow(icon: "chart.line.uptrend.xyaxis", title: "7-Day Forecast", description: "Projects your mental health trends")
+                MLFeatureInfoRow(icon: "calendar.badge.clock", title: "Similar Days", description: "Finds past days similar to today")
+            } header: {
+                Label("Features", systemImage: "sparkles")
+            }
+
+            Section {
+                MLDataRequirementInfoRow(entries: 7, feature: "Basic Statistics")
+                MLDataRequirementInfoRow(entries: 30, feature: "ML Predictions")
+                MLDataRequirementInfoRow(entries: 90, feature: "Hybrid AI Analysis")
+                MLDataRequirementInfoRow(entries: 180, feature: "Personalized AI")
+            } header: {
+                Label("Data Requirements", systemImage: "chart.bar.doc.horizontal")
+            }
+
+            Section {
+                Text("Your data stays on your device. ML models are trained locally using Apple's CoreML framework. No data is ever sent to external servers for analysis.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Label("Privacy", systemImage: "lock.shield")
+            }
+        }
+        .navigationTitle("AI Analysis")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct MLFeatureInfoRow: View {
+    let icon: String
+    let title: String
+    let description: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(.purple)
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.bold())
+                Text(description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct MLDataRequirementInfoRow: View {
+    let entries: Int
+    let feature: String
+
+    var body: some View {
+        HStack {
+            Text("\(entries)+ entries")
+                .font(.subheadline)
+                .foregroundStyle(.purple)
+                .frame(width: 100, alignment: .leading)
+            Text(feature)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
     }
 }
 

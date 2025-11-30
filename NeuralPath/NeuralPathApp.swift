@@ -174,6 +174,8 @@ struct NeuralPathApp: App {
                     donationManager.incrementSessionAndCheck()
                     // Re-schedule reminders on app launch
                     rescheduleRemindersIfNeeded()
+                    // Auto-initialize ML analysis
+                    MLModelManager.shared.autoInitializeIfNeeded()
                 }
                 // Show onboarding first for new users
                 .fullScreenCover(isPresented: $onboardingManager.shouldShowOnboarding) {

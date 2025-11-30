@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData. It enables users to track mood, anxiety, anhedonia, sleep, exercise, daylight exposure, medications, substances, mindfulness practices, and self-care routines. Features include HealthKit integration for automatic sleep data import, CloudKit sync, and statistical analysis.
+NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData. It enables users to track mood, anxiety, anhedonia, sleep, exercise, daylight exposure, medications, substances, mindfulness practices, and self-care routines. Features include HealthKit integration for automatic sleep data import, CloudKit sync, statistical analysis, and on-device ML-powered predictions using CoreML.
 
 ## Build & Run Commands
 
@@ -13,7 +13,7 @@ NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData
 open NeuralPath.xcodeproj
 
 # Build from command line
-xcodebuild -project NeuralPath.xcodeproj -scheme NeuralPath -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -project NeuralPath.xcodeproj -scheme NeuralPath -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 
 # Clean build folder
 xcodebuild clean -project NeuralPath.xcodeproj -scheme NeuralPath
@@ -95,6 +95,83 @@ The app uses SwiftData for persistence with an eleven-model schema:
 - UserDefaults keys: `selfCareMorningReminderEnabled`, `selfCareAfternoonReminderEnabled`, `selfCareEveningReminderEnabled`
 - Default reminder times: 7 AM, 12 PM, 8 PM
 
+### ML Analysis Layer
+
+The app includes an on-device machine learning system for mood prediction and pattern detection. All ML processing happens locally using CoreML - no data is sent to external servers.
+
+**Tiered Activation System:**
+- **7+ entries**: Basic statistics only
+- **30+ entries**: Basic ML predictions enabled
+- **90+ entries**: Hybrid AI analysis (statistical + ML blended)
+- **180+ entries**: Personalized ML with full pattern detection
+
+**ML Services** (`Services/ML/`):
+
+**MLFeatureVector** (`Services/ML/MLFeatureVector.swift`):
+- 70+ feature schema covering emotions, medications, temporal patterns, mindfulness, self-care, lifestyle
+- `EmotionFeatures`: Valence aggregation, dominant emotions, variety metrics
+- `MedicationFeatures`: Category encoding, adherence tracking, regimen change detection
+- `TemporalFeatures`: Day of week, time of day (cyclical sin/cos encoding), streak tracking
+- `MindfulnessFeatures`: Practice completion rates, variety, duration
+- `SelfCareFeatures`: Morning/afternoon/evening completion rates
+- `LifestyleFeatures`: Sleep quality, exercise, daylight exposure
+- `InteractionFeatures`: Cross-factor interactions (sleep×exercise, medication×mood)
+
+**FeatureTransformers** (`Services/ML/FeatureTransformers.swift`):
+- `EmotionTransformer`: Converts emotion arrays to valence-weighted features
+- `MedicationTransformer`: Tracks medication adherence and regimen changes with 14-day transition periods
+- `TemporalTransformer`: Cyclical encoding for time features, streak calculation
+- `MindfulnessTransformer`: Practice variety and consistency metrics
+- `SelfCareTransformer`: Time-of-day completion tracking
+- `LifestyleTransformer`: Normalizes sleep/exercise/daylight data
+- `InteractionTransformer`: Computes cross-factor feature interactions
+- `MissingDataHandler`: Filters valid entries for training
+
+**MLDataExtractor** (`Services/ML/MLDataExtractor.swift`):
+- SwiftData query coordination for feature extraction
+- `extractTrainingData()`: Builds feature vectors from historical entries
+- `extractFeaturesForEntry()`: Single entry feature extraction for prediction
+- `assessDataQuality()`: Returns `DataQualityAssessment` with completeness metrics
+- `AnalysisCapability` enum: Tracks unlocked features based on entry count
+
+**MLAnalysisEngine** (`Services/ML/MLAnalysisEngine.swift`):
+- CoreML integration for predictions
+- k-NN pattern matching for similar day detection
+- `predictTomorrowMood()`: Next-day mood prediction with confidence
+- `forecast7Days()`: 7-day mood trend forecast
+- `detectPatterns()`: Identifies recurring patterns (sleep, exercise, medication effects)
+- `findSimilarDays()`: Finds historical days with similar feature profiles
+- `PatternType` enum: weekly, medicationEffect, substanceTrigger, sleepCorrelation, exerciseBenefit, mindfulnessImpact, seasonalTrend
+
+**MLModelManager** (`Services/ML/MLModelManager.swift`):
+- Singleton managing model lifecycle (`MLModelManager.shared`)
+- `ModelState`: notInitialized, initializing, ready, needsRetraining, error
+- Auto-initializes on app launch via `autoInitializeIfNeeded()`
+- UserDefaults key: `"mlAnalysisEnabled"` (defaults to true)
+- Tracks `lastTrainingDate`, `entriesSinceTraining`, `modelVersion`
+- Retraining triggers: 7+ days since training OR 10+ new entries
+
+**AnalysisBlender** (`Services/ML/AnalysisBlender.swift`):
+- Blends statistical and ML results based on `AnalysisMode`
+- Confidence-weighted score combination
+- `ConfidenceMetrics`: statisticalConfidence, mlConfidence, dataQuality, blendWeights
+
+**HybridAnalysisEngine** (`Services/HybridAnalysisEngine.swift`):
+- Main orchestrator for hybrid statistical + ML analysis
+- `analyze()`: Runs both statistical and ML analysis, returns `HybridAnalysis`
+- `generateInsights()`: Creates `HybridInsight` array from analysis results
+- Graceful fallback to statistical-only if ML fails
+
+**ML UI Components** (`Views/Components/MLAnalysisComponents.swift`):
+- `MLPredictionCard`: Tomorrow's mood prediction with contributing factors
+- `ForecastChart`: 7-day forecast visualization using Swift Charts
+- `PatternCard`: Individual pattern display with recommendations
+- `PatternsSection`: List of detected patterns
+- `SimilarDaysCard`: Historical similar days comparison
+- `DataQualityCard`: Entry count, capabilities, next milestone
+- `MLStatusBanner`: Current analysis mode indicator
+- `ConfidenceBadge`: Confidence level indicator (High/Medium/Low)
+
 ### Medication Database
 
 **MedicationDatabase** (`Models/MedicationDatabase.swift`):
@@ -128,10 +205,14 @@ The app uses SwiftData for persistence with an eleven-model schema:
 - `ChartsView.swift`: Swift Charts visualization with time ranges (week/month/3 months/year), single or comparison mode
 
 **Tab 3 - Analysis:**
-- `ComprehensiveAnalysisView.swift`: Health score, trends, factor impacts using SimpleStatisticalAnalyzer
+- `ComprehensiveAnalysisView.swift`: Health score, trends, factor impacts using hybrid statistical + ML analysis
+- ML features: Tomorrow's prediction, 7-day forecast, detected patterns, similar days, data quality metrics
+- Uses `HybridAnalysisEngine` for combined analysis, falls back to statistical-only if ML unavailable
+- ML status banner shows current analysis mode (Statistical/Basic ML/Hybrid/Advanced)
 
 **Management Views:**
-- `SettingsView.swift`: Reminders, medication/substance/mindfulness/self-care management, CloudKit status, export, hidden developer menu
+- `SettingsView.swift`: Reminders, medication/substance/mindfulness/self-care management, CloudKit status, AI Analysis toggle, export, hidden developer menu
+- `MLSettingsSection`: AI Analysis toggle (enabled by default), status indicator, model info, "About AI Analysis" navigation
 - `MedicationManagementView.swift` / `AddUserMedicationView.swift`: Medication library CRUD
 - `SubstanceManagementView.swift` / `AddUserSubstanceView.swift`: Substance library CRUD
 - `MindfulnessManagementView.swift` / `AddUserMindfulnessView.swift`: Mindfulness practice library CRUD
@@ -147,6 +228,7 @@ The app uses SwiftData for persistence with an eleven-model schema:
 - `WrappingHStack.swift`: Custom Layout for multi-row flex layouts (used for emotion chips, substances)
 - `EmotionCloudSelector.swift`: Multi-select emotion picker with color-coded chips by valence
 - `SymptomEntryRow.swift`: List row for displaying symptom entries with mood, emotions, substances
+- `MLAnalysisComponents.swift`: ML-specific UI components (MLPredictionCard, ForecastChart, PatternCard, DataQualityCard, etc.)
 
 ### Onboarding & First Launch
 

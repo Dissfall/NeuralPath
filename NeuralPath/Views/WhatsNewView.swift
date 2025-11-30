@@ -27,8 +27,20 @@ enum WhatsNewContent {
             version: "1.1",
             features: [
                 WhatsNewFeature(
-                    icon: "brain.head.profile",
+                    icon: "cpu",
                     iconColor: .purple,
+                    title: "AI-Powered Analysis",
+                    description: "On-device machine learning predicts tomorrow's mood, detects patterns, and provides personalized insights - all while keeping your data private."
+                ),
+                WhatsNewFeature(
+                    icon: "chart.line.uptrend.xyaxis",
+                    iconColor: .blue,
+                    title: "7-Day Forecast",
+                    description: "See your projected mood trends for the week ahead with confidence intervals."
+                ),
+                WhatsNewFeature(
+                    icon: "brain.head.profile",
+                    iconColor: .teal,
                     title: "Mindfulness Tracking",
                     description: "Track meditation, breathing exercises, yoga, journaling, and other wellness practices with daily logging and reminders."
                 ),
