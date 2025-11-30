@@ -62,11 +62,6 @@ The app uses SwiftData for persistence with a seven-model schema:
 - `requestMedicationAuthorization()`: iOS 16+ per-object authorization
 - `fetchSleepData()`: Aggregates sleep stages, calculates quality score (1-5)
 
-**MLManager** (`Services/MLManager.swift`):
-- Loads 3 Core ML models: MoodPredictor, AnxietyPredictor, AnhedoniaPredictor
-- Inputs: sleep hours/quality, daylight, exercise, medication status, substance amount, day of week, previous day metrics
-- Optional return values with error handling
-
 **SimpleStatisticalAnalyzer** (`Services/SimpleStatisticalAnalyzer.swift`):
 - Mathematical insights without ML dependency
 - Factor impact analysis with confidence scoring
@@ -126,7 +121,6 @@ The app uses SwiftData for persistence with a seven-model schema:
 **Utility Views:**
 - `CloudKitStatusView.swift`: Sync status display
 - `ExportView.swift`: CSV/JSON export
-- `InsightsView.swift`: ML-powered predictions (requires 30+ entries)
 - `DeveloperMenuView.swift`: Test data generation (Easter egg: 7 rapid taps in Settings)
 
 **Reusable Components** (`Components/`):
@@ -198,15 +192,6 @@ The app uses SwiftData for persistence with a seven-model schema:
 - `com.apple.developer.icloud-container-identifiers`: iCloud.NeuralPath
 - `com.apple.developer.icloud-services`: CloudKit
 - `aps-environment`: development (push notifications)
-
-## Core ML Models
-
-Three tabular regression models in project root:
-- `MoodPredictor.mlmodel`
-- `AnxietyPredictor.mlmodel`
-- `AnhedoniaPredictor.mlmodel`
-
-ML project at `NeuralPath.mlproj/` with training data.
 
 ## Code Style
 
