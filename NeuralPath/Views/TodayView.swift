@@ -398,11 +398,14 @@ struct TodayView: View {
     var body: some View {
         NavigationStack {
             List {
-                // Today's Entry Section
-                Section {
-                    if let entry = todayEntry {
-                        TodayEntryRow(entry: entry, onEditTap: { showingEditEntry = true })
-                    } else {
+                if let entry = todayEntry {
+                    // All Done Card - hides tracking sections
+                    Section {
+                        AllDoneCard(entry: entry, onEdit: { showingEditEntry = true })
+                    }
+                } else {
+                    // Log Today's Entry button
+                    Section {
                         Button(action: { showingAddEntry = true }) {
                             HStack {
                                 Image(systemName: "square.and.pencil")
@@ -420,25 +423,24 @@ struct TodayView: View {
                             .padding(.vertical, 8)
                         }
                     }
-                }
 
-                // Morning Self-Care Section
-                if !morningSelfCare.isEmpty {
-                    selfCareSection(for: .morning, practices: morningSelfCare, logs: todayMorningSelfCareLogs)
-                }
+                    // Morning Self-Care Section
+                    if !morningSelfCare.isEmpty {
+                        selfCareSection(for: .morning, practices: morningSelfCare, logs: todayMorningSelfCareLogs)
+                    }
 
-                // Afternoon Self-Care Section
-                if !afternoonSelfCare.isEmpty {
-                    selfCareSection(for: .afternoon, practices: afternoonSelfCare, logs: todayAfternoonSelfCareLogs)
-                }
+                    // Afternoon Self-Care Section
+                    if !afternoonSelfCare.isEmpty {
+                        selfCareSection(for: .afternoon, practices: afternoonSelfCare, logs: todayAfternoonSelfCareLogs)
+                    }
 
-                // Evening Self-Care Section
-                if !eveningSelfCare.isEmpty {
-                    selfCareSection(for: .evening, practices: eveningSelfCare, logs: todayEveningSelfCareLogs)
-                }
+                    // Evening Self-Care Section
+                    if !eveningSelfCare.isEmpty {
+                        selfCareSection(for: .evening, practices: eveningSelfCare, logs: todayEveningSelfCareLogs)
+                    }
 
-                // Medications Section
-                if !scheduledMedications.isEmpty || !prnMedications.isEmpty {
+                    // Medications Section
+                    if !scheduledMedications.isEmpty || !prnMedications.isEmpty {
                     Section {
                         // Scheduled medications
                         ForEach(scheduledMedications) { medication in
@@ -626,6 +628,7 @@ struct TodayView: View {
                         }
                     }
                 }
+                } // end else (no todayEntry)
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Today")
@@ -857,6 +860,120 @@ struct TodayView: View {
                     .font(.subheadline)
                     .foregroundStyle(isCategoryComplete(timeOfDay) ? .green : .secondary)
             }
+        }
+    }
+}
+
+// MARK: - All Done Card
+
+private struct AllDoneCard: View {
+    let entry: SymptomEntry
+    let onEdit: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(.green)
+                Text("All done for today!")
+                    .font(.title2.bold())
+            }
+
+            VStack(spacing: 12) {
+                if let mood = entry.moodLevel {
+                    HStack {
+                        Text(mood.emoji)
+                            .font(.title)
+                        Text(mood.displayName)
+                            .font(.headline)
+                        Spacer()
+                    }
+                }
+
+                if let anxiety = entry.anxietyLevel, anxiety != .none {
+                    HStack {
+                        Label("Anxiety", systemImage: "brain.head.profile")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(anxiety.displayName)
+                            .font(.subheadline)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(anxietyColor(anxiety).opacity(0.2))
+                            .foregroundStyle(anxietyColor(anxiety))
+                            .clipShape(Capsule())
+                    }
+                }
+
+                if let anhedonia = entry.anhedoniaLevel, anhedonia != .none {
+                    HStack {
+                        Label("Anhedonia", systemImage: "sparkles")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(anhedonia.displayName)
+                            .font(.subheadline)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(Color.purple.opacity(0.2))
+                            .foregroundStyle(.purple)
+                            .clipShape(Capsule())
+                    }
+                }
+
+                if entry.sleepHours != nil || entry.exerciseMinutes != nil || entry.timeInDaylightMinutes != nil {
+                    Divider()
+
+                    HStack(spacing: 20) {
+                        if let sleep = entry.sleepHours {
+                            VStack(spacing: 4) {
+                                Image(systemName: "moon.zzz.fill")
+                                    .foregroundStyle(.indigo)
+                                Text(String(format: "%.1fh", sleep))
+                                    .font(.subheadline.bold())
+                            }
+                        }
+                        if let exercise = entry.exerciseMinutes {
+                            VStack(spacing: 4) {
+                                Image(systemName: "figure.run")
+                                    .foregroundStyle(.green)
+                                Text("\(Int(exercise))m")
+                                    .font(.subheadline.bold())
+                            }
+                        }
+                        if let daylight = entry.timeInDaylightMinutes {
+                            VStack(spacing: 4) {
+                                Image(systemName: "sun.max.fill")
+                                    .foregroundStyle(.orange)
+                                Text("\(Int(daylight))m")
+                                    .font(.subheadline.bold())
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+
+            Button(action: onEdit) {
+                Label("Edit Entry", systemImage: "pencil")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+
+    private func anxietyColor(_ level: AnxietyLevel) -> Color {
+        switch level {
+        case .none: return .green
+        case .mild: return .yellow
+        case .moderate: return .orange
+        case .severe: return .red
+        case .extreme: return .purple
         }
     }
 }
