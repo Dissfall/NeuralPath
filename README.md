@@ -1,35 +1,84 @@
 # NeuralPath
 
-A comprehensive iOS mental health symptom tracking application with HealthKit integration.
+A comprehensive iOS mental health tracking application built with SwiftUI and SwiftData. Features HealthKit integration, CloudKit sync, on-device ML-powered predictions, and extensive tracking capabilities for mood, anxiety, emotions, sleep, medications, substances, mindfulness, and self-care routines.
 
 ## Features
 
 ### Symptom Tracking
 - **Mood Tracking**: 5-level mood scale with emoji visualization (Very Low to Excellent)
-- **Anxiety Monitoring**: Track anxiety levels from None to Extreme
+- **Anxiety Monitoring**: Track anxiety levels from None to Extreme with color coding
 - **Anhedonia Assessment**: Monitor pleasure/interest loss with detailed descriptions
-- **Sleep Tracking**: Log sleep hours and quality ratings
-- **Medication Management**: Track medication adherence and effects
+- **Emotion Tracking**: 28 predefined emotions categorized by valence (positive, negative, neutral) with color-coded cloud selector
+- **Sleep Tracking**: Log sleep hours and quality ratings (automatic HealthKit import available)
+- **Exercise & Daylight**: Track physical activity and daylight exposure
+
+### Medication Management
+- **Medication Library**: Personal medication database with 200+ predefined medications
+- **Categories**: SSRIs, SNRIs, TCAs, MAOIs, Antipsychotics, Mood Stabilizers, Benzodiazepines, Sleep Aids, ADHD medications, Supplements, and more
+- **Scheduling**: Daily, twice daily, weekly, as-needed (PRN), and custom frequencies
+- **Reminders**: Per-medication notification reminders
+- **Quick Logging**: Fast medication logging from Today view
+
+### Substance Tracking
+- **Custom Substances**: Track coffee, alcohol, water, supplements, and more
+- **Units**: Multiple unit types (ml, oz, mg, g, cups, drinks, cigarettes)
+- **Quick Logging**: Easy substance logging with customizable amounts
+
+### Mindfulness Practices
+- **Practice Types**: Meditation, breathing exercises, yoga, journaling, body scan, relaxation, walking, gratitude
+- **Duration Tracking**: Log practice duration
+- **Reminders**: Customizable practice reminders
+- **Quick Logging**: Fast practice logging from Today view
+
+### Self-Care Routines
+- **Time-of-Day Categories**: Morning, afternoon, and evening routines
+- **Completion Tracking**: Visual progress for each time category
+- **Celebration Alerts**: Acknowledgment when completing all practices in a category
+- **Category-Level Reminders**: One reminder per time-of-day instead of per-practice
 
 ### HealthKit Integration
-- Automatic sleep data import from HealthKit
-- Read medication adherence from Health app (iOS 16+)
-- View medication history logged in Health app
+- Automatic sleep data import with quality scoring
 - Read heart rate and activity data
-- Save mindful sessions
+- Medication adherence from Health app (iOS 16+)
+- State of Mind integration (iOS 18+)
 - Secure permission-based access
 
+### CloudKit Sync
+- Automatic iCloud sync across devices
+- Graceful fallback to local-only storage if CloudKit unavailable
+- Sync status indicator in Settings
+
+### On-Device ML Analysis
+All machine learning processing happens locally using CoreML - no data is sent to external servers.
+
+**Tiered Activation System:**
+- **7+ entries**: Basic statistics and insights
+- **30+ entries**: Basic ML predictions enabled
+- **90+ entries**: Hybrid AI analysis (statistical + ML blended)
+- **180+ entries**: Personalized ML with full pattern detection
+
+**ML Features:**
+- Tomorrow's mood prediction with confidence scoring
+- 7-day mood trend forecast
+- Pattern detection (sleep correlation, exercise benefit, medication effects, seasonal trends)
+- Similar days matching using k-NN algorithm
+- Data quality assessment and capability tracking
+
 ### Visualization
-- **Charts & Graphs**: Visualize symptom trends over time
+- **Charts & Graphs**: Swift Charts visualization with multiple metrics
   - Line charts for mood and anhedonia
   - Bar charts for anxiety and sleep
-  - Multiple time ranges: Week, Month, 3 Months, Year
-- **Statistics**: View averages and trends for each metric
+  - Time ranges: Week, Month, 3 Months, Year
+  - Single metric or comparison mode
+- **Analysis Dashboard**: Health score, trends, factor impacts
+- **ML Insights**: Prediction cards, forecast charts, pattern cards
 
 ### Reminders
-- Daily notifications to log symptoms
-- Customizable reminder time
-- User-controlled notification preferences
+- Daily check-in notifications
+- Per-medication reminders with custom times
+- Mindfulness practice reminders
+- Self-care category reminders (morning, afternoon, evening)
+- Customizable notification preferences
 
 ### Data Export
 - Export data in CSV or JSON format
@@ -38,81 +87,128 @@ A comprehensive iOS mental health symptom tracking application with HealthKit in
 
 ## Architecture
 
-### Data Models
-- **SymptomEntry**: Main model storing all symptom data with SwiftData
-- **Medication**: Tracks individual medications with dosage and adherence
-- **MoodLevel/AnxietyLevel/AnhedoniaLevel**: Type-safe enums for symptom levels
+### SwiftData Model Layer
+The app uses SwiftData with an eleven-model schema:
 
-### Services
-- **HealthKitManager**: Handles all HealthKit integration
-  - Authorization management
-  - Sleep data fetching
-  - Mindful session logging
+**Core Models:**
+- `SymptomEntry`: Primary model with mood, anxiety, anhedonia, emotions, sleep, exercise, daylight, and notes
+- `Medication`: Historical medication data tied to symptom entries
+- `Substance`: Historical substance tracking tied to entries
 
-### Views
-- **ContentView**: Main tab-based interface
-- **AddSymptomView**: Form for creating new entries
-- **SymptomDetailView**: Detailed view of individual entries
-- **ChartsView**: Data visualization with Charts framework
-- **SettingsView**: App configuration and integrations
-- **ExportView**: Data export functionality
+**User Library Models:**
+- `UserMedication`: User-configured medication library
+- `UserSubstance`: User-configured substance library
+- `UserMindfulness`: User-configured mindfulness practices
+- `UserSelfCare`: User-configured self-care practices with time-of-day
+- `MedicationLog`, `SubstanceLog`, `MindfulnessLog`, `SelfCareLog`: Quick logging records
+
+### Services Layer
+- **CloudKitManager**: CloudKit availability and sync status management
+- **HealthKitManager**: HealthKit operations and authorization
+- **SimpleStatisticalAnalyzer**: Mathematical insights and trend detection
+- **HybridAnalysisEngine**: Combined statistical + ML analysis orchestration
+- **MedicationReminderService**: Medication notification scheduling
+- **MindfulnessReminderService**: Practice notification scheduling
+- **SelfCareReminderService**: Category-level self-care reminders
+
+### ML Analysis Layer (`Services/ML/`)
+- **MLFeatureVector**: 70+ feature schema covering emotions, medications, temporal patterns
+- **FeatureTransformers**: Data transformation pipeline for ML features
+- **MLDataExtractor**: SwiftData query coordination for feature extraction
+- **MLAnalysisEngine**: CoreML integration, predictions, pattern detection
+- **MLModelManager**: Model lifecycle management
+- **AnalysisBlender**: Statistical and ML result blending
+
+### View Architecture
+**4-Tab Navigation:**
+1. **Today**: Daily dashboard with medications, substances, mindfulness, self-care, and entry status
+2. **Entries**: Chronological entry list with add functionality
+3. **Charts**: Data visualization with time range selection
+4. **Analysis**: Health score, trends, ML predictions, and insights
 
 ## Technology Stack
 
 - **SwiftUI**: Modern declarative UI framework
-- **SwiftData**: Data persistence and management
+- **SwiftData**: Data persistence with CloudKit sync
 - **HealthKit**: Health data integration
+- **CloudKit**: iCloud sync
+- **CoreML**: On-device machine learning
 - **Charts**: Native data visualization
-- **UserNotifications**: Daily reminder system
+- **UserNotifications**: Reminder system
+- **StoreKit**: In-app donations
 
 ## Privacy & Security
 
 - All data stored locally with SwiftData
+- Optional CloudKit sync (can be disabled)
+- On-device ML processing - no data sent to servers
 - HealthKit integration with explicit user permission
-- Privacy-focused design with no cloud sync
 - User controls all data exports
+
+## Requirements
+
+- iOS 26.0 or later
+- Xcode 26.0 or later
+- HealthKit-capable device (for HealthKit features)
 
 ## Getting Started
 
 1. Open `NeuralPath.xcodeproj` in Xcode
-2. Select an iOS device or simulator (iOS 17.0+)
+2. Select an iOS device or simulator
 3. Build and run the project
-4. On first launch:
+4. Complete the onboarding flow:
    - Grant notification permissions for reminders
    - Connect to HealthKit for automatic sleep tracking
-   - Add your first symptom entry
+   - Add your medications, substances, and practices
+   - Configure your reminder preferences
+
+## Build Commands
+
+```bash
+# Open project in Xcode
+open NeuralPath.xcodeproj
+
+# Build from command line
+xcodebuild -project NeuralPath.xcodeproj -scheme NeuralPath -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+
+# Clean build folder
+xcodebuild clean -project NeuralPath.xcodeproj -scheme NeuralPath
+```
 
 ## Usage
 
+### Today View
+The Today tab provides a daily dashboard:
+- View today's entry status (mood, anxiety, anhedonia)
+- Check off scheduled medications
+- Log PRN (as-needed) medications
+- Track substance consumption with amounts
+- Log mindfulness practices
+- Complete self-care routines by time-of-day
+
 ### Adding an Entry
-1. Tap the `+` button on the main screen
+1. Tap the `+` button and select "Full Entry"
 2. Select the date/time for your entry
-3. Fill in relevant symptoms (all fields are optional)
-4. Import sleep data from HealthKit if available
-5. Add medications if needed
-6. Include notes for context
-7. Tap "Save"
+3. Fill in symptoms (all fields are optional)
+4. Select emotions from the cloud selector
+5. Import sleep data from HealthKit if available
+6. Add medications and substances
+7. Include notes for context
+8. Tap "Save"
 
-### Viewing Charts
-1. Switch to the "Charts" tab
-2. Select time range (Week/Month/3 Months/Year)
-3. Choose metric to visualize (Mood/Anxiety/Anhedonia/Sleep)
-4. Review statistics below the chart
+### Viewing Analysis
+1. Switch to the "Analysis" tab
+2. View your health score and trends
+3. See factor impact analysis
+4. Review ML predictions (if enough data)
+5. Explore detected patterns and similar days
 
-### Setting Up Reminders
-1. Tap the gear icon to open Settings
-2. Toggle "Daily Reminders"
-3. Set your preferred reminder time
-4. Grant notification permissions when prompted
-
-### Viewing Medication History from Health App
-1. Connect to HealthKit in Settings (if not already connected)
-2. Tap "Medication History" in Settings
-3. View medications logged in the Health app
-4. Select time range (Week/Month/3 Months/Year)
-5. See medication adherence status (Taken/Skipped)
-
-Note: Medications are logged in the Health app separately. NeuralPath can read this data but cannot write to it directly.
+### Managing Libraries
+Access Settings to manage:
+- Medication library (add/edit/remove medications)
+- Substance library (add/edit/remove substances)
+- Mindfulness practices (add/edit/remove practices)
+- Self-care routines (add/edit/remove practices by time-of-day)
 
 ### Exporting Data
 1. Open Settings
@@ -120,33 +216,57 @@ Note: Medications are logged in the Health app separately. NeuralPath can read t
 3. Choose format (CSV or JSON)
 4. Share via any available method
 
-## Requirements
-
-- iOS 17.0 or later
-- Xcode 16.0 or later
-- HealthKit-capable device (for HealthKit features)
-
 ## File Structure
 
 ```
 NeuralPath/
+├── Components/
+│   ├── EmotionCloudSelector.swift
+│   ├── SymptomEntryRow.swift
+│   └── WrappingHStack.swift
 ├── Models/
 │   ├── SymptomEntry.swift
-│   ├── Medication.swift
-│   ├── MoodLevel.swift
-│   ├── AnxietyLevel.swift
-│   └── AnhedoniaLevel.swift
+│   ├── Medication.swift / UserMedication.swift / MedicationLog.swift
+│   ├── Substance.swift / UserSubstance.swift / SubstanceLog.swift
+│   ├── UserMindfulness.swift / MindfulnessLog.swift
+│   ├── UserSelfCare.swift / SelfCareLog.swift
+│   ├── MoodLevel.swift / AnxietyLevel.swift / AnhedoniaLevel.swift
+│   ├── Emotion.swift
+│   ├── MedicationDatabase.swift / MedicationCategory.swift
+│   ├── MindfulnessCategory.swift
+│   └── SelfCareTimeOfDay.swift
+├── Services/
+│   ├── CloudKitManager.swift
+│   ├── HealthKitManager.swift
+│   ├── HybridAnalysisEngine.swift
+│   ├── SimpleStatisticalAnalyzer.swift
+│   ├── MedicationReminderService.swift
+│   ├── MindfulnessReminderService.swift
+│   ├── SelfCareReminderService.swift
+│   └── ML/
+│       ├── MLFeatureVector.swift
+│       ├── FeatureTransformers.swift
+│       ├── MLDataExtractor.swift
+│       ├── MLAnalysisEngine.swift
+│       ├── MLModelManager.swift
+│       └── AnalysisBlender.swift
 ├── Views/
+│   ├── TodayView.swift
 │   ├── AddSymptomView.swift
 │   ├── SymptomDetailView.swift
 │   ├── ChartsView.swift
+│   ├── ComprehensiveAnalysisView.swift
 │   ├── SettingsView.swift
+│   ├── OnboardingView.swift
+│   ├── WhatsNewView.swift
 │   ├── ExportView.swift
-│   └── MedicationHistoryView.swift
-├── Services/
-│   └── HealthKitManager.swift
+│   ├── *ManagementView.swift (Medication, Substance, Mindfulness, SelfCare)
+│   ├── QuickLog*.swift (Medication, Substance, Mindfulness, SelfCare)
+│   └── Components/
+│       └── MLAnalysisComponents.swift
 ├── ContentView.swift
 ├── NeuralPathApp.swift
+├── Localizable.xcstrings
 ├── Info.plist
 └── NeuralPath.entitlements
 ```
