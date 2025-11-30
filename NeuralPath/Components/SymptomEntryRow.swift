@@ -6,9 +6,29 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SymptomEntryRow: View {
     let entry: SymptomEntry
+
+    @Query private var allMindfulnessLogs: [MindfulnessLog]
+    @Query private var allSelfCareLogs: [SelfCareLog]
+
+    private var mindfulnessCount: Int {
+        guard let entryDate = entry.timestamp else { return 0 }
+        return allMindfulnessLogs.filter { log in
+            guard let logDate = log.timestamp else { return false }
+            return Calendar.current.isDate(logDate, inSameDayAs: entryDate)
+        }.count
+    }
+
+    private var selfCareCount: Int {
+        guard let entryDate = entry.timestamp else { return 0 }
+        return allSelfCareLogs.filter { log in
+            guard let logDate = log.timestamp else { return false }
+            return Calendar.current.isDate(logDate, inSameDayAs: entryDate)
+        }.count
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -67,6 +87,29 @@ struct SymptomEntryRow: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            if mindfulnessCount > 0 || selfCareCount > 0 {
+                HStack(spacing: 12) {
+                    if mindfulnessCount > 0 {
+                        Label("\(mindfulnessCount)", systemImage: "brain.head.profile")
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.purple.opacity(0.2))
+                            .foregroundStyle(.purple)
+                            .cornerRadius(8)
+                    }
+                    if selfCareCount > 0 {
+                        Label("\(selfCareCount)", systemImage: "heart.fill")
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.pink.opacity(0.2))
+                            .foregroundStyle(.pink)
+                            .cornerRadius(8)
+                    }
+                }
             }
 
             if let notes = entry.notes, !notes.isEmpty {

@@ -5,10 +5,28 @@ struct SymptomDetailView: View {
     let entry: SymptomEntry
 
     @Query private var allEntries: [SymptomEntry]
+    @Query private var allMindfulnessLogs: [MindfulnessLog]
+    @Query private var allSelfCareLogs: [SelfCareLog]
     @State private var showingEditSheet = false
 
     private var freshEntry: SymptomEntry? {
         allEntries.first { $0.id == entry.id }
+    }
+
+    private var mindfulnessLogsForDay: [MindfulnessLog] {
+        guard let entryDate = (freshEntry ?? entry).timestamp else { return [] }
+        return allMindfulnessLogs.filter { log in
+            guard let logDate = log.timestamp else { return false }
+            return Calendar.current.isDate(logDate, inSameDayAs: entryDate)
+        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+    }
+
+    private var selfCareLogsForDay: [SelfCareLog] {
+        guard let entryDate = (freshEntry ?? entry).timestamp else { return [] }
+        return allSelfCareLogs.filter { log in
+            guard let logDate = log.timestamp else { return false }
+            return Calendar.current.isDate(logDate, inSameDayAs: entryDate)
+        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
     }
 
     var body: some View {
@@ -187,6 +205,62 @@ struct SymptomDetailView: View {
                             }
                         }
                         .padding(.vertical, 4)
+                    }
+                }
+            }
+
+            if !mindfulnessLogsForDay.isEmpty {
+                Section("Mindfulness") {
+                    ForEach(mindfulnessLogsForDay) { log in
+                        HStack {
+                            if let category = log.userMindfulness?.category {
+                                Image(systemName: category.icon)
+                                    .foregroundStyle(category.color)
+                                    .frame(width: 24)
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(log.practiceName ?? "")
+                                    .font(.subheadline)
+                                if let time = log.timestamp {
+                                    Text(time, style: .time)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            Spacer()
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                        }
+                    }
+                }
+            }
+
+            if !selfCareLogsForDay.isEmpty {
+                Section("Self-Care") {
+                    ForEach(SelfCareTimeOfDay.allCases) { timeOfDay in
+                        let logsForTime = selfCareLogsForDay.filter { $0.timeOfDay == timeOfDay }
+                        if !logsForTime.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Label(timeOfDay.displayName, systemImage: timeOfDay.icon)
+                                    .font(.caption)
+                                    .foregroundStyle(timeOfDay.color)
+                                ForEach(logsForTime) { log in
+                                    HStack {
+                                        Text(log.practiceName ?? "")
+                                            .font(.subheadline)
+                                        Spacer()
+                                        if let time = log.timestamp {
+                                            Text(time, style: .time)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(.green)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
                     }
                 }
             }
