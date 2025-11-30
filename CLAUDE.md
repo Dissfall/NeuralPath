@@ -31,7 +31,7 @@ xcodebuild clean -project NeuralPath.xcodeproj -scheme NeuralPath
 The app uses SwiftData for persistence with a seven-model schema:
 
 **Core Models:**
-- **SymptomEntry** (`Models/SymptomEntry.swift`): Primary model with mood, anxiety, anhedonia, sleep data, exercise, daylight, notes, and relationships to medications/substances
+- **SymptomEntry** (`Models/SymptomEntry.swift`): Primary model with mood, anxiety, anhedonia, emotions, sleep data, exercise, daylight, notes, and relationships to medications/substances
 - **Medication** (`Models/Medication.swift`): Historical medication data tied to symptom entries (cascade delete)
 - **Substance** (`Models/Substance.swift`): Historical substance tracking tied to entries (cascade delete)
 
@@ -129,6 +129,11 @@ The app uses SwiftData for persistence with a seven-model schema:
 - `InsightsView.swift`: ML-powered predictions (requires 30+ entries)
 - `DeveloperMenuView.swift`: Test data generation (Easter egg: 7 rapid taps in Settings)
 
+**Reusable Components** (`Components/`):
+- `WrappingHStack.swift`: Custom Layout for multi-row flex layouts (used for emotion chips, substances)
+- `EmotionCloudSelector.swift`: Multi-select emotion picker with color-coded chips by valence
+- `SymptomEntryRow.swift`: List row for displaying symptom entries with mood, emotions, substances
+
 ### Onboarding & First Launch
 
 **OnboardingView** (`Views/OnboardingView.swift`):
@@ -151,7 +156,7 @@ The app uses SwiftData for persistence with a seven-model schema:
 - `checkForWhatsNew()`: Compares current app version with last seen using semantic version comparison
 - `WhatsNewContent` enum: Static configuration of features per version
 - Shown after onboarding or when app version upgrades
-- Version 1.1 features: Today View, Swipe Actions, PRN Medications, Quick Logging
+- Version 1.1 features: Emotion Cloud, Today View, Swipe Actions, PRN Medications, Privacy Notice
 
 ### Reminders System
 
@@ -172,6 +177,11 @@ The app uses SwiftData for persistence with a seven-model schema:
 - `MoodLevel`: 5 levels with emoji, iOS 18+ `stateOfMindValence` support
 - `AnxietyLevel`: 5 levels from None to Extreme with color coding
 - `AnhedoniaLevel`: 5 levels with detailed descriptions
+
+**Emotions:**
+- `Emotion` (`Models/Emotion.swift`): 28 predefined emotions with valence categorization
+- `EmotionValence`: positive, negative, neutral - determines chip color
+- Stored as `[String]` in SymptomEntry, accessed via `emotions` computed property
 
 **Medication/Substance:**
 - `MedicationCategory`: 9 categories (SSRI, SNRI, Benzodiazepine, etc.) with SF Symbol icons

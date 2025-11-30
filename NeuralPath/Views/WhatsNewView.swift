@@ -27,6 +27,12 @@ enum WhatsNewContent {
             version: "1.1",
             features: [
                 WhatsNewFeature(
+                    icon: "cloud.fill",
+                    iconColor: .cyan,
+                    title: "Emotion Cloud",
+                    description: "Track your feelings with a beautiful cloud of emotions. Select multiple feelings colored by type: positive, negative, or neutral."
+                ),
+                WhatsNewFeature(
                     icon: "calendar",
                     iconColor: .blue,
                     title: "Today View",
@@ -45,10 +51,10 @@ enum WhatsNewContent {
                     description: "Track as-needed medications separately with support for multiple daily doses."
                 ),
                 WhatsNewFeature(
-                    icon: "clock",
-                    iconColor: .purple,
-                    title: "Quick Logging",
-                    description: "Log medications and substances directly from the Today view with a single tap."
+                    icon: "lock.shield.fill",
+                    iconColor: .teal,
+                    title: "Your Privacy Matters",
+                    description: "All your data stays on your device. We don't collect any personal information."
                 )
             ]
         )

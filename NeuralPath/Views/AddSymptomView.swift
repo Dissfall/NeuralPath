@@ -27,6 +27,7 @@ struct AddSymptomView: View {
     @State private var moodLevel: MoodLevel?
     @State private var anxietyLevel: AnxietyLevel?
     @State private var anhedoniaLevel: AnhedoniaLevel?
+    @State private var selectedEmotions: Set<Emotion> = []
     @State private var sleepQualityRating: Int?
     @State private var sleepHours: String = ""
     @State private var timeInDaylightMinutes: String = ""
@@ -139,6 +140,7 @@ struct AddSymptomView: View {
                 )
 
                 MoodSection(moodLevel: $moodLevel)
+                EmotionSection(selectedEmotions: $selectedEmotions)
                 AnxietySection(anxietyLevel: $anxietyLevel)
                 AnhedoniaSection(anhedoniaLevel: $anhedoniaLevel)
                 SleepSection(sleepHours: $sleepHours, sleepQualityRating: $sleepQualityRating)
@@ -530,6 +532,7 @@ struct AddSymptomView: View {
         exerciseMinutes =
             entry.exerciseMinutes.map { String(format: "%.0f", $0) } ?? ""
         notes = entry.notes ?? ""
+        selectedEmotions = Set(entry.emotions)
 
         var takenMeds: [UUID: Date] = [:]
         entry.medications?
@@ -666,7 +669,8 @@ struct AddSymptomView: View {
             sleepHours: Double(sleepHours),
             timeInDaylightMinutes: Double(timeInDaylightMinutes),
             exerciseMinutes: Double(exerciseMinutes),
-            notes: notes
+            notes: notes,
+            selectedEmotions: selectedEmotions.isEmpty ? nil : selectedEmotions.map { $0.rawValue }
         )
 
         let meds = takenMedications.compactMap {
@@ -744,6 +748,7 @@ struct AddSymptomView: View {
         entry.timeInDaylightMinutes = Double(timeInDaylightMinutes)
         entry.exerciseMinutes = Double(exerciseMinutes)
         entry.notes = notes
+        entry.selectedEmotions = selectedEmotions.isEmpty ? nil : selectedEmotions.map { $0.rawValue }
 
         // Delete old medications
         if let oldMeds = entry.medications {
@@ -910,6 +915,39 @@ struct MoodSection: View {
                     Text("\(level.emoji) \(level.displayName)").tag(level as MoodLevel?)
                 }
             }
+        }
+    }
+}
+
+struct EmotionSection: View {
+    @Binding var selectedEmotions: Set<Emotion>
+
+    private var emotionsSummary: String {
+        if selectedEmotions.isEmpty {
+            return "Tap to select"
+        }
+        let names = selectedEmotions.map { $0.displayName }.sorted()
+        if names.count <= 3 {
+            return names.joined(separator: ", ")
+        }
+        return "\(names.prefix(2).joined(separator: ", ")) +\(names.count - 2)"
+    }
+
+    var body: some View {
+        Section {
+            DisclosureGroup {
+                EmotionCloudSelector(selectedEmotions: $selectedEmotions)
+                    .padding(.vertical, 8)
+            } label: {
+                HStack {
+                    Text("Feelings")
+                    Spacer()
+                    Text(emotionsSummary)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } footer: {
+            Text("Select all emotions that describe how you felt today")
         }
     }
 }

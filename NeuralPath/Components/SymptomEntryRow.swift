@@ -54,6 +54,21 @@ struct SymptomEntryRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+            if !entry.emotions.isEmpty {
+                WrappingHStack(horizontalSpacing: 6, verticalSpacing: 6) {
+                    ForEach(entry.emotions) { emotion in
+                        Text(emotion.displayName)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(emotion.color.opacity(0.2))
+                            .foregroundStyle(emotion.color)
+                            .cornerRadius(8)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             if let notes = entry.notes, !notes.isEmpty {
                 Text(notes)
                     .font(.caption)

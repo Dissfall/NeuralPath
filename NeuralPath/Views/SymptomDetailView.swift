@@ -40,6 +40,22 @@ struct SymptomDetailView: View {
                 }
             }
 
+            if !displayEntry.emotions.isEmpty {
+                Section("Feelings") {
+                    WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+                        ForEach(displayEntry.emotions) { emotion in
+                            Text(emotion.displayName)
+                                .font(.subheadline)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(emotion.color.opacity(0.2))
+                                .foregroundStyle(emotion.color)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+            }
+
             if let anxiety = displayEntry.anxietyLevel {
                 Section("Anxiety") {
                     HStack {
