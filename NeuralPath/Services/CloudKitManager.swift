@@ -113,4 +113,39 @@ class CloudKitManager {
             return false
         }
     }
+
+    @MainActor
+    func deleteAllData(modelContext: ModelContext) async throws {
+        // Delete all SymptomEntry (cascades to Medication, Substance)
+        let entries = try modelContext.fetch(FetchDescriptor<SymptomEntry>())
+        for entry in entries {
+            modelContext.delete(entry)
+        }
+
+        // Delete all UserMedication (cascades to MedicationLog)
+        let meds = try modelContext.fetch(FetchDescriptor<UserMedication>())
+        for med in meds {
+            modelContext.delete(med)
+        }
+
+        // Delete all UserSubstance (cascades to SubstanceLog)
+        let subs = try modelContext.fetch(FetchDescriptor<UserSubstance>())
+        for sub in subs {
+            modelContext.delete(sub)
+        }
+
+        // Delete all UserMindfulness (cascades to MindfulnessLog)
+        let mindfulness = try modelContext.fetch(FetchDescriptor<UserMindfulness>())
+        for m in mindfulness {
+            modelContext.delete(m)
+        }
+
+        // Delete all UserSelfCare (cascades to SelfCareLog)
+        let selfCare = try modelContext.fetch(FetchDescriptor<UserSelfCare>())
+        for s in selfCare {
+            modelContext.delete(s)
+        }
+
+        try modelContext.save()
+    }
 }

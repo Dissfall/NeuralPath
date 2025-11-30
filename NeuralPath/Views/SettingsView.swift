@@ -3,12 +3,15 @@ import UserNotifications
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @State private var dailyReminderEnabled = false
     @State private var dailyReminderTime = Date()
     @State private var medicationReminderEnabled = false
     @State private var healthKitAuthorized = false
     @State private var showingExport = false
     @State private var showingDonation = false
+    @State private var showingDeleteConfirmation = false
+    @State private var isDeleting = false
 
     // Developer menu states
     @State private var tapCount = 0
@@ -147,6 +150,21 @@ struct SettingsView: View {
                     } label: {
                         Label("Export Data", systemImage: "square.and.arrow.up")
                     }
+
+                    Button(role: .destructive) {
+                        showingDeleteConfirmation = true
+                    } label: {
+                        if isDeleting {
+                            HStack {
+                                Label("Deleting...", systemImage: "trash")
+                                Spacer()
+                                ProgressView()
+                            }
+                        } else {
+                            Label("Delete All Data", systemImage: "trash")
+                        }
+                    }
+                    .disabled(isDeleting)
                 } header: {
                     Text("Data")
                 }
@@ -255,6 +273,20 @@ struct SettingsView: View {
                     onNeverShow: { showingDonation = false }
                 )
             }
+            .confirmationDialog(
+                "Delete All Data",
+                isPresented: $showingDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Delete Everything", role: .destructive) {
+                    Task {
+                        await deleteAllData()
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("This will permanently delete all your entries, medications, substances, mindfulness practices, and self-care routines from this device and iCloud. This cannot be undone.")
+            }
             #if DEBUG
             .sheet(isPresented: $showDeveloperMenu) {
                 DeveloperMenuView()
@@ -346,6 +378,17 @@ struct SettingsView: View {
             healthKitAuthorized = true
         } catch {
             print("Failed to authorize HealthKit: \(error)")
+        }
+    }
+
+    private func deleteAllData() async {
+        isDeleting = true
+        defer { isDeleting = false }
+
+        do {
+            try await CloudKitManager.shared.deleteAllData(modelContext: modelContext)
+        } catch {
+            print("Failed to delete data: \(error)")
         }
     }
 

@@ -20,6 +20,9 @@ class TestDataGenerator {
         var includeSleep: Bool = true
         var includeExercise: Bool = true
         var includeDaylight: Bool = true
+        var includeEmotions: Bool = true
+        var includeMindfulness: Bool = true
+        var includeSelfCare: Bool = true
     }
 
     private let modelContext: ModelContext
@@ -31,9 +34,11 @@ class TestDataGenerator {
     // MARK: - Main Generation Method
 
     func generateTestData(options: GenerationOptions) async throws {
-        // Create or get test user medications
+        // Create or get test user data
         let medications = options.includeMedications ? try await setupTestMedications() : []
         let substances = options.includeSubstances ? try await setupTestSubstances() : []
+        let mindfulnessPractices = options.includeMindfulness ? try await setupTestMindfulnessPractices() : []
+        let selfCarePractices = options.includeSelfCare ? try await setupTestSelfCarePractices() : []
 
         // Generate entries for each day
         let endDate = Date()
@@ -43,6 +48,8 @@ class TestDataGenerator {
         var dayIndex = 0
 
         while currentDate <= endDate {
+            let progress = Double(dayIndex) / Double(options.numberOfDays)
+
             let entry = generateEntry(
                 for: currentDate,
                 dayIndex: dayIndex,
@@ -54,6 +61,26 @@ class TestDataGenerator {
             )
 
             modelContext.insert(entry)
+
+            // Generate mindfulness logs for this day
+            if options.includeMindfulness && !mindfulnessPractices.isEmpty {
+                generateMindfulnessLogs(
+                    for: currentDate,
+                    practices: mindfulnessPractices,
+                    pattern: options.pattern,
+                    progress: progress
+                )
+            }
+
+            // Generate self-care logs for this day
+            if options.includeSelfCare && !selfCarePractices.isEmpty {
+                generateSelfCareLogs(
+                    for: currentDate,
+                    practices: selfCarePractices,
+                    pattern: options.pattern,
+                    progress: progress
+                )
+            }
 
             currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
             dayIndex += 1
@@ -138,6 +165,93 @@ class TestDataGenerator {
         try modelContext.save()
 
         return [coffee, alcohol]
+    }
+
+    private func setupTestMindfulnessPractices() async throws -> [UserMindfulness] {
+        let descriptor = FetchDescriptor<UserMindfulness>(
+            predicate: #Predicate { practice in
+                practice.name?.contains("[TEST]") == true
+            }
+        )
+
+        let existing = try modelContext.fetch(descriptor)
+        if !existing.isEmpty {
+            return existing
+        }
+
+        let meditation = UserMindfulness(
+            name: "[TEST] Meditation",
+            category: .meditation,
+            durationMinutes: 10,
+            notes: "Test mindfulness practice",
+            isActive: true
+        )
+
+        let breathing = UserMindfulness(
+            name: "[TEST] Breathing",
+            category: .breathing,
+            durationMinutes: 5,
+            notes: "Test breathing exercise",
+            isActive: true
+        )
+
+        let yoga = UserMindfulness(
+            name: "[TEST] Yoga",
+            category: .yoga,
+            durationMinutes: 20,
+            notes: "Test yoga practice",
+            isActive: true
+        )
+
+        modelContext.insert(meditation)
+        modelContext.insert(breathing)
+        modelContext.insert(yoga)
+
+        try modelContext.save()
+
+        return [meditation, breathing, yoga]
+    }
+
+    private func setupTestSelfCarePractices() async throws -> [UserSelfCare] {
+        let descriptor = FetchDescriptor<UserSelfCare>(
+            predicate: #Predicate { practice in
+                practice.name?.contains("[TEST]") == true
+            }
+        )
+
+        let existing = try modelContext.fetch(descriptor)
+        if !existing.isEmpty {
+            return existing
+        }
+
+        let morning = UserSelfCare(
+            name: "[TEST] Morning Stretch",
+            timeOfDay: .morning,
+            notes: "Test morning self-care",
+            isActive: true
+        )
+
+        let afternoon = UserSelfCare(
+            name: "[TEST] Lunch Walk",
+            timeOfDay: .afternoon,
+            notes: "Test afternoon self-care",
+            isActive: true
+        )
+
+        let evening = UserSelfCare(
+            name: "[TEST] Evening Journal",
+            timeOfDay: .evening,
+            notes: "Test evening self-care",
+            isActive: true
+        )
+
+        modelContext.insert(morning)
+        modelContext.insert(afternoon)
+        modelContext.insert(evening)
+
+        try modelContext.save()
+
+        return [morning, afternoon, evening]
     }
 
     // MARK: - Entry Generation
@@ -247,7 +361,120 @@ class TestDataGenerator {
             entry.substances = subs
         }
 
+        // Add emotions based on mood
+        if options.includeEmotions {
+            entry.selectedEmotions = generateEmotions(mood: mood, pattern: pattern)
+        }
+
         return entry
+    }
+
+    // MARK: - Emotions Generation
+
+    private func generateEmotions(mood: Int, pattern: DataPattern) -> [String] {
+        var emotions: [String] = []
+        let emotionCount = Int.random(in: 1...3)
+
+        let positiveEmotions: [Emotion] = [.happy, .grateful, .calm, .hopeful, .confident, .content, .peaceful]
+        let negativeEmotions: [Emotion] = [.sad, .anxious, .frustrated, .overwhelmed, .lonely, .irritable]
+        let neutralEmotions: [Emotion] = [.tired, .restless, .reflective, .bored, .indifferent]
+
+        for _ in 0..<emotionCount {
+            let emotion: Emotion
+            if mood >= 4 {
+                emotion = positiveEmotions.randomElement() ?? .calm
+            } else if mood <= 2 {
+                emotion = negativeEmotions.randomElement() ?? .sad
+            } else {
+                let allOptions = neutralEmotions + (Double.random(in: 0...1) > 0.5 ? positiveEmotions : negativeEmotions)
+                emotion = allOptions.randomElement() ?? .tired
+            }
+            if !emotions.contains(emotion.rawValue) {
+                emotions.append(emotion.rawValue)
+            }
+        }
+
+        return emotions
+    }
+
+    // MARK: - Log Generation
+
+    private func generateMindfulnessLogs(
+        for date: Date,
+        practices: [UserMindfulness],
+        pattern: DataPattern,
+        progress: Double
+    ) {
+        let baseCompletionRate: Double
+        switch pattern {
+        case .improving:
+            baseCompletionRate = 0.5 + progress * 0.3
+        case .worsening:
+            baseCompletionRate = 0.8 - progress * 0.4
+        case .stable:
+            baseCompletionRate = 0.6
+        case .variable:
+            baseCompletionRate = Double.random(in: 0.4...0.8)
+        }
+
+        for practice in practices {
+            if Double.random(in: 0...1) < baseCompletionRate {
+                let hour = Int.random(in: 7...14)
+                let logTime = Calendar.current.date(bySettingHour: hour, minute: Int.random(in: 0...59), second: 0, of: date) ?? date
+
+                let log = MindfulnessLog(
+                    userMindfulness: practice,
+                    practiceName: practice.name?.replacingOccurrences(of: "[TEST] ", with: ""),
+                    timestamp: logTime,
+                    notes: "Test log"
+                )
+                modelContext.insert(log)
+            }
+        }
+    }
+
+    private func generateSelfCareLogs(
+        for date: Date,
+        practices: [UserSelfCare],
+        pattern: DataPattern,
+        progress: Double
+    ) {
+        let baseCompletionRate: Double
+        switch pattern {
+        case .improving:
+            baseCompletionRate = 0.6 + progress * 0.3
+        case .worsening:
+            baseCompletionRate = 0.9 - progress * 0.4
+        case .stable:
+            baseCompletionRate = 0.7
+        case .variable:
+            baseCompletionRate = Double.random(in: 0.5...0.9)
+        }
+
+        for practice in practices {
+            if Double.random(in: 0...1) < baseCompletionRate {
+                let hour: Int
+                switch practice.timeOfDay {
+                case .morning:
+                    hour = Int.random(in: 6...9)
+                case .afternoon:
+                    hour = Int.random(in: 12...15)
+                case .evening:
+                    hour = Int.random(in: 19...22)
+                }
+
+                let logTime = Calendar.current.date(bySettingHour: hour, minute: Int.random(in: 0...59), second: 0, of: date) ?? date
+
+                let log = SelfCareLog(
+                    userSelfCare: practice,
+                    practiceName: practice.name?.replacingOccurrences(of: "[TEST] ", with: ""),
+                    timeOfDay: practice.timeOfDay,
+                    timestamp: logTime,
+                    notes: "Test log"
+                )
+                modelContext.insert(log)
+            }
+        }
     }
 
     // MARK: - Symptom Calculation
@@ -379,6 +606,53 @@ class TestDataGenerator {
         let testSubs = try modelContext.fetch(subDescriptor)
         for sub in testSubs {
             modelContext.delete(sub)
+        }
+
+        // Delete test mindfulness practices (logs deleted via cascade)
+        let mindfulnessDescriptor = FetchDescriptor<UserMindfulness>(
+            predicate: #Predicate { practice in
+                practice.name?.contains("[TEST]") == true
+            }
+        )
+
+        let testMindfulness = try modelContext.fetch(mindfulnessDescriptor)
+        for practice in testMindfulness {
+            modelContext.delete(practice)
+        }
+
+        // Delete test self-care practices (logs deleted via cascade)
+        let selfCareDescriptor = FetchDescriptor<UserSelfCare>(
+            predicate: #Predicate { practice in
+                practice.name?.contains("[TEST]") == true
+            }
+        )
+
+        let testSelfCare = try modelContext.fetch(selfCareDescriptor)
+        for practice in testSelfCare {
+            modelContext.delete(practice)
+        }
+
+        // Delete orphan test logs (in case they weren't cascade deleted)
+        let mindfulnessLogDescriptor = FetchDescriptor<MindfulnessLog>(
+            predicate: #Predicate { log in
+                log.notes?.contains("Test log") == true
+            }
+        )
+
+        let testMindfulnessLogs = try modelContext.fetch(mindfulnessLogDescriptor)
+        for log in testMindfulnessLogs {
+            modelContext.delete(log)
+        }
+
+        let selfCareLogDescriptor = FetchDescriptor<SelfCareLog>(
+            predicate: #Predicate { log in
+                log.notes?.contains("Test log") == true
+            }
+        )
+
+        let testSelfCareLogs = try modelContext.fetch(selfCareLogDescriptor)
+        for log in testSelfCareLogs {
+            modelContext.delete(log)
         }
 
         try modelContext.save()
