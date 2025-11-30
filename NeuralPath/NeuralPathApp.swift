@@ -31,6 +31,11 @@ func rescheduleRemindersIfNeeded() {
         MedicationReminderService.shared.scheduleMedicationRemindersFromContext()
     }
 
+    // Re-schedule mindfulness reminders
+    if UserDefaults.standard.bool(forKey: "mindfulnessReminderEnabled") {
+        MindfulnessReminderService.shared.scheduleMindfulnessRemindersFromContext()
+    }
+
     // Re-schedule daily entry reminder
     if UserDefaults.standard.bool(forKey: "dailyReminderEnabled"),
        let savedTime = UserDefaults.standard.object(forKey: "dailyReminderTime") as? Date {
@@ -71,7 +76,9 @@ struct NeuralPathApp: App {
             UserMedication.self,
             UserSubstance.self,
             MedicationLog.self,
-            SubstanceLog.self
+            SubstanceLog.self,
+            UserMindfulness.self,
+            MindfulnessLog.self
         ])
 
         // Get the Application Support directory and ensure it exists

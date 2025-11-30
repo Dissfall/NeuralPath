@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData. It enables users to track mood, anxiety, anhedonia, sleep, exercise, daylight exposure, medications, and substances. Features include HealthKit integration for automatic sleep data import, CloudKit sync, and Core ML-powered predictions.
+NeuralPath is an iOS mental health tracking app built with SwiftUI and SwiftData. It enables users to track mood, anxiety, anhedonia, sleep, exercise, daylight exposure, medications, substances, and mindfulness practices. Features include HealthKit integration for automatic sleep data import, CloudKit sync, and statistical analysis.
 
 ## Build & Run Commands
 
@@ -28,7 +28,7 @@ xcodebuild clean -project NeuralPath.xcodeproj -scheme NeuralPath
 
 ### SwiftData Model Layer
 
-The app uses SwiftData for persistence with a seven-model schema:
+The app uses SwiftData for persistence with a nine-model schema:
 
 **Core Models:**
 - **SymptomEntry** (`Models/SymptomEntry.swift`): Primary model with mood, anxiety, anhedonia, emotions, sleep data, exercise, daylight, notes, and relationships to medications/substances
@@ -38,8 +38,10 @@ The app uses SwiftData for persistence with a seven-model schema:
 **User Library Models:**
 - **UserMedication** (`Models/UserMedication.swift`): User-configured medication library with category, frequency, active status
 - **UserSubstance** (`Models/UserSubstance.swift`): User-configured substance library with default units
+- **UserMindfulness** (`Models/UserMindfulness.swift`): User-configured mindfulness practices with category, duration, reminders
 - **MedicationLog** (`Models/MedicationLog.swift`): Quick medication logging records
 - **SubstanceLog** (`Models/SubstanceLog.swift`): Quick substance logging records
+- **MindfulnessLog** (`Models/MindfulnessLog.swift`): Quick mindfulness practice logging records
 
 **Model Container Setup:** Configured in `NeuralPathApp.swift` with three-tier fallback:
 1. CloudKit-enabled configuration (if available)
@@ -78,6 +80,12 @@ The app uses SwiftData for persistence with a seven-model schema:
 - Identifier prefix: `"medicationReminder_"` + medication UUID
 - `requestNotificationPermission()`: Requests authorization for alerts, sound, badge
 
+**MindfulnessReminderService** (`Services/MindfulnessReminderService.swift`):
+- Singleton for scheduling mindfulness practice notifications
+- `scheduleMindfulnessReminders()`: Schedules reminders for practices with `reminderEnabled=true`
+- Identifier prefix: `"mindfulnessReminder_"` + practice UUID
+- UserDefaults key: `"mindfulnessReminderEnabled"` for global toggle
+
 ### Medication Database
 
 **MedicationDatabase** (`Models/MedicationDatabase.swift`):
@@ -95,9 +103,9 @@ The app uses SwiftData for persistence with a seven-model schema:
 **Navigation structure:** 4-tab TabView
 
 **Tab 0 - Today:**
-- `TodayView.swift`: Daily dashboard showing today's medications, substances, and entry status
-- Sections: Today's Entry (mood/anxiety/anhedonia), Scheduled Medications (checkbox to mark taken), PRN Medications (as-needed logging), Substances (with amounts)
-- Quick logging: Tap checkbox to create `MedicationLog`, swipe to edit time/amount or delete
+- `TodayView.swift`: Daily dashboard showing today's medications, substances, mindfulness, and entry status
+- Sections: Today's Entry (mood/anxiety/anhedonia), Scheduled Medications (checkbox to mark taken), PRN Medications (as-needed logging), Substances (with amounts), Mindfulness (practice logging)
+- Quick logging: Tap checkbox to create logs, swipe to edit time/amount or delete
 - Uses `@Query` with date predicates to filter today's data
 
 **Tab 1 - Entries:**
@@ -113,10 +121,11 @@ The app uses SwiftData for persistence with a seven-model schema:
 - `ComprehensiveAnalysisView.swift`: Health score, trends, factor impacts using SimpleStatisticalAnalyzer
 
 **Management Views:**
-- `SettingsView.swift`: Reminders, medication/substance management, CloudKit status, export, hidden developer menu
+- `SettingsView.swift`: Reminders, medication/substance/mindfulness management, CloudKit status, export, hidden developer menu
 - `MedicationManagementView.swift` / `AddUserMedicationView.swift`: Medication library CRUD
 - `SubstanceManagementView.swift` / `AddUserSubstanceView.swift`: Substance library CRUD
-- `QuickLogMedicationView.swift` / `QuickLogSubstanceView.swift`: Quick logging interfaces
+- `MindfulnessManagementView.swift` / `AddUserMindfulnessView.swift`: Mindfulness practice library CRUD
+- `QuickLogMedicationView.swift` / `QuickLogSubstanceView.swift` / `QuickLogMindfulnessView.swift`: Quick logging interfaces
 
 **Utility Views:**
 - `CloudKitStatusView.swift`: Sync status display
@@ -132,14 +141,15 @@ The app uses SwiftData for persistence with a seven-model schema:
 
 **OnboardingView** (`Views/OnboardingView.swift`):
 - `OnboardingManager`: Manages state via UserDefaults key `"hasCompletedOnboarding"`
-- 7 sequential steps via TabView:
+- 8 sequential steps via TabView:
   1. **Welcome**: Introduction to NeuralPath
   2. **HealthKit**: Request Apple Health authorization for sleep/exercise
   3. **Medications**: Add medications (manual entry or HealthKit import)
   4. **Substances**: Quick-add common substances (Coffee, Alcohol, Water, Tea, Energy Drink)
-  5. **Reminders**: Configure daily entry and medication reminder times
-  6. **How to Use**: Interactive 5-screen tutorial carousel
-  7. **Complete**: Final tips and get started
+  5. **Mindfulness**: Quick-add mindfulness practices (Meditation, Breathing, Yoga, Journaling, etc.)
+  6. **Reminders**: Configure daily entry and medication reminder times
+  7. **How to Use**: Interactive 5-screen tutorial carousel
+  8. **Complete**: Final tips and get started
 - Shown via `fullScreenCover` in `NeuralPathApp.swift` on first launch
 - `resetOnboarding()` available for testing via Developer Menu
 
@@ -181,6 +191,10 @@ The app uses SwiftData for persistence with a seven-model schema:
 - `MedicationCategory`: 9 categories (SSRI, SNRI, Benzodiazepine, etc.) with SF Symbol icons
 - `MedicationFrequency`: 7 options (daily, twice daily, weekly, as needed, etc.)
 - `SubstanceUnit`: 8 units (ml, oz, mg, g, cups, drinks, cigarettes, other)
+
+**Mindfulness:**
+- `MindfulnessCategory` (`Models/MindfulnessCategory.swift`): 8 practice types with SF Symbol icons
+- Categories: meditation, breathing, yoga, journaling, bodyScan, relaxation, walking, gratitude
 
 ## Required Permissions
 

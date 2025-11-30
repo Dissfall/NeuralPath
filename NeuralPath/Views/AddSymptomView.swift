@@ -15,10 +15,16 @@ struct AddSymptomView: View {
         filter: #Predicate<UserSubstance> { $0.isActive == true },
         sort: \UserSubstance.name
     ) private var userSubstances: [UserSubstance]
+    @Query(
+        filter: #Predicate<UserMindfulness> { $0.isActive == true },
+        sort: \UserMindfulness.name
+    ) private var userMindfulness: [UserMindfulness]
     @Query(sort: \MedicationLog.timestamp, order: .forward) private
         var allMedicationLogs: [MedicationLog]
     @Query(sort: \SubstanceLog.timestamp, order: .forward) private
         var allSubstanceLogs: [SubstanceLog]
+    @Query(sort: \MindfulnessLog.timestamp, order: .forward) private
+        var allMindfulnessLogs: [MindfulnessLog]
 
     let entryToEdit: SymptomEntry?
 
@@ -35,6 +41,7 @@ struct AddSymptomView: View {
     @State private var notes: String = ""
     @State private var takenMedications: [UUID: Date] = [:]
     @State private var takenSubstances: [SubstanceEntry] = []
+    @State private var loggedMindfulness: [MindfulnessLogEntry] = []
     @State private var isLoadingSleepData = false
     @State private var showingHealthKitImport = false
 
@@ -51,6 +58,10 @@ struct AddSymptomView: View {
     // Add substance state
     @State private var substanceToAdd: UserSubstance?
     @State private var newSubstanceAmount: String = "1"
+
+    // Edit states for mindfulness
+    @State private var mindfulnessToEditTime: MindfulnessLogEntry?
+    @State private var editMindfulnessTime: Date = Date()
 
     // Time-based warnings
     @State private var showEarlyMorningAlert = false
@@ -107,6 +118,13 @@ struct AddSymptomView: View {
             return "None"
         }
         return "\(takenSubstances.count) log\(takenSubstances.count == 1 ? "" : "s")"
+    }
+
+    private var mindfulnessSummary: String {
+        if loggedMindfulness.isEmpty {
+            return "None"
+        }
+        return "\(loggedMindfulness.count) session\(loggedMindfulness.count == 1 ? "" : "s")"
     }
 
     private var hasEntryForSelectedDate: Bool {
@@ -331,6 +349,79 @@ struct AddSymptomView: View {
                     }
                 }
 
+                // Mindfulness Section
+                if !userMindfulness.isEmpty || !loggedMindfulness.isEmpty {
+                    Section {
+                        ForEach(loggedMindfulness) { entry in
+                            EntryMindfulnessRow(entry: entry, userMindfulness: userMindfulness)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        loggedMindfulness.removeAll { $0.id == entry.id }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+
+                                    Button {
+                                        editMindfulnessTime = entry.timestamp
+                                        mindfulnessToEditTime = entry
+                                    } label: {
+                                        Label("Time", systemImage: "clock")
+                                    }
+                                    .tint(.blue)
+                                }
+                        }
+
+                        if !userMindfulness.isEmpty {
+                            Menu {
+                                ForEach(userMindfulness) { practice in
+                                    Button {
+                                        guard let practiceId = practice.id else { return }
+                                        loggedMindfulness.append(
+                                            MindfulnessLogEntry(
+                                                userMindfulnessId: practiceId,
+                                                timestamp: Date()
+                                            )
+                                        )
+                                    } label: {
+                                        Label(practice.name ?? "Unknown", systemImage: practice.category?.icon ?? "brain.head.profile")
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(.blue)
+                                    Text("Log Practice")
+                                        .foregroundStyle(.blue)
+                                    Spacer()
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Label("Mindfulness", systemImage: "brain.head.profile")
+                            Spacer()
+                            Text(mindfulnessSummary)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } else {
+                    Section("Mindfulness") {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("No mindfulness practices in your library")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            NavigationLink {
+                                MindfulnessManagementView()
+                            } label: {
+                                Label("Add Practices in Settings", systemImage: "gear")
+                                    .font(.caption)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+
                 NotesSection(notes: $notes)
             }
             .navigationTitle(isEditMode ? "Edit Entry" : "New Entry")
@@ -479,6 +570,26 @@ struct AddSymptomView: View {
                     Text("\(substance.name ?? "Unknown") (\(substance.defaultUnit?.abbreviation ?? ""))")
                 }
             }
+            // Edit mindfulness time sheet
+            .sheet(isPresented: Binding(
+                get: { mindfulnessToEditTime != nil },
+                set: { if !$0 { mindfulnessToEditTime = nil } }
+            )) {
+                if let entry = mindfulnessToEditTime {
+                    EntryEditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: userMindfulness.first { $0.id == entry.userMindfulnessId }?.name ?? "Practice",
+                        time: $editMindfulnessTime,
+                        onSave: {
+                            if let index = loggedMindfulness.firstIndex(where: { $0.id == entry.id }) {
+                                loggedMindfulness[index].timestamp = editMindfulnessTime
+                            }
+                            mindfulnessToEditTime = nil
+                        },
+                        onCancel: { mindfulnessToEditTime = nil }
+                    )
+                }
+            }
         }
     }
 
@@ -619,6 +730,27 @@ struct AddSymptomView: View {
             }
         }
         takenSubstances = substanceEntries
+
+        // Load mindfulness logs for the selected date
+        let mindfulnessLogsForDate = allMindfulnessLogs.filter { log in
+            (log.timestamp ?? Date.distantPast) >= startOfDay && (log.timestamp ?? Date.distantFuture) < endOfDay
+        }
+
+        var mindfulnessEntries: [MindfulnessLogEntry] = []
+        for log in mindfulnessLogsForDate {
+            if let userPractice = userMindfulness.first(where: {
+                $0.name == log.practiceName
+            }),
+            let practiceId = userPractice.id {
+                mindfulnessEntries.append(
+                    MindfulnessLogEntry(
+                        userMindfulnessId: practiceId,
+                        timestamp: log.timestamp ?? Date()
+                    )
+                )
+            }
+        }
+        loggedMindfulness = mindfulnessEntries
     }
 
     private func importMedicationsFromHealthKit(
@@ -713,6 +845,17 @@ struct AddSymptomView: View {
         meds.forEach { modelContext.insert($0) }
         subs.forEach { modelContext.insert($0) }
 
+        // Save mindfulness logs
+        for mindfulnessEntry in loggedMindfulness {
+            guard let practice = userMindfulness.first(where: { $0.id == mindfulnessEntry.userMindfulnessId }) else { continue }
+            let log = MindfulnessLog(
+                userMindfulness: practice,
+                practiceName: practice.name ?? "",
+                timestamp: mindfulnessEntry.timestamp
+            )
+            modelContext.insert(log)
+        }
+
         if healthKitManager.isAuthorized, let mood = moodLevel {
             Task {
                 if #available(iOS 18.0, *) {
@@ -802,6 +945,27 @@ struct AddSymptomView: View {
         subs.forEach { $0.symptomEntry = entry }
         subs.forEach { modelContext.insert($0) }
 
+        // Delete old mindfulness logs for this day and create new ones
+        let startOfDayForMindfulness = calendar.startOfDay(for: selectedDate)
+        let endOfDayForMindfulness = calendar.date(byAdding: .day, value: 1, to: startOfDayForMindfulness) ?? selectedDate
+
+        let existingMindfulnessLogs = allMindfulnessLogs.filter { log in
+            guard let timestamp = log.timestamp else { return false }
+            return timestamp >= startOfDayForMindfulness && timestamp < endOfDayForMindfulness
+        }
+        existingMindfulnessLogs.forEach { modelContext.delete($0) }
+
+        // Create new mindfulness logs
+        for mindfulnessEntry in loggedMindfulness {
+            guard let practice = userMindfulness.first(where: { $0.id == mindfulnessEntry.userMindfulnessId }) else { continue }
+            let log = MindfulnessLog(
+                userMindfulness: practice,
+                practiceName: practice.name ?? "",
+                timestamp: mindfulnessEntry.timestamp
+            )
+            modelContext.insert(log)
+        }
+
         if healthKitManager.isAuthorized, let mood = moodLevel {
             Task {
                 if #available(iOS 18.0, *) {
@@ -867,6 +1031,18 @@ struct SubstanceEntry: Identifiable {
         self.userSubstanceId = userSubstanceId
         self.amount = amount
         self.unit = unit
+        self.timestamp = timestamp
+    }
+}
+
+struct MindfulnessLogEntry: Identifiable {
+    var id: UUID
+    var userMindfulnessId: UUID
+    var timestamp: Date
+
+    init(id: UUID = UUID(), userMindfulnessId: UUID, timestamp: Date) {
+        self.id = id
+        self.userMindfulnessId = userMindfulnessId
         self.timestamp = timestamp
     }
 }
@@ -1192,6 +1368,48 @@ struct EntrySubstanceRow: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
+
+            Text(timeFormatter.string(from: entry.timestamp))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+// MARK: - Entry Mindfulness Row
+
+struct EntryMindfulnessRow: View {
+    let entry: MindfulnessLogEntry
+    let userMindfulness: [UserMindfulness]
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
+
+    private var practice: UserMindfulness? {
+        userMindfulness.first { $0.id == entry.userMindfulnessId }
+    }
+
+    private var practiceName: String {
+        practice?.name ?? "Unknown"
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .font(.title3)
+
+            HStack(spacing: 8) {
+                Image(systemName: practice?.category?.icon ?? "brain.head.profile")
+                    .foregroundStyle(.purple)
+                Text(practiceName)
+                    .font(.subheadline)
+            }
+
+            Spacer()
 
             Text(timeFormatter.string(from: entry.timestamp))
                 .font(.caption)

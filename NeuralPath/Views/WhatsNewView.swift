@@ -27,6 +27,12 @@ enum WhatsNewContent {
             version: "1.1",
             features: [
                 WhatsNewFeature(
+                    icon: "brain.head.profile",
+                    iconColor: .purple,
+                    title: "Mindfulness Tracking",
+                    description: "Track meditation, breathing exercises, yoga, journaling, and other wellness practices with daily logging and reminders."
+                ),
+                WhatsNewFeature(
                     icon: "cloud.fill",
                     iconColor: .cyan,
                     title: "Emotion Cloud",

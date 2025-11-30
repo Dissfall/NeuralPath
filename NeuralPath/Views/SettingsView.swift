@@ -97,10 +97,16 @@ struct SettingsView: View {
                     } label: {
                         Label("Manage Substances", systemImage: "drop.triangle.fill")
                     }
+
+                    NavigationLink {
+                        MindfulnessManagementView()
+                    } label: {
+                        Label("Manage Mindfulness", systemImage: "brain.head.profile")
+                    }
                 } header: {
                     Text("Tracking")
                 } footer: {
-                    Text("Manage your medications and substances for easy tracking")
+                    Text("Manage your medications, substances, and mindfulness practices for easy tracking")
                 }
 
                 // CloudKit sync status

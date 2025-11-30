@@ -43,9 +43,10 @@ enum OnboardingStep: Int, CaseIterable {
     case healthKit = 1
     case medications = 2
     case substances = 3
-    case reminders = 4
-    case howToUse = 5
-    case complete = 6
+    case mindfulness = 4
+    case reminders = 5
+    case howToUse = 6
+    case complete = 7
 
     var title: String {
         switch self {
@@ -53,6 +54,7 @@ enum OnboardingStep: Int, CaseIterable {
         case .healthKit: return "Apple Health"
         case .medications: return "Medications"
         case .substances: return "Substances"
+        case .mindfulness: return "Mindfulness"
         case .reminders: return "Reminders"
         case .howToUse: return "How to Use"
         case .complete: return "All Set!"
@@ -105,6 +107,12 @@ struct OnboardingView: View {
                     onSkip: { nextStep() }
                 )
                 .tag(OnboardingStep.substances)
+
+                OnboardingMindfulnessStep(
+                    onContinue: { nextStep() },
+                    onSkip: { nextStep() }
+                )
+                .tag(OnboardingStep.mindfulness)
 
                 OnboardingRemindersStep(
                     onContinue: { nextStep() },
@@ -636,6 +644,159 @@ struct OnboardingSubstancesStep: View {
     private func deleteSubstances(at offsets: IndexSet) {
         for index in offsets {
             substances[index].isActive = false
+        }
+    }
+}
+
+// MARK: - Mindfulness Step
+
+struct OnboardingMindfulnessStep: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(filter: #Predicate<UserMindfulness> { $0.isActive == true },
+           sort: \UserMindfulness.name) private var practices: [UserMindfulness]
+
+    let onContinue: () -> Void
+    let onSkip: () -> Void
+
+    @State private var showingAddPractice = false
+
+    private let commonPractices: [(name: String, category: MindfulnessCategory, icon: String)] = [
+        ("Meditation", .meditation, "brain.head.profile"),
+        ("Breathing Exercises", .breathing, "wind"),
+        ("Yoga", .yoga, "figure.yoga"),
+        ("Journaling", .journaling, "pencil.and.scribble"),
+        ("Body Scan", .bodyScan, "figure.stand"),
+        ("Progressive Relaxation", .relaxation, "bed.double.fill"),
+        ("Mindful Walking", .walking, "figure.walk"),
+        ("Gratitude Practice", .gratitude, "heart.fill")
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 16) {
+                Image(systemName: "brain.head.profile")
+                    .font(.system(size: 60))
+                    .foregroundStyle(.purple)
+
+                VStack(spacing: 8) {
+                    Text("Mindfulness Practices")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+
+                    Text("Track meditation, breathing exercises, yoga, and other wellness practices.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+            }
+            .padding(.top, 40)
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Quick Add")
+                    .font(.headline)
+                    .padding(.horizontal, 32)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(commonPractices, id: \.name) { practice in
+                            let isAdded = practices.contains { $0.name == practice.name }
+
+                            Button {
+                                if !isAdded {
+                                    addPractice(name: practice.name, category: practice.category)
+                                }
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: practice.icon)
+                                    Text(practice.name)
+                                    if isAdded {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(.green)
+                                    }
+                                }
+                                .font(.subheadline)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 10)
+                                .background(isAdded ? Color.green.opacity(0.1) : Color.gray.opacity(0.1))
+                                .foregroundStyle(isAdded ? .green : .primary)
+                                .clipShape(Capsule())
+                            }
+                            .disabled(isAdded)
+                        }
+                    }
+                    .padding(.horizontal, 32)
+                }
+            }
+            .padding(.top, 24)
+
+            if !practices.isEmpty {
+                List {
+                    ForEach(practices) { practice in
+                        HStack {
+                            Image(systemName: practice.category?.icon ?? "brain.head.profile")
+                                .foregroundStyle(.purple)
+                            Text(practice.name ?? "Unknown")
+                                .font(.headline)
+                            Spacer()
+                            if let category = practice.category {
+                                Text(category.displayName)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .onDelete(perform: deletePractices)
+                }
+                .listStyle(.inset)
+            } else {
+                Spacer()
+            }
+
+            VStack(spacing: 12) {
+                Button {
+                    showingAddPractice = true
+                } label: {
+                    Label("Add Custom Practice", systemImage: "plus")
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.bordered)
+
+                Button(action: onContinue) {
+                    Text(practices.isEmpty ? "Skip" : "Continue")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(practices.isEmpty ? Color.gray.opacity(0.3) : Color.blue)
+                        .foregroundColor(practices.isEmpty ? .primary : .white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+            }
+            .padding(.horizontal, 32)
+            .padding(.bottom, 40)
+        }
+        .sheet(isPresented: $showingAddPractice) {
+            AddUserMindfulnessView()
+        }
+    }
+
+    private func addPractice(name: String, category: MindfulnessCategory) {
+        let practice = UserMindfulness(
+            name: name,
+            category: category,
+            durationMinutes: 10,
+            notes: nil
+        )
+        modelContext.insert(practice)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func deletePractices(at offsets: IndexSet) {
+        for index in offsets {
+            practices[index].isActive = false
         }
     }
 }

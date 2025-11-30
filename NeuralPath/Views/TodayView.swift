@@ -14,8 +14,11 @@ struct TodayView: View {
            sort: \UserMedication.name) private var userMedications: [UserMedication]
     @Query(filter: #Predicate<UserSubstance> { $0.isActive == true },
            sort: \UserSubstance.name) private var userSubstances: [UserSubstance]
+    @Query(filter: #Predicate<UserMindfulness> { $0.isActive == true },
+           sort: \UserMindfulness.name) private var userMindfulness: [UserMindfulness]
     @Query(sort: \MedicationLog.timestamp) private var allMedicationLogs: [MedicationLog]
     @Query(sort: \SubstanceLog.timestamp) private var allSubstanceLogs: [SubstanceLog]
+    @Query(sort: \MindfulnessLog.timestamp) private var allMindfulnessLogs: [MindfulnessLog]
 
     @State private var showingAddEntry = false
     @State private var showingEditEntry = false
@@ -29,6 +32,7 @@ struct TodayView: View {
     @State private var medicationToEditTime: UserMedication?
     @State private var substanceLogToEditTime: SubstanceLog?
     @State private var substanceLogToEditAmount: SubstanceLog?
+    @State private var mindfulnessLogToEditTime: MindfulnessLog?
     @State private var editTime: Date = Date()
     @State private var editAmount: String = ""
 
@@ -75,6 +79,18 @@ struct TodayView: View {
             return []
         }
         return allSubstanceLogs.filter { log in
+            guard let timestamp = log.timestamp else { return false }
+            return timestamp >= startOfDay && timestamp < endOfDay
+        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+    }
+
+    private var todayMindfulnessLogs: [MindfulnessLog] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
+            return []
+        }
+        return allMindfulnessLogs.filter { log in
             guard let timestamp = log.timestamp else { return false }
             return timestamp >= startOfDay && timestamp < endOfDay
         }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
@@ -187,6 +203,31 @@ struct TodayView: View {
         substanceLogToEditAmount = nil
     }
 
+    private func logMindfulness(_ practice: UserMindfulness) {
+        let log = MindfulnessLog(
+            userMindfulness: practice,
+            practiceName: practice.name ?? "",
+            timestamp: Date()
+        )
+        modelContext.insert(log)
+    }
+
+    private func deleteMindfulnessLog(_ log: MindfulnessLog) {
+        modelContext.delete(log)
+    }
+
+    private func startEditMindfulnessTime(_ log: MindfulnessLog) {
+        editTime = log.timestamp ?? Date()
+        mindfulnessLogToEditTime = log
+    }
+
+    private func saveMindfulnessTime() {
+        if let log = mindfulnessLogToEditTime {
+            log.timestamp = editTime
+        }
+        mindfulnessLogToEditTime = nil
+    }
+
     private var medicationsSummary: String {
         if scheduledMedications.isEmpty {
             let prnCount = todayPrnLogs.count
@@ -203,6 +244,13 @@ struct TodayView: View {
             return "None today"
         }
         return "\(todaySubstanceLogs.count) log\(todaySubstanceLogs.count == 1 ? "" : "s")"
+    }
+
+    private var mindfulnessSummary: String {
+        if todayMindfulnessLogs.isEmpty {
+            return "None today"
+        }
+        return "\(todayMindfulnessLogs.count) session\(todayMindfulnessLogs.count == 1 ? "" : "s")"
     }
 
     var body: some View {
@@ -370,6 +418,57 @@ struct TodayView: View {
                         }
                     }
                 }
+
+                // Mindfulness Section
+                if !userMindfulness.isEmpty || !todayMindfulnessLogs.isEmpty {
+                    Section {
+                        ForEach(todayMindfulnessLogs) { log in
+                            MindfulnessLogRow(log: log)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        deleteMindfulnessLog(log)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+
+                                    Button {
+                                        startEditMindfulnessTime(log)
+                                    } label: {
+                                        Label("Time", systemImage: "clock")
+                                    }
+                                    .tint(.blue)
+                                }
+                        }
+
+                        if !userMindfulness.isEmpty {
+                            Menu {
+                                ForEach(userMindfulness) { practice in
+                                    Button {
+                                        logMindfulness(practice)
+                                    } label: {
+                                        Label(practice.name ?? "Unknown", systemImage: practice.category?.icon ?? "brain.head.profile")
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(.blue)
+                                    Text("Log Practice")
+                                        .foregroundStyle(.blue)
+                                    Spacer()
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Label("Mindfulness", systemImage: "brain.head.profile")
+                            Spacer()
+                            Text(mindfulnessSummary)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Today")
@@ -489,6 +588,21 @@ struct TodayView: View {
             } message: {
                 if let log = substanceLogToEditAmount {
                     Text("\(log.substanceName ?? "Unknown") (\(log.unit?.abbreviation ?? ""))")
+                }
+            }
+            // Edit time for mindfulness log
+            .sheet(isPresented: Binding(
+                get: { mindfulnessLogToEditTime != nil },
+                set: { if !$0 { mindfulnessLogToEditTime = nil } }
+            )) {
+                if let log = mindfulnessLogToEditTime {
+                    EditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: log.practiceName ?? "Practice",
+                        time: $editTime,
+                        onSave: saveMindfulnessTime,
+                        onCancel: { mindfulnessLogToEditTime = nil }
+                    )
                 }
             }
         }
@@ -723,6 +837,37 @@ private struct SubstanceLogRow: View {
     }
 }
 
+// MARK: - Mindfulness Log Row
+
+private struct MindfulnessLogRow: View {
+    let log: MindfulnessLog
+
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .font(.title3)
+
+            Text(log.practiceName ?? "Unknown")
+                .font(.subheadline)
+
+            Spacer()
+
+            if let time = log.timestamp {
+                Text(timeFormatter.string(from: time))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
 // MARK: - Edit Time Sheet
 
 private struct EditTimeSheet: View {
@@ -758,5 +903,5 @@ private struct EditTimeSheet: View {
 
 #Preview {
     TodayView()
-        .modelContainer(for: [SymptomEntry.self, UserMedication.self, UserSubstance.self, MedicationLog.self, SubstanceLog.self], inMemory: true)
+        .modelContainer(for: [SymptomEntry.self, UserMedication.self, UserSubstance.self, UserMindfulness.self, MedicationLog.self, SubstanceLog.self, MindfulnessLog.self], inMemory: true)
 }
