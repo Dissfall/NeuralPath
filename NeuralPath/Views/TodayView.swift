@@ -27,6 +27,7 @@ struct TodayView: View {
     @State private var showingEditEntry = false
     @State private var showingArchive = false
     @State private var showingSettings = false
+    @State private var showingEntryExistsDialog = false
     @State private var substanceToLog: UserSubstance?
     @State private var substanceAmount: String = "1"
 
@@ -642,7 +643,11 @@ struct TodayView: View {
                         }
 
                         Button {
-                            showingAddEntry = true
+                            if todayEntry != nil {
+                                showingEntryExistsDialog = true
+                            } else {
+                                showingAddEntry = true
+                            }
                         } label: {
                             Label("Add Entry", systemImage: "plus")
                         }
@@ -792,6 +797,22 @@ struct TodayView: View {
                 if let timeOfDay = completedTimeOfDay {
                     Text(timeOfDay.completionMessage)
                 }
+            }
+            // Entry exists dialog
+            .confirmationDialog(
+                "Entry Exists",
+                isPresented: $showingEntryExistsDialog,
+                titleVisibility: .visible
+            ) {
+                Button("Edit Today's Entry") {
+                    showingEditEntry = true
+                }
+                Button("Create Entry for Another Day") {
+                    showingAddEntry = true
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("You already have an entry for today.")
             }
         }
     }
