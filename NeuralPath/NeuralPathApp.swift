@@ -7,9 +7,58 @@
 
 import SwiftUI
 import SwiftData
+import UserNotifications
+
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    // Show notifications even when app is in foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound, .badge])
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+}
+
+func rescheduleRemindersIfNeeded() {
+    // Re-schedule medication reminders
+    if UserDefaults.standard.bool(forKey: "medicationReminderEnabled") {
+        MedicationReminderService.shared.scheduleMedicationRemindersFromContext()
+    }
+
+    // Re-schedule daily entry reminder
+    if UserDefaults.standard.bool(forKey: "dailyReminderEnabled"),
+       let savedTime = UserDefaults.standard.object(forKey: "dailyReminderTime") as? Date {
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: ["dailyEntryReminder"])
+
+        let content = UNMutableNotificationContent()
+        content.title = "Time to Check In"
+        content.body = "How are you feeling today? Take a moment to log your mood and symptoms."
+        content.sound = .default
+
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: savedTime)
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        let request = UNNotificationRequest(identifier: "dailyEntryReminder", content: content, trigger: trigger)
+
+        center.add(request) { error in
+            if let error = error {
+                print("Failed to re-schedule daily reminder: \(error)")
+            }
+        }
+    }
+}
 
 @main
 struct NeuralPathApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var whatsNewManager = WhatsNewManager()
     @StateObject private var onboardingManager = OnboardingManager()
     @StateObject private var donationManager = DonationManager()
@@ -109,6 +158,8 @@ struct NeuralPathApp: App {
                     onboardingManager.checkOnboardingStatus()
                     // Increment session count for donation prompt
                     donationManager.incrementSessionAndCheck()
+                    // Re-schedule reminders on app launch
+                    rescheduleRemindersIfNeeded()
                 }
                 // Show onboarding first for new users
                 .fullScreenCover(isPresented: $onboardingManager.shouldShowOnboarding) {

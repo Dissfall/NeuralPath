@@ -43,7 +43,15 @@ class MedicationReminderService {
 
     func scheduleMedicationRemindersFromContext() {
         Task {
-            guard let container = try? ModelContainer(for: UserMedication.self) else { return }
+            // Use the same store URL as the main app
+            let fileManager = FileManager.default
+            guard let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
+            let storeURL = appSupportURL.appendingPathComponent("NeuralPath.store")
+
+            let schema = Schema([UserMedication.self])
+            let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
+
+            guard let container = try? ModelContainer(for: schema, configurations: [config]) else { return }
             let context = container.mainContext
 
             let descriptor = FetchDescriptor<UserMedication>(
