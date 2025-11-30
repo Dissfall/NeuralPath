@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum MindfulnessCategory: String, Codable, CaseIterable, Identifiable {
     case meditation
@@ -40,6 +41,19 @@ enum MindfulnessCategory: String, Codable, CaseIterable, Identifiable {
         case .relaxation: return "bed.double.fill"
         case .walking: return "figure.walk"
         case .gratitude: return "heart.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .meditation: return .purple
+        case .breathing: return .cyan
+        case .yoga: return .orange
+        case .journaling: return .blue
+        case .bodyScan: return .teal
+        case .relaxation: return .indigo
+        case .walking: return .green
+        case .gratitude: return .pink
         }
     }
 }
