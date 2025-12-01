@@ -24,34 +24,48 @@ class SelfCareReminderService {
 
     private init() {}
 
+    // Plain struct to hold practice data for async scheduling
+    private struct SelfCarePracticeData {
+        let timeOfDay: SelfCareTimeOfDay
+        let isActive: Bool
+    }
+
     func scheduleSelfCareReminders(practices: [UserSelfCare]) {
+        // Extract data synchronously before async work
+        let practiceData: [SelfCarePracticeData] = practices.map { practice in
+            SelfCarePracticeData(
+                timeOfDay: practice.timeOfDay,
+                isActive: practice.isActive == true
+            )
+        }
+
         Task {
             await removeAllSelfCareReminders()
 
             // Group practices by time of day
-            let morningPractices = practices.filter { $0.timeOfDay == .morning && $0.isActive == true }
-            let afternoonPractices = practices.filter { $0.timeOfDay == .afternoon && $0.isActive == true }
-            let eveningPractices = practices.filter { $0.timeOfDay == .evening && $0.isActive == true }
+            let morningCount = practiceData.filter { $0.timeOfDay == .morning && $0.isActive }.count
+            let afternoonCount = practiceData.filter { $0.timeOfDay == .afternoon && $0.isActive }.count
+            let eveningCount = practiceData.filter { $0.timeOfDay == .evening && $0.isActive }.count
 
             // Schedule morning reminder
-            if !morningPractices.isEmpty,
+            if morningCount > 0,
                UserDefaults.standard.bool(forKey: Self.morningReminderEnabledKey),
                let reminderTime = UserDefaults.standard.object(forKey: Self.morningReminderTimeKey) as? Date {
-                await scheduleReminder(for: .morning, time: reminderTime, practiceCount: morningPractices.count)
+                await scheduleReminder(for: .morning, time: reminderTime, practiceCount: morningCount)
             }
 
             // Schedule afternoon reminder
-            if !afternoonPractices.isEmpty,
+            if afternoonCount > 0,
                UserDefaults.standard.bool(forKey: Self.afternoonReminderEnabledKey),
                let reminderTime = UserDefaults.standard.object(forKey: Self.afternoonReminderTimeKey) as? Date {
-                await scheduleReminder(for: .afternoon, time: reminderTime, practiceCount: afternoonPractices.count)
+                await scheduleReminder(for: .afternoon, time: reminderTime, practiceCount: afternoonCount)
             }
 
             // Schedule evening reminder
-            if !eveningPractices.isEmpty,
+            if eveningCount > 0,
                UserDefaults.standard.bool(forKey: Self.eveningReminderEnabledKey),
                let reminderTime = UserDefaults.standard.object(forKey: Self.eveningReminderTimeKey) as? Date {
-                await scheduleReminder(for: .evening, time: reminderTime, practiceCount: eveningPractices.count)
+                await scheduleReminder(for: .evening, time: reminderTime, practiceCount: eveningCount)
             }
         }
     }
@@ -62,7 +76,20 @@ class SelfCareReminderService {
             guard let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
             let storeURL = appSupportURL.appendingPathComponent("NeuralPath.store")
 
-            let schema = Schema([UserSelfCare.self, SelfCareLog.self])
+            // NOTE: Must use full schema matching main app to avoid "no such table" errors
+            let schema = Schema([
+                SymptomEntry.self,
+                Medication.self,
+                Substance.self,
+                UserMedication.self,
+                UserSubstance.self,
+                MedicationLog.self,
+                SubstanceLog.self,
+                UserMindfulness.self,
+                MindfulnessLog.self,
+                UserSelfCare.self,
+                SelfCareLog.self
+            ])
             let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
 
             guard let container = try? ModelContainer(for: schema, configurations: [config]) else { return }
@@ -73,7 +100,42 @@ class SelfCareReminderService {
             )
 
             guard let practices = try? context.fetch(descriptor) else { return }
-            scheduleSelfCareReminders(practices: practices)
+
+            // Extract data synchronously within same context
+            let practiceData: [SelfCarePracticeData] = practices.map { practice in
+                SelfCarePracticeData(
+                    timeOfDay: practice.timeOfDay,
+                    isActive: practice.isActive == true
+                )
+            }
+
+            await removeAllSelfCareReminders()
+
+            // Group practices by time of day
+            let morningCount = practiceData.filter { $0.timeOfDay == .morning && $0.isActive }.count
+            let afternoonCount = practiceData.filter { $0.timeOfDay == .afternoon && $0.isActive }.count
+            let eveningCount = practiceData.filter { $0.timeOfDay == .evening && $0.isActive }.count
+
+            // Schedule morning reminder
+            if morningCount > 0,
+               UserDefaults.standard.bool(forKey: Self.morningReminderEnabledKey),
+               let reminderTime = UserDefaults.standard.object(forKey: Self.morningReminderTimeKey) as? Date {
+                await scheduleReminder(for: .morning, time: reminderTime, practiceCount: morningCount)
+            }
+
+            // Schedule afternoon reminder
+            if afternoonCount > 0,
+               UserDefaults.standard.bool(forKey: Self.afternoonReminderEnabledKey),
+               let reminderTime = UserDefaults.standard.object(forKey: Self.afternoonReminderTimeKey) as? Date {
+                await scheduleReminder(for: .afternoon, time: reminderTime, practiceCount: afternoonCount)
+            }
+
+            // Schedule evening reminder
+            if eveningCount > 0,
+               UserDefaults.standard.bool(forKey: Self.eveningReminderEnabledKey),
+               let reminderTime = UserDefaults.standard.object(forKey: Self.eveningReminderTimeKey) as? Date {
+                await scheduleReminder(for: .evening, time: reminderTime, practiceCount: eveningCount)
+            }
         }
     }
 

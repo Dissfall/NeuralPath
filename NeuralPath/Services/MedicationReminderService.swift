@@ -18,37 +18,63 @@ class MedicationReminderService {
 
     private init() {}
 
+    // Plain struct to hold medication data for async scheduling
+    private struct MedicationReminderData {
+        let id: String
+        let name: String
+        let dosage: String?
+        let reminderTime: Date
+    }
+
     func scheduleMedicationReminders(medications: [UserMedication]) {
+        // Extract data synchronously before async work
+        let reminderData: [MedicationReminderData] = medications.compactMap { medication in
+            guard medication.reminderEnabled == true,
+                  let reminderTime = medication.reminderTime,
+                  let name = medication.name,
+                  medication.isActive == true else {
+                return nil
+            }
+            return MedicationReminderData(
+                id: medication.id?.uuidString ?? UUID().uuidString,
+                name: name,
+                dosage: medication.dosage,
+                reminderTime: reminderTime
+            )
+        }
+
         Task {
-            // First, remove all existing medication reminders
             await removeAllMedicationReminders()
 
-            // Check if master toggle is enabled
             let masterEnabled = UserDefaults.standard.bool(forKey: "medicationReminderEnabled")
             guard masterEnabled else { return }
 
-            // Schedule reminders for each medication with reminder enabled
-            for medication in medications {
-                guard medication.reminderEnabled == true,
-                      let reminderTime = medication.reminderTime,
-                      let name = medication.name,
-                      medication.isActive == true else {
-                    continue
-                }
-
-                await scheduleReminder(for: medication, name: name, time: reminderTime)
+            for data in reminderData {
+                await scheduleReminder(data: data)
             }
         }
     }
 
     func scheduleMedicationRemindersFromContext() {
         Task {
-            // Use the same store URL as the main app
             let fileManager = FileManager.default
             guard let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
             let storeURL = appSupportURL.appendingPathComponent("NeuralPath.store")
 
-            let schema = Schema([UserMedication.self])
+            // NOTE: Must use full schema matching main app to avoid "no such table" errors
+            let schema = Schema([
+                SymptomEntry.self,
+                Medication.self,
+                Substance.self,
+                UserMedication.self,
+                UserSubstance.self,
+                MedicationLog.self,
+                SubstanceLog.self,
+                UserMindfulness.self,
+                MindfulnessLog.self,
+                UserSelfCare.self,
+                SelfCareLog.self
+            ])
             let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
 
             guard let container = try? ModelContainer(for: schema, configurations: [config]) else { return }
@@ -59,29 +85,51 @@ class MedicationReminderService {
             )
 
             guard let medications = try? context.fetch(descriptor) else { return }
-            scheduleMedicationReminders(medications: medications)
+
+            // Extract data synchronously within same context
+            let reminderData: [MedicationReminderData] = medications.compactMap { medication in
+                guard let reminderTime = medication.reminderTime,
+                      let name = medication.name else {
+                    return nil
+                }
+                return MedicationReminderData(
+                    id: medication.id?.uuidString ?? UUID().uuidString,
+                    name: name,
+                    dosage: medication.dosage,
+                    reminderTime: reminderTime
+                )
+            }
+
+            await removeAllMedicationReminders()
+
+            let masterEnabled = UserDefaults.standard.bool(forKey: "medicationReminderEnabled")
+            guard masterEnabled else { return }
+
+            for data in reminderData {
+                await scheduleReminder(data: data)
+            }
         }
     }
 
-    private func scheduleReminder(for medication: UserMedication, name: String, time: Date) async {
+    private func scheduleReminder(data: MedicationReminderData) async {
         let content = UNMutableNotificationContent()
         content.title = "Medication Reminder"
 
-        if let dosage = medication.dosage, !dosage.isEmpty {
-            content.body = "Time to take \(name) (\(dosage))"
+        if let dosage = data.dosage, !dosage.isEmpty {
+            content.body = "Time to take \(data.name) (\(dosage))"
         } else {
-            content.body = "Time to take \(name)"
+            content.body = "Time to take \(data.name)"
         }
 
         content.sound = .default
         content.categoryIdentifier = "MEDICATION_REMINDER"
 
         let calendar = Calendar.current
-        let components = calendar.dateComponents([.hour, .minute], from: time)
+        let components = calendar.dateComponents([.hour, .minute], from: data.reminderTime)
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
 
-        let identifier = reminderIdentifier(for: medication)
+        let identifier = "\(reminderPrefix)\(data.id)"
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
 
         do {
@@ -104,10 +152,6 @@ class MedicationReminderService {
         Task {
             await removeAllMedicationReminders()
         }
-    }
-
-    private func reminderIdentifier(for medication: UserMedication) -> String {
-        "\(reminderPrefix)\(medication.id?.uuidString ?? UUID().uuidString)"
     }
 
     func requestNotificationPermission() async -> Bool {
