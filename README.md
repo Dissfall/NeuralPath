@@ -2,9 +2,21 @@
 
 A comprehensive iOS mental health tracking application built with SwiftUI and SwiftData. Features HealthKit integration, CloudKit sync, on-device ML-powered predictions, and extensive tracking capabilities for mood, anxiety, emotions, sleep, medications, substances, mindfulness, and self-care routines.
 
-<img width="590" height="1278" alt="IMG_1748" src="https://github.com/user-attachments/assets/5f4ceb71-7213-4fff-a88e-273e25630a9f" />
-<img width="590" height="1278" alt="IMG_1749" src="https://github.com/user-attachments/assets/3c6ffe59-dd4c-44b9-87ed-1c71b26050ba" />
-<img width="590" height="1278" alt="IMG_1750" src="https://github.com/user-attachments/assets/9d14c84b-5ad9-4a1d-a6e0-b6957d025e7a" />
+## Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/5f4ceb71-7213-4fff-a88e-273e25630a9f" width="250" alt="Today View" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="https://github.com/user-attachments/assets/3c6ffe59-dd4c-44b9-87ed-1c71b26050ba" width="250" alt="Entry Form" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="https://github.com/user-attachments/assets/9d14c84b-5ad9-4a1d-a6e0-b6957d025e7a" width="250" alt="Charts View" />
+</p>
+
+<p align="center">
+  <em>Today View</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>Entry Form</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>Charts View</em>
+</p>
 
 ## Features
 
