@@ -130,12 +130,17 @@ struct MedicationManagementView: View {
 struct MedicationRow: View {
     let medication: UserMedication
 
-    private var reminderTimeString: String? {
+    private var reminderBadgeInfo: (String, String, Color)? {
         guard medication.reminderEnabled == true,
-              let time = medication.reminderTime else { return nil }
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: time)
+              let timeOfDay = medication.timeOfDay else { return nil }
+
+        if timeOfDay == .custom {
+            guard let customTime = medication.customReminderTime else { return nil }
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            return (timeOfDay.icon, formatter.string(from: customTime), timeOfDay.color)
+        }
+        return (timeOfDay.icon, timeOfDay.displayName, timeOfDay.color)
     }
 
     var body: some View {
@@ -171,14 +176,14 @@ struct MedicationRow: View {
                             .cornerRadius(4)
                     }
 
-                    if let timeStr = reminderTimeString {
+                    if let (icon, text, color) = reminderBadgeInfo {
                         HStack(spacing: 2) {
-                            Image(systemName: "bell.fill")
+                            Image(systemName: icon)
                                 .font(.caption2)
-                            Text(timeStr)
+                            Text(text)
                                 .font(.caption)
                         }
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(color)
                     }
                 }
             }

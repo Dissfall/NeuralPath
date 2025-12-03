@@ -7,6 +7,9 @@ struct SettingsView: View {
     @State private var dailyReminderEnabled = false
     @State private var dailyReminderTime = Date()
     @State private var medicationReminderEnabled = false
+    @State private var morningMedicationTime = MedicationReminderService.defaultReminderTime(for: .morning)
+    @State private var afternoonMedicationTime = MedicationReminderService.defaultReminderTime(for: .afternoon)
+    @State private var eveningMedicationTime = MedicationReminderService.defaultReminderTime(for: .evening)
     @State private var healthKitAuthorized = false
     @State private var showingExport = false
     @State private var showingDonation = false
@@ -71,21 +74,50 @@ struct SettingsView: View {
                             }
                         }
 
+                    if medicationReminderEnabled {
+                        HStack {
+                            Label("Morning", systemImage: MedicationTimeOfDay.morning.icon)
+                                .foregroundStyle(MedicationTimeOfDay.morning.color)
+                            Spacer()
+                            DatePicker("", selection: $morningMedicationTime, displayedComponents: .hourAndMinute)
+                                .labelsHidden()
+                                .onChange(of: morningMedicationTime) { _, _ in
+                                    saveMedicationTimeSettings()
+                                }
+                        }
+
+                        HStack {
+                            Label("Afternoon", systemImage: MedicationTimeOfDay.afternoon.icon)
+                                .foregroundStyle(MedicationTimeOfDay.afternoon.color)
+                            Spacer()
+                            DatePicker("", selection: $afternoonMedicationTime, displayedComponents: .hourAndMinute)
+                                .labelsHidden()
+                                .onChange(of: afternoonMedicationTime) { _, _ in
+                                    saveMedicationTimeSettings()
+                                }
+                        }
+
+                        HStack {
+                            Label("Evening", systemImage: MedicationTimeOfDay.evening.icon)
+                                .foregroundStyle(MedicationTimeOfDay.evening.color)
+                            Spacer()
+                            DatePicker("", selection: $eveningMedicationTime, displayedComponents: .hourAndMinute)
+                                .labelsHidden()
+                                .onChange(of: eveningMedicationTime) { _, _ in
+                                    saveMedicationTimeSettings()
+                                }
+                        }
+                    }
+
                     NavigationLink {
                         MedicationManagementView()
                     } label: {
-                        HStack {
-                            Text("Configure Times")
-                            Spacer()
-                            Text("Per medication")
-                                .foregroundStyle(.secondary)
-                                .font(.caption)
-                        }
+                        Text("Manage Medications")
                     }
                 } header: {
                     Label("Medications", systemImage: "pills.fill")
                 } footer: {
-                    Text("Enable reminders and set individual times for each medication in Manage Medications.")
+                    Text("Set default reminder times for morning, afternoon, and evening. Individual medications can use a custom time if needed.")
                 }
 
                 Section {
@@ -322,6 +354,17 @@ struct SettingsView: View {
             components.minute = 0
             dailyReminderTime = Calendar.current.date(from: components) ?? Date()
         }
+
+        // Load medication time-of-day settings
+        if let time = UserDefaults.standard.object(forKey: MedicationReminderService.morningReminderTimeKey) as? Date {
+            morningMedicationTime = time
+        }
+        if let time = UserDefaults.standard.object(forKey: MedicationReminderService.afternoonReminderTimeKey) as? Date {
+            afternoonMedicationTime = time
+        }
+        if let time = UserDefaults.standard.object(forKey: MedicationReminderService.eveningReminderTimeKey) as? Date {
+            eveningMedicationTime = time
+        }
     }
 
     private func saveDailyReminderSettings() {
@@ -331,6 +374,13 @@ struct SettingsView: View {
 
     private func saveMedicationReminderSettings() {
         UserDefaults.standard.set(medicationReminderEnabled, forKey: medicationReminderEnabledKey)
+    }
+
+    private func saveMedicationTimeSettings() {
+        UserDefaults.standard.set(morningMedicationTime, forKey: MedicationReminderService.morningReminderTimeKey)
+        UserDefaults.standard.set(afternoonMedicationTime, forKey: MedicationReminderService.afternoonReminderTimeKey)
+        UserDefaults.standard.set(eveningMedicationTime, forKey: MedicationReminderService.eveningReminderTimeKey)
+        MedicationReminderService.shared.scheduleMedicationRemindersFromContext()
     }
 
     private func requestNotificationPermission(onSuccess: @escaping () -> Void) {

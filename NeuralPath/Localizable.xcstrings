@@ -1116,6 +1116,7 @@
       }
     },
     "Configure Times" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -1204,6 +1205,9 @@
           }
         }
       }
+    },
+    "Custom Time" : {
+
     },
     "Daily Entry" : {
       "localizations" : {
@@ -1355,6 +1359,9 @@
           }
         }
       }
+    },
+    "Default Time" : {
+
     },
     "Default Unit" : {
       "localizations" : {
@@ -1616,6 +1623,7 @@
       }
     },
     "Enable reminders and set individual times for each medication in Manage Medications." : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -1840,7 +1848,11 @@
         }
       }
     },
+    "Get a daily notification to take this medication" : {
+
+    },
     "Get a daily notification to take this medication at your chosen time" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -3020,6 +3032,7 @@
       }
     },
     "Per medication" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -3446,6 +3459,9 @@
           }
         }
       }
+    },
+    "Set default reminder times for morning, afternoon, and evening. Individual medications can use a custom time if needed." : {
+
     },
     "Set reminder times when editing each medication" : {
       "localizations" : {
@@ -3874,6 +3890,9 @@
           }
         }
       }
+    },
+    "This medication will have its own reminder at the specified time" : {
+
     },
     "This will delete all entries marked as test data, including [TEST] medications and substances." : {
 
@@ -4310,6 +4329,9 @@
           }
         }
       }
+    },
+    "You can change default %@ time in Settings" : {
+
     },
     "You can change this later in Settings." : {
       "localizations" : {

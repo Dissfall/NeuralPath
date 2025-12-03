@@ -25,7 +25,62 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
 }
 
+func migrateMedicationTimeOfDay() {
+    let migrationKey = "medicationTimeOfDayMigrationCompleted"
+    guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }
+
+    Task {
+        let fileManager = FileManager.default
+        guard let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
+        let storeURL = appSupportURL.appendingPathComponent("NeuralPath.store")
+
+        let schema = Schema([
+            SymptomEntry.self, Medication.self, Substance.self,
+            UserMedication.self, UserSubstance.self, MedicationLog.self, SubstanceLog.self,
+            UserMindfulness.self, MindfulnessLog.self, UserSelfCare.self, SelfCareLog.self
+        ])
+        let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
+
+        guard let container = try? ModelContainer(for: schema, configurations: [config]) else { return }
+        let context = container.mainContext
+
+        let descriptor = FetchDescriptor<UserMedication>(
+            predicate: #Predicate { $0.isActive == true && $0.reminderEnabled == true }
+        )
+
+        guard let medications = try? context.fetch(descriptor) else { return }
+
+        for medication in medications {
+            // Skip if already migrated
+            guard medication.timeOfDay == nil else { continue }
+
+            // Map existing reminderTime to timeOfDay
+            if let reminderTime = medication.reminderTime {
+                let hour = Calendar.current.component(.hour, from: reminderTime)
+                let timeOfDay: MedicationTimeOfDay
+                switch hour {
+                case 5..<11: timeOfDay = .morning
+                case 11..<17: timeOfDay = .afternoon
+                case 17..<24, 0..<5: timeOfDay = .evening
+                default: timeOfDay = .morning
+                }
+                medication.timeOfDay = timeOfDay
+            } else {
+                medication.timeOfDay = .morning
+            }
+        }
+
+        try? context.save()
+        await MainActor.run {
+            UserDefaults.standard.set(true, forKey: migrationKey)
+        }
+    }
+}
+
 func rescheduleRemindersIfNeeded() {
+    // Migrate medications to new time-of-day system
+    migrateMedicationTimeOfDay()
+
     // Re-schedule medication reminders
     if UserDefaults.standard.bool(forKey: "medicationReminderEnabled") {
         MedicationReminderService.shared.scheduleMedicationRemindersFromContext()

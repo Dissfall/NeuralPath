@@ -19,13 +19,21 @@ struct AddUserMedicationView: View {
     @State private var notes: String
     @State private var startDate: Date
     @State private var reminderEnabled: Bool
-    @State private var reminderTime: Date
+    @State private var timeOfDay: MedicationTimeOfDay
+    @State private var customReminderTime: Date
 
     private let medication: UserMedication?
     private var isEditing: Bool { medication != nil }
 
     init(medication: UserMedication? = nil, prefilledMedication: MedicationInfo? = nil) {
         self.medication = medication
+
+        let defaultCustomTime: Date = {
+            var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+            components.hour = 8
+            components.minute = 0
+            return Calendar.current.date(from: components) ?? Date()
+        }()
 
         // Priority: editing existing > prefilled from database > empty
         if let existingMed = medication {
@@ -36,15 +44,8 @@ struct AddUserMedicationView: View {
             _notes = State(initialValue: existingMed.notes ?? "")
             _startDate = State(initialValue: existingMed.startDate ?? Date())
             _reminderEnabled = State(initialValue: existingMed.reminderEnabled ?? false)
-
-            if let existingTime = existingMed.reminderTime {
-                _reminderTime = State(initialValue: existingTime)
-            } else {
-                var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-                components.hour = 8
-                components.minute = 0
-                _reminderTime = State(initialValue: Calendar.current.date(from: components) ?? Date())
-            }
+            _timeOfDay = State(initialValue: existingMed.timeOfDay ?? .morning)
+            _customReminderTime = State(initialValue: existingMed.customReminderTime ?? defaultCustomTime)
         } else if let prefilled = prefilledMedication {
             _name = State(initialValue: prefilled.name)
             _dosage = State(initialValue: "")
@@ -53,11 +54,8 @@ struct AddUserMedicationView: View {
             _notes = State(initialValue: "")
             _startDate = State(initialValue: Date())
             _reminderEnabled = State(initialValue: false)
-
-            var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-            components.hour = 8
-            components.minute = 0
-            _reminderTime = State(initialValue: Calendar.current.date(from: components) ?? Date())
+            _timeOfDay = State(initialValue: .morning)
+            _customReminderTime = State(initialValue: defaultCustomTime)
         } else {
             _name = State(initialValue: "")
             _dosage = State(initialValue: "")
@@ -66,11 +64,8 @@ struct AddUserMedicationView: View {
             _notes = State(initialValue: "")
             _startDate = State(initialValue: Date())
             _reminderEnabled = State(initialValue: false)
-
-            var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-            components.hour = 8
-            components.minute = 0
-            _reminderTime = State(initialValue: Calendar.current.date(from: components) ?? Date())
+            _timeOfDay = State(initialValue: .morning)
+            _customReminderTime = State(initialValue: defaultCustomTime)
         }
     }
 
@@ -114,12 +109,34 @@ struct AddUserMedicationView: View {
                     Toggle("Daily Reminder", isOn: $reminderEnabled)
 
                     if reminderEnabled {
-                        DatePicker("Reminder Time", selection: $reminderTime, displayedComponents: .hourAndMinute)
+                        Picker("Time of Day", selection: $timeOfDay) {
+                            ForEach(MedicationTimeOfDay.allCases) { tod in
+                                Label(tod.displayName, systemImage: tod.icon)
+                                    .tag(tod)
+                            }
+                        }
+
+                        if timeOfDay == .custom {
+                            DatePicker("Custom Time", selection: $customReminderTime, displayedComponents: .hourAndMinute)
+                        } else {
+                            HStack {
+                                Text("Default Time")
+                                Spacer()
+                                Text(defaultTimeString(for: timeOfDay))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
                 } header: {
                     Label("Reminder", systemImage: "bell.fill")
                 } footer: {
-                    Text("Get a daily notification to take this medication at your chosen time")
+                    if reminderEnabled && timeOfDay != .custom {
+                        Text("You can change default \(timeOfDay.displayName.lowercased()) time in Settings")
+                    } else if reminderEnabled && timeOfDay == .custom {
+                        Text("This medication will have its own reminder at the specified time")
+                    } else {
+                        Text("Get a daily notification to take this medication")
+                    }
                 }
 
                 Section {
@@ -159,7 +176,8 @@ struct AddUserMedicationView: View {
             medication.notes = notes
             medication.startDate = startDate
             medication.reminderEnabled = reminderEnabled
-            medication.reminderTime = reminderTime
+            medication.timeOfDay = reminderEnabled ? timeOfDay : nil
+            medication.customReminderTime = (timeOfDay == .custom) ? customReminderTime : nil
         } else {
             let newMedication = UserMedication(
                 name: name,
@@ -168,8 +186,9 @@ struct AddUserMedicationView: View {
                 frequency: frequency,
                 notes: notes,
                 startDate: startDate,
-                reminderTime: reminderEnabled ? reminderTime : nil,
-                reminderEnabled: reminderEnabled
+                reminderEnabled: reminderEnabled,
+                timeOfDay: reminderEnabled ? timeOfDay : .morning,
+                customReminderTime: (timeOfDay == .custom) ? customReminderTime : nil
             )
             modelContext.insert(newMedication)
         }
@@ -178,6 +197,13 @@ struct AddUserMedicationView: View {
         MedicationReminderService.shared.scheduleMedicationRemindersFromContext()
 
         dismiss()
+    }
+
+    private func defaultTimeString(for timeOfDay: MedicationTimeOfDay) -> String {
+        let time = MedicationReminderService.getReminderTime(for: timeOfDay)
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: time)
     }
 }
 

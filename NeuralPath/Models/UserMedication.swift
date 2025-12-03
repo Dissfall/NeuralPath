@@ -20,8 +20,10 @@ final class UserMedication {
     var createdDate: Date?
     var startDate: Date?
     var endDate: Date?
-    var reminderTime: Date?
+    var reminderTime: Date? // Deprecated: kept for migration
     var reminderEnabled: Bool?
+    var timeOfDay: MedicationTimeOfDay?
+    var customReminderTime: Date? // Used when timeOfDay == .custom
 
     @Relationship(deleteRule: .cascade, inverse: \MedicationLog.userMedication)
     var logs: [MedicationLog]?
@@ -38,7 +40,9 @@ final class UserMedication {
         startDate: Date? = nil,
         endDate: Date? = nil,
         reminderTime: Date? = nil,
-        reminderEnabled: Bool? = false
+        reminderEnabled: Bool? = false,
+        timeOfDay: MedicationTimeOfDay? = .morning,
+        customReminderTime: Date? = nil
     ) {
         self.id = id
         self.name = name
@@ -52,5 +56,7 @@ final class UserMedication {
         self.endDate = endDate
         self.reminderTime = reminderTime
         self.reminderEnabled = reminderEnabled
+        self.timeOfDay = timeOfDay
+        self.customReminderTime = customReminderTime
     }
 }
