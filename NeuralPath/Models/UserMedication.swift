@@ -24,6 +24,7 @@ final class UserMedication {
     var reminderEnabled: Bool?
     var timeOfDay: MedicationTimeOfDay?
     var customReminderTime: Date? // Used when timeOfDay == .custom
+    var weeklyReminderDay: Int? // 1=Sunday, 2=Monday, ..., 7=Saturday (for weekly frequency)
 
     @Relationship(deleteRule: .cascade, inverse: \MedicationLog.userMedication)
     var logs: [MedicationLog]?
@@ -42,7 +43,8 @@ final class UserMedication {
         reminderTime: Date? = nil,
         reminderEnabled: Bool? = false,
         timeOfDay: MedicationTimeOfDay? = .morning,
-        customReminderTime: Date? = nil
+        customReminderTime: Date? = nil,
+        weeklyReminderDay: Int? = 2 // Monday default
     ) {
         self.id = id
         self.name = name
@@ -58,5 +60,6 @@ final class UserMedication {
         self.reminderEnabled = reminderEnabled
         self.timeOfDay = timeOfDay
         self.customReminderTime = customReminderTime
+        self.weeklyReminderDay = weeklyReminderDay
     }
 }

@@ -1329,6 +1329,9 @@
         }
       }
     },
+    "Day" : {
+
+    },
     "Daylight" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1818,6 +1821,9 @@
         }
       }
     },
+    "Friday" : {
+
+    },
     "Generate Test Data" : {
       "localizations" : {
         "be" : {
@@ -1848,9 +1854,6 @@
         }
       }
     },
-    "Get a daily notification to take this medication" : {
-
-    },
     "Get a daily notification to take this medication at your chosen time" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1861,6 +1864,9 @@
           }
         }
       }
+    },
+    "Get notified when it's time to take this medication" : {
+
     },
     "Get reminded at times set for each medication" : {
       "localizations" : {
@@ -2594,6 +2600,9 @@
         }
       }
     },
+    "Monday" : {
+
+    },
     "Monitor caffeine, alcohol, and other substances that affect your wellbeing." : {
       "localizations" : {
         "be" : {
@@ -2693,6 +2702,9 @@
           }
         }
       }
+    },
+    "Night" : {
+
     },
     "No Analysis Available" : {
       "localizations" : {
@@ -3242,6 +3254,9 @@
         }
       }
     },
+    "Reminders are automatically scheduled based on frequency. Change default times in Settings." : {
+
+    },
     "Remove" : {
 
     },
@@ -3306,6 +3321,9 @@
           }
         }
       }
+    },
+    "Saturday" : {
+
     },
     "Save" : {
       "localizations" : {
@@ -3460,7 +3478,7 @@
         }
       }
     },
-    "Set default reminder times for morning, afternoon, and evening. Individual medications can use a custom time if needed." : {
+    "Set default reminder times. Medications are auto-assigned based on their dosing frequency." : {
 
     },
     "Set reminder times when editing each medication" : {
@@ -3773,6 +3791,9 @@
         }
       }
     },
+    "Sunday" : {
+
+    },
     "Support" : {
       "localizations" : {
         "be" : {
@@ -3907,6 +3928,9 @@
         }
       }
     },
+    "Thursday" : {
+
+    },
     "Time" : {
       "localizations" : {
         "be" : {
@@ -3989,6 +4013,9 @@
           }
         }
       }
+    },
+    "Times" : {
+
     },
     "to" : {
       "localizations" : {
@@ -4130,6 +4157,9 @@
         }
       }
     },
+    "Tuesday" : {
+
+    },
     "UI Debug" : {
 
     },
@@ -4246,6 +4276,9 @@
         }
       }
     },
+    "Wednesday" : {
+
+    },
     "Welcome to NeuralPath" : {
       "localizations" : {
         "be" : {
@@ -4344,6 +4377,12 @@
       }
     },
     "You have unsaved changes that will be lost." : {
+
+    },
+    "You'll be reminded every 48 hours starting from when this is set up" : {
+
+    },
+    "You'll be reminded once per week on the selected day" : {
 
     },
     "You're All Set!" : {

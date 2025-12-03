@@ -21,6 +21,7 @@ struct AddUserMedicationView: View {
     @State private var reminderEnabled: Bool
     @State private var timeOfDay: MedicationTimeOfDay
     @State private var customReminderTime: Date
+    @State private var weeklyReminderDay: Int
 
     private let medication: UserMedication?
     private var isEditing: Bool { medication != nil }
@@ -46,6 +47,7 @@ struct AddUserMedicationView: View {
             _reminderEnabled = State(initialValue: existingMed.reminderEnabled ?? false)
             _timeOfDay = State(initialValue: existingMed.timeOfDay ?? .morning)
             _customReminderTime = State(initialValue: existingMed.customReminderTime ?? defaultCustomTime)
+            _weeklyReminderDay = State(initialValue: existingMed.weeklyReminderDay ?? 2)
         } else if let prefilled = prefilledMedication {
             _name = State(initialValue: prefilled.name)
             _dosage = State(initialValue: "")
@@ -56,6 +58,7 @@ struct AddUserMedicationView: View {
             _reminderEnabled = State(initialValue: false)
             _timeOfDay = State(initialValue: .morning)
             _customReminderTime = State(initialValue: defaultCustomTime)
+            _weeklyReminderDay = State(initialValue: 2)
         } else {
             _name = State(initialValue: "")
             _dosage = State(initialValue: "")
@@ -66,6 +69,7 @@ struct AddUserMedicationView: View {
             _reminderEnabled = State(initialValue: false)
             _timeOfDay = State(initialValue: .morning)
             _customReminderTime = State(initialValue: defaultCustomTime)
+            _weeklyReminderDay = State(initialValue: 2)
         }
     }
 
@@ -105,37 +109,18 @@ struct AddUserMedicationView: View {
                     Text("Timeline")
                 }
 
-                Section {
-                    Toggle("Daily Reminder", isOn: $reminderEnabled)
+                // Reminder section - hidden for PRN medications
+                if frequency != .asNeeded {
+                    Section {
+                        Toggle(reminderToggleLabel, isOn: $reminderEnabled)
 
-                    if reminderEnabled {
-                        Picker("Time of Day", selection: $timeOfDay) {
-                            ForEach(MedicationTimeOfDay.allCases) { tod in
-                                Label(tod.displayName, systemImage: tod.icon)
-                                    .tag(tod)
-                            }
+                        if reminderEnabled {
+                            reminderOptionsView
                         }
-
-                        if timeOfDay == .custom {
-                            DatePicker("Custom Time", selection: $customReminderTime, displayedComponents: .hourAndMinute)
-                        } else {
-                            HStack {
-                                Text("Default Time")
-                                Spacer()
-                                Text(defaultTimeString(for: timeOfDay))
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                } header: {
-                    Label("Reminder", systemImage: "bell.fill")
-                } footer: {
-                    if reminderEnabled && timeOfDay != .custom {
-                        Text("You can change default \(timeOfDay.displayName.lowercased()) time in Settings")
-                    } else if reminderEnabled && timeOfDay == .custom {
-                        Text("This medication will have its own reminder at the specified time")
-                    } else {
-                        Text("Get a daily notification to take this medication")
+                    } header: {
+                        Label("Reminder", systemImage: "bell.fill")
+                    } footer: {
+                        reminderFooterText
                     }
                 }
 
@@ -167,6 +152,129 @@ struct AddUserMedicationView: View {
         }
     }
 
+    // MARK: - Reminder UI Components
+
+    private var reminderToggleLabel: String {
+        switch frequency {
+        case .weekly:
+            return "Weekly Reminder"
+        case .everyOtherDay:
+            return "Every Other Day Reminder"
+        default:
+            return "Daily Reminder"
+        }
+    }
+
+    @ViewBuilder
+    private var reminderOptionsView: some View {
+        switch frequency {
+        case .onceDaily:
+            // User picks time-of-day
+            Picker("Time of Day", selection: $timeOfDay) {
+                ForEach(MedicationTimeOfDay.allCases) { tod in
+                    Label(tod.displayName, systemImage: tod.icon)
+                        .tag(tod)
+                }
+            }
+
+            if timeOfDay == .custom {
+                DatePicker("Custom Time", selection: $customReminderTime, displayedComponents: .hourAndMinute)
+            } else {
+                HStack {
+                    Text("Default Time")
+                    Spacer()
+                    Text(defaultTimeString(for: timeOfDay))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+        case .twiceDaily, .threeTimesDaily, .fourTimesDaily:
+            // Auto-assigned times (read-only)
+            HStack {
+                Text("Times")
+                Spacer()
+                Text(autoAssignedTimesDescription)
+                    .foregroundStyle(.secondary)
+            }
+
+        case .weekly:
+            // Day of week picker
+            Picker("Day", selection: $weeklyReminderDay) {
+                Text("Sunday").tag(1)
+                Text("Monday").tag(2)
+                Text("Tuesday").tag(3)
+                Text("Wednesday").tag(4)
+                Text("Thursday").tag(5)
+                Text("Friday").tag(6)
+                Text("Saturday").tag(7)
+            }
+
+            // Time of day picker
+            Picker("Time", selection: $timeOfDay) {
+                ForEach(MedicationTimeOfDay.scheduledCases, id: \.self) { tod in
+                    Label(tod.displayName, systemImage: tod.icon)
+                        .tag(tod)
+                }
+                Label("Custom Time", systemImage: "clock.fill")
+                    .tag(MedicationTimeOfDay.custom)
+            }
+
+            if timeOfDay == .custom {
+                DatePicker("Custom Time", selection: $customReminderTime, displayedComponents: .hourAndMinute)
+            }
+
+        case .everyOtherDay:
+            // Time of day picker
+            Picker("Time", selection: $timeOfDay) {
+                ForEach(MedicationTimeOfDay.scheduledCases, id: \.self) { tod in
+                    Label(tod.displayName, systemImage: tod.icon)
+                        .tag(tod)
+                }
+                Label("Custom Time", systemImage: "clock.fill")
+                    .tag(MedicationTimeOfDay.custom)
+            }
+
+            if timeOfDay == .custom {
+                DatePicker("Custom Time", selection: $customReminderTime, displayedComponents: .hourAndMinute)
+            }
+
+        case .asNeeded:
+            EmptyView()
+        }
+    }
+
+    private var autoAssignedTimesDescription: String {
+        let slots = MedicationReminderService.getTimeSlotsForFrequency(frequency, userSelected: nil)
+        return slots.map { $0.displayName }.joined(separator: ", ")
+    }
+
+    private var reminderFooterText: Text {
+        if !reminderEnabled {
+            return Text("Get notified when it's time to take this medication")
+        }
+
+        switch frequency {
+        case .onceDaily:
+            if timeOfDay == .custom {
+                return Text("This medication will have its own reminder at the specified time")
+            } else {
+                return Text("You can change default \(timeOfDay.displayName.lowercased()) time in Settings")
+            }
+
+        case .twiceDaily, .threeTimesDaily, .fourTimesDaily:
+            return Text("Reminders are automatically scheduled based on frequency. Change default times in Settings.")
+
+        case .weekly:
+            return Text("You'll be reminded once per week on the selected day")
+
+        case .everyOtherDay:
+            return Text("You'll be reminded every 48 hours starting from when this is set up")
+
+        case .asNeeded:
+            return Text("")
+        }
+    }
+
     private func saveMedication() {
         if let medication = medication {
             medication.name = name
@@ -178,6 +286,7 @@ struct AddUserMedicationView: View {
             medication.reminderEnabled = reminderEnabled
             medication.timeOfDay = reminderEnabled ? timeOfDay : nil
             medication.customReminderTime = (timeOfDay == .custom) ? customReminderTime : nil
+            medication.weeklyReminderDay = (frequency == .weekly) ? weeklyReminderDay : nil
         } else {
             let newMedication = UserMedication(
                 name: name,
@@ -188,7 +297,8 @@ struct AddUserMedicationView: View {
                 startDate: startDate,
                 reminderEnabled: reminderEnabled,
                 timeOfDay: reminderEnabled ? timeOfDay : .morning,
-                customReminderTime: (timeOfDay == .custom) ? customReminderTime : nil
+                customReminderTime: (timeOfDay == .custom) ? customReminderTime : nil,
+                weeklyReminderDay: (frequency == .weekly) ? weeklyReminderDay : 2
             )
             modelContext.insert(newMedication)
         }

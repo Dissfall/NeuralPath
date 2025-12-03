@@ -20,6 +20,7 @@ class MedicationReminderService {
     static let morningReminderTimeKey = "medicationMorningReminderTime"
     static let afternoonReminderTimeKey = "medicationAfternoonReminderTime"
     static let eveningReminderTimeKey = "medicationEveningReminderTime"
+    static let nightReminderTimeKey = "medicationNightReminderTime"
 
     private init() {}
 
@@ -27,38 +28,85 @@ class MedicationReminderService {
         let id: String
         let name: String
         let dosage: String?
+        let frequency: MedicationFrequency
+        let weeklyReminderDay: Int?
+        let userSelectedTimeOfDay: MedicationTimeOfDay?
+        let customReminderTime: Date?
+    }
+
+    /// Returns time slots for a given frequency
+    static func getTimeSlotsForFrequency(_ frequency: MedicationFrequency, userSelected: MedicationTimeOfDay?) -> [MedicationTimeOfDay] {
+        switch frequency {
+        case .onceDaily:
+            return [userSelected ?? .morning]
+        case .twiceDaily:
+            return [.morning, .evening]
+        case .threeTimesDaily:
+            return [.morning, .afternoon, .evening]
+        case .fourTimesDaily:
+            return [.morning, .afternoon, .evening, .night]
+        case .weekly, .everyOtherDay:
+            return [userSelected ?? .morning]
+        case .asNeeded:
+            return []
+        }
     }
 
     func scheduleMedicationReminders(medications: [UserMedication]) {
+        // Group by time-of-day for daily frequencies
         var morningMeds: [MedicationData] = []
         var afternoonMeds: [MedicationData] = []
         var eveningMeds: [MedicationData] = []
+        var nightMeds: [MedicationData] = []
         var customMeds: [(MedicationData, Date)] = []
+        var weeklyMeds: [MedicationData] = []
+        var everyOtherDayMeds: [MedicationData] = []
 
         for medication in medications {
+            let frequency = medication.frequency ?? .onceDaily
             guard medication.reminderEnabled == true,
                   medication.isActive == true,
-                  medication.frequency != .asNeeded, // PRN medications excluded
+                  frequency != .asNeeded,
                   let name = medication.name else { continue }
 
             let data = MedicationData(
                 id: medication.id?.uuidString ?? UUID().uuidString,
                 name: name,
-                dosage: medication.dosage
+                dosage: medication.dosage,
+                frequency: frequency,
+                weeklyReminderDay: medication.weeklyReminderDay,
+                userSelectedTimeOfDay: medication.timeOfDay,
+                customReminderTime: medication.customReminderTime
             )
 
-            let timeOfDay = medication.timeOfDay ?? .morning
+            // Handle custom time separately
+            if medication.timeOfDay == .custom, let customTime = medication.customReminderTime {
+                customMeds.append((data, customTime))
+                continue
+            }
 
-            switch timeOfDay {
-            case .morning:
-                morningMeds.append(data)
-            case .afternoon:
-                afternoonMeds.append(data)
-            case .evening:
-                eveningMeds.append(data)
-            case .custom:
-                if let customTime = medication.customReminderTime {
-                    customMeds.append((data, customTime))
+            // Handle non-daily frequencies
+            switch frequency {
+            case .weekly:
+                weeklyMeds.append(data)
+            case .everyOtherDay:
+                everyOtherDayMeds.append(data)
+            default:
+                // Daily frequencies - use auto-assignment
+                let timeSlots = Self.getTimeSlotsForFrequency(frequency, userSelected: medication.timeOfDay)
+                for slot in timeSlots {
+                    switch slot {
+                    case .morning:
+                        morningMeds.append(data)
+                    case .afternoon:
+                        afternoonMeds.append(data)
+                    case .evening:
+                        eveningMeds.append(data)
+                    case .night:
+                        nightMeds.append(data)
+                    case .custom:
+                        break
+                    }
                 }
             }
         }
@@ -69,23 +117,33 @@ class MedicationReminderService {
             let masterEnabled = UserDefaults.standard.bool(forKey: "medicationReminderEnabled")
             guard masterEnabled else { return }
 
+            // Schedule daily grouped reminders
             if !morningMeds.isEmpty {
-                let time = getMorningReminderTime()
-                await scheduleGroupedReminder(timeOfDay: .morning, medications: morningMeds, time: time)
+                await scheduleGroupedReminder(timeOfDay: .morning, medications: morningMeds, time: getMorningReminderTime())
             }
-
             if !afternoonMeds.isEmpty {
-                let time = getAfternoonReminderTime()
-                await scheduleGroupedReminder(timeOfDay: .afternoon, medications: afternoonMeds, time: time)
+                await scheduleGroupedReminder(timeOfDay: .afternoon, medications: afternoonMeds, time: getAfternoonReminderTime())
             }
-
             if !eveningMeds.isEmpty {
-                let time = getEveningReminderTime()
-                await scheduleGroupedReminder(timeOfDay: .evening, medications: eveningMeds, time: time)
+                await scheduleGroupedReminder(timeOfDay: .evening, medications: eveningMeds, time: getEveningReminderTime())
+            }
+            if !nightMeds.isEmpty {
+                await scheduleGroupedReminder(timeOfDay: .night, medications: nightMeds, time: getNightReminderTime())
             }
 
+            // Schedule custom time reminders
             for (data, time) in customMeds {
                 await scheduleIndividualReminder(data: data, time: time)
+            }
+
+            // Schedule weekly reminders
+            for data in weeklyMeds {
+                await scheduleWeeklyReminder(data: data)
+            }
+
+            // Schedule every-other-day reminders
+            for data in everyOtherDayMeds {
+                await scheduleEveryOtherDayReminder(data: data)
             }
         }
     }
@@ -120,33 +178,58 @@ class MedicationReminderService {
 
             guard let medications = try? context.fetch(descriptor) else { return }
 
+            // Group by time-of-day for daily frequencies
             var morningMeds: [MedicationData] = []
             var afternoonMeds: [MedicationData] = []
             var eveningMeds: [MedicationData] = []
+            var nightMeds: [MedicationData] = []
             var customMeds: [(MedicationData, Date)] = []
+            var weeklyMeds: [MedicationData] = []
+            var everyOtherDayMeds: [MedicationData] = []
 
             for medication in medications {
-                guard medication.frequency != .asNeeded,
+                let frequency = medication.frequency ?? .onceDaily
+                guard frequency != .asNeeded,
                       let name = medication.name else { continue }
 
                 let data = MedicationData(
                     id: medication.id?.uuidString ?? UUID().uuidString,
                     name: name,
-                    dosage: medication.dosage
+                    dosage: medication.dosage,
+                    frequency: frequency,
+                    weeklyReminderDay: medication.weeklyReminderDay,
+                    userSelectedTimeOfDay: medication.timeOfDay,
+                    customReminderTime: medication.customReminderTime
                 )
 
-                let timeOfDay = medication.timeOfDay ?? .morning
+                // Handle custom time separately
+                if medication.timeOfDay == .custom, let customTime = medication.customReminderTime {
+                    customMeds.append((data, customTime))
+                    continue
+                }
 
-                switch timeOfDay {
-                case .morning:
-                    morningMeds.append(data)
-                case .afternoon:
-                    afternoonMeds.append(data)
-                case .evening:
-                    eveningMeds.append(data)
-                case .custom:
-                    if let customTime = medication.customReminderTime {
-                        customMeds.append((data, customTime))
+                // Handle non-daily frequencies
+                switch frequency {
+                case .weekly:
+                    weeklyMeds.append(data)
+                case .everyOtherDay:
+                    everyOtherDayMeds.append(data)
+                default:
+                    // Daily frequencies - use auto-assignment
+                    let timeSlots = Self.getTimeSlotsForFrequency(frequency, userSelected: medication.timeOfDay)
+                    for slot in timeSlots {
+                        switch slot {
+                        case .morning:
+                            morningMeds.append(data)
+                        case .afternoon:
+                            afternoonMeds.append(data)
+                        case .evening:
+                            eveningMeds.append(data)
+                        case .night:
+                            nightMeds.append(data)
+                        case .custom:
+                            break
+                        }
                     }
                 }
             }
@@ -156,23 +239,33 @@ class MedicationReminderService {
             let masterEnabled = UserDefaults.standard.bool(forKey: "medicationReminderEnabled")
             guard masterEnabled else { return }
 
+            // Schedule daily grouped reminders
             if !morningMeds.isEmpty {
-                let time = getMorningReminderTime()
-                await scheduleGroupedReminder(timeOfDay: .morning, medications: morningMeds, time: time)
+                await scheduleGroupedReminder(timeOfDay: .morning, medications: morningMeds, time: getMorningReminderTime())
             }
-
             if !afternoonMeds.isEmpty {
-                let time = getAfternoonReminderTime()
-                await scheduleGroupedReminder(timeOfDay: .afternoon, medications: afternoonMeds, time: time)
+                await scheduleGroupedReminder(timeOfDay: .afternoon, medications: afternoonMeds, time: getAfternoonReminderTime())
             }
-
             if !eveningMeds.isEmpty {
-                let time = getEveningReminderTime()
-                await scheduleGroupedReminder(timeOfDay: .evening, medications: eveningMeds, time: time)
+                await scheduleGroupedReminder(timeOfDay: .evening, medications: eveningMeds, time: getEveningReminderTime())
+            }
+            if !nightMeds.isEmpty {
+                await scheduleGroupedReminder(timeOfDay: .night, medications: nightMeds, time: getNightReminderTime())
             }
 
+            // Schedule custom time reminders
             for (data, time) in customMeds {
                 await scheduleIndividualReminder(data: data, time: time)
+            }
+
+            // Schedule weekly reminders (individual, not grouped)
+            for data in weeklyMeds {
+                await scheduleWeeklyReminder(data: data)
+            }
+
+            // Schedule every-other-day reminders (individual, interval-based)
+            for data in everyOtherDayMeds {
+                await scheduleEveryOtherDayReminder(data: data)
             }
         }
     }
@@ -243,6 +336,63 @@ class MedicationReminderService {
         }
     }
 
+    private func scheduleWeeklyReminder(data: MedicationData) async {
+        let content = UNMutableNotificationContent()
+        content.title = "Weekly Medication Reminder"
+
+        if let dosage = data.dosage, !dosage.isEmpty {
+            content.body = "Time to take \(data.name) (\(dosage))"
+        } else {
+            content.body = "Time to take \(data.name)"
+        }
+
+        content.sound = .default
+        content.categoryIdentifier = "MEDICATION_REMINDER_WEEKLY"
+
+        let timeOfDay = data.userSelectedTimeOfDay ?? .morning
+        let time = getTime(for: timeOfDay)
+
+        var components = Calendar.current.dateComponents([.hour, .minute], from: time)
+        components.weekday = data.weeklyReminderDay ?? 2 // Monday default
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+
+        let identifier = "\(reminderPrefix)weekly_\(data.id)"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        do {
+            try await notificationCenter.add(request)
+        } catch {
+            print("Failed to schedule weekly medication reminder: \(error)")
+        }
+    }
+
+    private func scheduleEveryOtherDayReminder(data: MedicationData) async {
+        let content = UNMutableNotificationContent()
+        content.title = "Medication Reminder"
+
+        if let dosage = data.dosage, !dosage.isEmpty {
+            content.body = "Time to take \(data.name) (\(dosage))"
+        } else {
+            content.body = "Time to take \(data.name)"
+        }
+
+        content.sound = .default
+        content.categoryIdentifier = "MEDICATION_REMINDER_QOD"
+
+        // 48 hours in seconds
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 48 * 60 * 60, repeats: true)
+
+        let identifier = "\(reminderPrefix)qod_\(data.id)"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        do {
+            try await notificationCenter.add(request)
+        } catch {
+            print("Failed to schedule every-other-day medication reminder: \(error)")
+        }
+    }
+
     // MARK: - Default Time Helpers
 
     private func getMorningReminderTime() -> Date {
@@ -258,6 +408,21 @@ class MedicationReminderService {
     private func getEveningReminderTime() -> Date {
         UserDefaults.standard.object(forKey: Self.eveningReminderTimeKey) as? Date
             ?? Self.defaultReminderTime(for: .evening)
+    }
+
+    private func getNightReminderTime() -> Date {
+        UserDefaults.standard.object(forKey: Self.nightReminderTimeKey) as? Date
+            ?? Self.defaultReminderTime(for: .night)
+    }
+
+    private func getTime(for timeOfDay: MedicationTimeOfDay) -> Date {
+        switch timeOfDay {
+        case .morning: return getMorningReminderTime()
+        case .afternoon: return getAfternoonReminderTime()
+        case .evening: return getEveningReminderTime()
+        case .night: return getNightReminderTime()
+        case .custom: return getMorningReminderTime()
+        }
     }
 
     static func defaultReminderTime(for timeOfDay: MedicationTimeOfDay) -> Date {
@@ -278,6 +443,9 @@ class MedicationReminderService {
         case .evening:
             return UserDefaults.standard.object(forKey: eveningReminderTimeKey) as? Date
                 ?? defaultReminderTime(for: .evening)
+        case .night:
+            return UserDefaults.standard.object(forKey: nightReminderTimeKey) as? Date
+                ?? defaultReminderTime(for: .night)
         case .custom:
             return defaultReminderTime(for: .morning)
         }

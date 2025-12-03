@@ -130,17 +130,37 @@ struct MedicationManagementView: View {
 struct MedicationRow: View {
     let medication: UserMedication
 
-    private var reminderBadgeInfo: (String, String, Color)? {
-        guard medication.reminderEnabled == true,
-              let timeOfDay = medication.timeOfDay else { return nil }
+    private var reminderBadges: [(icon: String, text: String, color: Color)] {
+        guard medication.reminderEnabled == true else { return [] }
 
-        if timeOfDay == .custom {
-            guard let customTime = medication.customReminderTime else { return nil }
+        let frequency = medication.frequency ?? .onceDaily
+
+        // Custom time - single badge with specific time
+        if medication.timeOfDay == .custom, let customTime = medication.customReminderTime {
             let formatter = DateFormatter()
             formatter.timeStyle = .short
-            return (timeOfDay.icon, formatter.string(from: customTime), timeOfDay.color)
+            return [("clock.fill", formatter.string(from: customTime), .blue)]
         }
-        return (timeOfDay.icon, timeOfDay.displayName, timeOfDay.color)
+
+        // Weekly - show day of week
+        if frequency == .weekly {
+            let dayNames = ["", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+            let day = medication.weeklyReminderDay ?? 2
+            let timeOfDay = medication.timeOfDay ?? .morning
+            return [(timeOfDay.icon, dayNames[day], timeOfDay.color)]
+        }
+
+        // Every other day - show QOD badge
+        if frequency == .everyOtherDay {
+            let timeOfDay = medication.timeOfDay ?? .morning
+            return [(timeOfDay.icon, "QOD", timeOfDay.color)]
+        }
+
+        // Daily frequencies - show time slot badges based on frequency
+        let timeSlots = MedicationReminderService.getTimeSlotsForFrequency(frequency, userSelected: medication.timeOfDay)
+        return timeSlots.map { slot in
+            (slot.icon, slot.displayName, slot.color)
+        }
     }
 
     var body: some View {
@@ -175,15 +195,21 @@ struct MedicationRow: View {
                             .background(Color.blue.opacity(0.1))
                             .cornerRadius(4)
                     }
+                }
 
-                    if let (icon, text, color) = reminderBadgeInfo {
-                        HStack(spacing: 2) {
-                            Image(systemName: icon)
-                                .font(.caption2)
-                            Text(text)
-                                .font(.caption)
+                // Reminder badges on separate row if multiple
+                if !reminderBadges.isEmpty {
+                    HStack(spacing: 6) {
+                        ForEach(reminderBadges.indices, id: \.self) { index in
+                            let badge = reminderBadges[index]
+                            HStack(spacing: 2) {
+                                Image(systemName: badge.icon)
+                                    .font(.caption2)
+                                Text(badge.text)
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(badge.color)
                         }
-                        .foregroundStyle(color)
                     }
                 }
             }
