@@ -282,7 +282,7 @@ struct SymptomDetailView: View {
         }
         .sheet(isPresented: $showingEditSheet) {
             if let displayEntry = freshEntry {
-                AddSymptomView(entryToEdit: displayEntry)
+                StepperEntryView(entryToEdit: displayEntry)
             }
         }
     }

@@ -288,6 +288,12 @@
         }
       }
     },
+    "0" : {
+
+    },
+    "0.0" : {
+
+    },
     "1 active medication" : {
       "localizations" : {
         "be" : {
@@ -407,6 +413,9 @@
           }
         }
       }
+    },
+    "Add any additional notes about your day..." : {
+
     },
     "Add any instructions or notes about this practice" : {
       "localizations" : {
@@ -589,6 +598,7 @@
       }
     },
     "Add Quality Rating" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -597,6 +607,9 @@
           }
         }
       }
+    },
+    "Add Rating" : {
+
     },
     "Add self-care practices in Settings" : {
       "localizations" : {
@@ -689,6 +702,7 @@
       }
     },
     "Additional notes" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -778,7 +792,11 @@
         }
       }
     },
+    "An entry already exists for this date. Please select a different date or edit the existing entry." : {
+
+    },
     "An entry for this date already exists. Please choose a different date or delete the existing entry first." : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -891,6 +909,9 @@
         }
       }
     },
+    "As-Needed (PRN)" : {
+
+    },
     "Automatically import sleep data and sync your health information." : {
       "localizations" : {
         "be" : {
@@ -900,6 +921,9 @@
           }
         }
       }
+    },
+    "Back" : {
+
     },
     "Based on today's patterns" : {
       "localizations" : {
@@ -1302,6 +1326,7 @@
       }
     },
     "Daylight" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -1431,6 +1456,12 @@
         }
       }
     },
+    "Discard" : {
+
+    },
+    "Discard Changes?" : {
+
+    },
     "Don't remind me again" : {
       "localizations" : {
         "be" : {
@@ -1551,6 +1582,9 @@
         }
       }
     },
+    "Edit Time" : {
+
+    },
     "Edit Today's Entry" : {
       "localizations" : {
         "be" : {
@@ -1591,7 +1625,11 @@
         }
       }
     },
+    "Enter amount for %@" : {
+
+    },
     "Entry Already Exists" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -1642,6 +1680,7 @@
       }
     },
     "Entry for Yesterday?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -1851,6 +1890,9 @@
         }
       }
     },
+    "Go back to previous steps to add information about your day." : {
+
+    },
     "Goal" : {
       "localizations" : {
         "be" : {
@@ -1981,6 +2023,9 @@
         }
       }
     },
+    "hrs" : {
+
+    },
     "iCloud Sync" : {
       "localizations" : {
         "be" : {
@@ -2102,6 +2147,7 @@
       }
     },
     "It's early morning. Are you logging for yesterday?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -2110,6 +2156,12 @@
           }
         }
       }
+    },
+    "It's early morning. Would you like to log this entry for yesterday instead?" : {
+
+    },
+    "Keep Editing" : {
+
     },
     "Key factors:" : {
       "localizations" : {
@@ -2181,6 +2233,9 @@
         }
       }
     },
+    "Loading data from Apple Health..." : {
+
+    },
     "Loading medications..." : {
       "localizations" : {
         "be" : {
@@ -2210,6 +2265,9 @@
           }
         }
       }
+    },
+    "Log for Yesterday?" : {
+
     },
     "Log Mindfulness" : {
       "localizations" : {
@@ -2674,6 +2732,9 @@
         }
       }
     },
+    "No data entered yet" : {
+
+    },
     "No Entries Yet" : {
       "localizations" : {
         "be" : {
@@ -2845,6 +2906,7 @@
       }
     },
     "No, today" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -2853,6 +2915,9 @@
           }
         }
       }
+    },
+    "No, use today" : {
+
     },
     "None" : {
       "localizations" : {
@@ -3164,6 +3229,9 @@
         }
       }
     },
+    "Remove" : {
+
+    },
     "Report a Bug" : {
       "localizations" : {
         "be" : {
@@ -3235,6 +3303,9 @@
           }
         }
       }
+    },
+    "Save Entry" : {
+
     },
     "Schedule" : {
       "localizations" : {
@@ -3768,6 +3839,9 @@
         }
       }
     },
+    "Tap to select emotions" : {
+
+    },
     "Test data generation for development" : {
 
     },
@@ -3863,6 +3937,9 @@
           }
         }
       }
+    },
+    "Time Outdoors" : {
+
     },
     "Time Range" : {
       "localizations" : {
@@ -4087,6 +4164,9 @@
         }
       }
     },
+    "Update Entry" : {
+
+    },
     "Updated %@" : {
       "localizations" : {
         "be" : {
@@ -4208,6 +4288,7 @@
       }
     },
     "Yes, for yesterday" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -4216,6 +4297,9 @@
           }
         }
       }
+    },
+    "Yes, use yesterday" : {
+
     },
     "You already have an entry for today." : {
       "localizations" : {
@@ -4236,6 +4320,9 @@
           }
         }
       }
+    },
+    "You have unsaved changes that will be lost." : {
+
     },
     "You're All Set!" : {
       "localizations" : {

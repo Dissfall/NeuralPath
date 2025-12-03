@@ -662,11 +662,11 @@ struct TodayView: View {
                 }
             }
             .sheet(isPresented: $showingAddEntry) {
-                AddSymptomView()
+                StepperEntryView()
             }
             .sheet(isPresented: $showingEditEntry) {
                 if let entry = todayEntry {
-                    AddSymptomView(entryToEdit: entry)
+                    StepperEntryView(entryToEdit: entry)
                 }
             }
             .sheet(isPresented: $showingArchive) {
