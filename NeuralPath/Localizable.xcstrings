@@ -691,6 +691,9 @@
         }
       }
     },
+    "Add to Library" : {
+
+    },
     "Add Your Medications" : {
       "localizations" : {
         "be" : {
@@ -955,6 +958,9 @@
         }
       }
     },
+    "Begin" : {
+
+    },
     "Best time to log" : {
       "localizations" : {
         "be" : {
@@ -1185,6 +1191,9 @@
           }
         }
       }
+    },
+    "Continue Practice" : {
+
     },
     "Continue Setup" : {
       "localizations" : {
@@ -1636,6 +1645,12 @@
         }
       }
     },
+    "End & Log Progress" : {
+
+    },
+    "End Practice?" : {
+
+    },
     "Enter amount for %@" : {
 
     },
@@ -1760,6 +1775,9 @@
           }
         }
       }
+    },
+    "Exit Without Saving" : {
+
     },
     "Export Data" : {
       "localizations" : {
@@ -1930,6 +1948,9 @@
           }
         }
       }
+    },
+    "Guided" : {
+
     },
     "Has schedule" : {
       "localizations" : {
@@ -3074,6 +3095,9 @@
         }
       }
     },
+    "Practice" : {
+
+    },
     "Practice Name" : {
       "localizations" : {
         "be" : {
@@ -3781,6 +3805,9 @@
         }
       }
     },
+    "Suggested for You" : {
+
+    },
     "Suggestions" : {
       "localizations" : {
         "be" : {
@@ -3876,6 +3903,9 @@
         }
       }
     },
+    "Tap to continue" : {
+
+    },
     "Tap to select emotions" : {
 
     },
@@ -3911,6 +3941,12 @@
           }
         }
       }
+    },
+    "thing" : {
+
+    },
+    "things" : {
+
     },
     "This medication will have its own reminder at the specified time" : {
 
@@ -4289,6 +4325,9 @@
         }
       }
     },
+    "Well done" : {
+
+    },
     "Well Done!" : {
       "localizations" : {
         "be" : {
@@ -4376,7 +4415,13 @@
         }
       }
     },
+    "You completed %@" : {
+
+    },
     "You have unsaved changes that will be lost." : {
+
+    },
+    "You showed up. That matters." : {
 
     },
     "You'll be reminded every 48 hours starting from when this is set up" : {

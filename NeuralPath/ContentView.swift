@@ -30,6 +30,12 @@ struct ContentView: View {
                     Label("Analysis", systemImage: "brain")
                 }
                 .tag(2)
+
+            PracticeTabView()
+                .tabItem {
+                    Label("Practice", systemImage: "figure.mind.and.body")
+                }
+                .tag(3)
         }
     }
 }

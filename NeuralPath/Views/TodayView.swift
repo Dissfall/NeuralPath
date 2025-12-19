@@ -1238,14 +1238,44 @@ private struct MindfulnessLogRow: View {
         return formatter
     }
 
+    private var isGuidedPractice: Bool {
+        guard let notes = log.notes else { return false }
+        return GuidedPracticeLogMetadata.from(json: notes) != nil
+    }
+
+    private var guidedPractice: GuidedPractice? {
+        guard let notes = log.notes,
+              let metadata = GuidedPracticeLogMetadata.from(json: notes) else { return nil }
+        return GuidedPracticeDatabase.practice(byId: metadata.practiceId)
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.green)
                 .font(.title3)
 
-            Text(log.practiceName ?? "Unknown")
-                .font(.subheadline)
+            HStack(spacing: 6) {
+                if let practice = guidedPractice {
+                    Image(systemName: practice.category.icon)
+                        .foregroundStyle(practice.category.color)
+                        .font(.caption)
+                }
+
+                Text(log.practiceName ?? "Unknown")
+                    .font(.subheadline)
+
+                if isGuidedPractice {
+                    Text("Guided")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.purple.opacity(0.2))
+                        .foregroundStyle(.purple)
+                        .clipShape(Capsule())
+                }
+            }
 
             Spacer()
 
