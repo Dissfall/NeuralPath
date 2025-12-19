@@ -27,7 +27,6 @@ struct TodayView: View {
     @State private var showingEditEntry = false
     @State private var showingArchive = false
     @State private var showingSettings = false
-    @State private var showingEntryExistsDialog = false
     @State private var substanceToLog: UserSubstance?
     @State private var substanceAmount: String = "1"
 
@@ -41,11 +40,10 @@ struct TodayView: View {
     @State private var editTime: Date = Date()
     @State private var editAmount: String = ""
 
-    // Completion celebration states
-    @State private var showMorningCompletion = false
-    @State private var showAfternoonCompletion = false
-    @State private var showEveningCompletion = false
+    // Completion celebration
     @State private var completedTimeOfDay: SelfCareTimeOfDay?
+
+    // MARK: - Computed Properties
 
     private var scheduledMedications: [UserMedication] {
         userMedications.filter { $0.frequency != .asNeeded }
@@ -53,14 +51,6 @@ struct TodayView: View {
 
     private var prnMedications: [UserMedication] {
         userMedications.filter { $0.frequency == .asNeeded }
-    }
-
-    private var todayPrnLogs: [MedicationLog] {
-        let prnMedicationNames = Set(prnMedications.compactMap { $0.name })
-        return todayMedicationLogs.filter { log in
-            guard let name = log.medicationName else { return false }
-            return prnMedicationNames.contains(name)
-        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
     }
 
     private var todayEntry: SymptomEntry? {
@@ -92,7 +82,7 @@ struct TodayView: View {
         return allSubstanceLogs.filter { log in
             guard let timestamp = log.timestamp else { return false }
             return timestamp >= startOfDay && timestamp < endOfDay
-        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+        }
     }
 
     private var todayMindfulnessLogs: [MindfulnessLog] {
@@ -104,7 +94,7 @@ struct TodayView: View {
         return allMindfulnessLogs.filter { log in
             guard let timestamp = log.timestamp else { return false }
             return timestamp >= startOfDay && timestamp < endOfDay
-        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+        }
     }
 
     private var todaySelfCareLogs: [SelfCareLog] {
@@ -116,43 +106,438 @@ struct TodayView: View {
         return allSelfCareLogs.filter { log in
             guard let timestamp = log.timestamp else { return false }
             return timestamp >= startOfDay && timestamp < endOfDay
-        }.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+        }
     }
 
-    // Self-care practices by time of day
-    private var morningSelfCare: [UserSelfCare] {
-        userSelfCare.filter { $0.timeOfDay == .morning }
+    private var showFinishDayButton: Bool {
+        let hour = Calendar.current.component(.hour, from: Date())
+        return hour >= 18 && todayEntry == nil
     }
 
-    private var afternoonSelfCare: [UserSelfCare] {
-        userSelfCare.filter { $0.timeOfDay == .afternoon }
+    // MARK: - Timeline Building
+
+    private var timelineItems: [TimelineItem] {
+        var items: [TimelineItem] = []
+
+        // Scheduled medications
+        for med in scheduledMedications {
+            let log = todayMedicationLogs.first { $0.medicationName == med.name }
+            let plannedTime = med.reminderTime ?? TimeBlock.from(date: Date()).defaultTime
+            items.append(TimelineItem(
+                id: "med_\(med.id)",
+                type: .scheduledMedication(med),
+                name: med.name ?? "Unknown",
+                time: log?.timestamp ?? plannedTime,
+                plannedTime: plannedTime,
+                isCompleted: log != nil,
+                subtitle: med.dosage
+            ))
+        }
+
+        // PRN medication logs
+        let prnMedicationNames = Set(prnMedications.compactMap { $0.name })
+        for log in todayMedicationLogs {
+            guard let name = log.medicationName, prnMedicationNames.contains(name) else { continue }
+            items.append(TimelineItem(
+                id: "prn_\(log.id)",
+                type: .prnMedication(log),
+                name: name,
+                time: log.timestamp ?? Date(),
+                plannedTime: nil,
+                isCompleted: true,
+                subtitle: nil
+            ))
+        }
+
+        // Substance logs
+        for log in todaySubstanceLogs {
+            let amount = log.amount ?? 0
+            let unit = log.unit ?? .other
+            let formattedAmount = amount.truncatingRemainder(dividingBy: 1) == 0
+                ? String(format: "%.0f", amount)
+                : String(format: "%.1f", amount)
+            items.append(TimelineItem(
+                id: "sub_\(log.id)",
+                type: .substance(log),
+                name: log.substanceName ?? "Unknown",
+                time: log.timestamp ?? Date(),
+                plannedTime: nil,
+                isCompleted: true,
+                subtitle: "\(formattedAmount) \(unit.abbreviation)"
+            ))
+        }
+
+        // Mindfulness logs
+        for log in todayMindfulnessLogs {
+            items.append(TimelineItem(
+                id: "mind_\(log.id)",
+                type: .mindfulness(log),
+                name: log.practiceName ?? "Unknown",
+                time: log.timestamp ?? Date(),
+                plannedTime: nil,
+                isCompleted: true,
+                subtitle: isGuidedPractice(log) ? "Guided" : nil
+            ))
+        }
+
+        // Self-care (scheduled and logged)
+        for practice in userSelfCare {
+            let log = todaySelfCareLogs.first { $0.userSelfCare?.id == practice.id }
+            let plannedTime = practice.timeOfDay.defaultTime
+            items.append(TimelineItem(
+                id: "selfcare_\(practice.id)",
+                type: log != nil ? .loggedSelfCare(log!) : .scheduledSelfCare(practice),
+                name: practice.name ?? "Unknown",
+                time: log?.timestamp ?? plannedTime,
+                plannedTime: plannedTime,
+                isCompleted: log != nil,
+                subtitle: practice.timeOfDay.displayName
+            ))
+        }
+
+        return items.sorted { $0.effectiveTime < $1.effectiveTime }
     }
 
-    private var eveningSelfCare: [UserSelfCare] {
-        userSelfCare.filter { $0.timeOfDay == .evening }
+    private var timelineSections: [TimeBlockSection] {
+        let grouped = Dictionary(grouping: timelineItems) { $0.timeBlock }
+        return TimeBlock.allCases.compactMap { block in
+            guard let items = grouped[block], !items.isEmpty else { return nil }
+            return TimeBlockSection(block: block, items: items)
+        }
     }
 
-    // Today's self-care logs by time of day
-    private var todayMorningSelfCareLogs: [SelfCareLog] {
-        todaySelfCareLogs.filter { $0.timeOfDay == .morning }
+    private func isGuidedPractice(_ log: MindfulnessLog) -> Bool {
+        guard let notes = log.notes else { return false }
+        return GuidedPracticeLogMetadata.from(json: notes) != nil
     }
 
-    private var todayAfternoonSelfCareLogs: [SelfCareLog] {
-        todaySelfCareLogs.filter { $0.timeOfDay == .afternoon }
+    // MARK: - Body
+
+    var body: some View {
+        NavigationStack {
+            ZStack(alignment: .bottomTrailing) {
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        // Header card if entry exists
+                        if let entry = todayEntry {
+                            AllDoneCard(entry: entry, onEdit: { showingEditEntry = true })
+                                .padding()
+                        }
+
+                        // Timeline sections
+                        if timelineSections.isEmpty && todayEntry == nil {
+                            EmptyTimelineView()
+                        } else {
+                            ForEach(timelineSections) { section in
+                                timelineSection(section)
+                            }
+                        }
+
+                        // Finish Day button
+                        if showFinishDayButton {
+                            FinishDayButton(action: { showingAddEntry = true })
+                                .padding(.top, 16)
+                        }
+
+                        // Bottom padding for FAB
+                        Color.clear.frame(height: 80)
+                    }
+                }
+                .background(Color(.systemGroupedBackground))
+
+                // FAB
+                AddItemFAB(
+                    userSubstances: userSubstances,
+                    userMindfulness: userMindfulness,
+                    userSelfCare: userSelfCare.filter { practice in
+                        !todaySelfCareLogs.contains { $0.userSelfCare?.id == practice.id }
+                    },
+                    prnMedications: prnMedications,
+                    onLogSubstance: promptLogSubstance,
+                    onLogMindfulness: logMindfulness,
+                    onLogSelfCare: logSelfCare,
+                    onLogPRN: logMedication
+                )
+                .padding(.trailing, 16)
+                .padding(.bottom, 16)
+            }
+            .navigationTitle("Today")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingArchive = true
+                    } label: {
+                        Label("History", systemImage: "clock.arrow.circlepath")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Label("Settings", systemImage: "gear")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddEntry) {
+                StepperEntryView()
+            }
+            .sheet(isPresented: $showingEditEntry) {
+                if let entry = todayEntry {
+                    StepperEntryView(entryToEdit: entry)
+                }
+            }
+            .sheet(isPresented: $showingArchive) {
+                ArchiveView()
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
+            }
+            .alert("Log Substance", isPresented: Binding(
+                get: { substanceToLog != nil },
+                set: { if !$0 { substanceToLog = nil } }
+            )) {
+                TextField("Amount", text: $substanceAmount)
+                    .keyboardType(.decimalPad)
+                Button("Cancel", role: .cancel) {
+                    substanceToLog = nil
+                }
+                Button("Log") {
+                    confirmLogSubstance()
+                }
+            } message: {
+                if let substance = substanceToLog {
+                    Text("\(substance.name ?? "Unknown") (\(substance.defaultUnit?.abbreviation ?? ""))")
+                }
+            }
+            // Edit time sheets
+            .sheet(isPresented: Binding(
+                get: { medicationLogToEditTime != nil },
+                set: { if !$0 { medicationLogToEditTime = nil } }
+            )) {
+                if let log = medicationLogToEditTime {
+                    EditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: log.medicationName ?? "Medication",
+                        time: $editTime,
+                        onSave: saveMedicationLogTime,
+                        onCancel: { medicationLogToEditTime = nil }
+                    )
+                }
+            }
+            .sheet(isPresented: Binding(
+                get: { medicationToEditTime != nil },
+                set: { if !$0 { medicationToEditTime = nil } }
+            )) {
+                if let medication = medicationToEditTime {
+                    EditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: medication.name ?? "Medication",
+                        time: $editTime,
+                        onSave: saveScheduledMedicationTime,
+                        onCancel: { medicationToEditTime = nil }
+                    )
+                }
+            }
+            .sheet(isPresented: Binding(
+                get: { substanceLogToEditTime != nil },
+                set: { if !$0 { substanceLogToEditTime = nil } }
+            )) {
+                if let log = substanceLogToEditTime {
+                    EditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: log.substanceName ?? "Substance",
+                        time: $editTime,
+                        onSave: saveSubstanceTime,
+                        onCancel: { substanceLogToEditTime = nil }
+                    )
+                }
+            }
+            .alert("Edit Amount", isPresented: Binding(
+                get: { substanceLogToEditAmount != nil },
+                set: { if !$0 { substanceLogToEditAmount = nil } }
+            )) {
+                TextField("Amount", text: $editAmount)
+                    .keyboardType(.decimalPad)
+                Button("Cancel", role: .cancel) {
+                    substanceLogToEditAmount = nil
+                }
+                Button("Save") {
+                    saveSubstanceAmount()
+                }
+            } message: {
+                if let log = substanceLogToEditAmount {
+                    Text("\(log.substanceName ?? "Unknown") (\(log.unit?.abbreviation ?? ""))")
+                }
+            }
+            .sheet(isPresented: Binding(
+                get: { mindfulnessLogToEditTime != nil },
+                set: { if !$0 { mindfulnessLogToEditTime = nil } }
+            )) {
+                if let log = mindfulnessLogToEditTime {
+                    EditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: log.practiceName ?? "Practice",
+                        time: $editTime,
+                        onSave: saveMindfulnessTime,
+                        onCancel: { mindfulnessLogToEditTime = nil }
+                    )
+                }
+            }
+            .sheet(isPresented: Binding(
+                get: { selfCareLogToEditTime != nil },
+                set: { if !$0 { selfCareLogToEditTime = nil } }
+            )) {
+                if let log = selfCareLogToEditTime {
+                    EditTimeSheet(
+                        title: "Edit Time",
+                        subtitle: log.practiceName ?? "Practice",
+                        time: $editTime,
+                        onSave: saveSelfCareTime,
+                        onCancel: { selfCareLogToEditTime = nil }
+                    )
+                }
+            }
+            .alert("Well Done!", isPresented: Binding(
+                get: { completedTimeOfDay != nil },
+                set: { if !$0 { completedTimeOfDay = nil } }
+            )) {
+                Button("OK") {
+                    completedTimeOfDay = nil
+                }
+            } message: {
+                if let timeOfDay = completedTimeOfDay {
+                    Text(timeOfDay.completionMessage)
+                }
+            }
+        }
     }
 
-    private var todayEveningSelfCareLogs: [SelfCareLog] {
-        todaySelfCareLogs.filter { $0.timeOfDay == .evening }
+    // MARK: - Timeline Section
+
+    @ViewBuilder
+    private func timelineSection(_ section: TimeBlockSection) -> some View {
+        VStack(spacing: 0) {
+            TimeBlockHeader(
+                block: section.block,
+                completedCount: section.items.filter(\.isCompleted).count,
+                totalCount: section.items.count
+            )
+
+            ForEach(section.items) { item in
+                TimelineItemRow(item: item) {
+                    handleItemTap(item)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    swipeActions(for: item)
+                }
+            }
+        }
+        .padding(.vertical, 8)
     }
 
-    private func medicationStatus(_ medication: UserMedication) -> (taken: Bool, time: Date?) {
-        let log = todayMedicationLogs.first { $0.medicationName == medication.name }
-        return (log != nil, log?.timestamp)
+    @ViewBuilder
+    private func swipeActions(for item: TimelineItem) -> some View {
+        switch item.type {
+        case .scheduledMedication(let med):
+            if item.isCompleted {
+                Button {
+                    untickMedication(med)
+                } label: {
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                }
+                .tint(.orange)
+
+                Button {
+                    startEditScheduledMedicationTime(med)
+                } label: {
+                    Label("Time", systemImage: "clock")
+                }
+                .tint(.blue)
+            }
+
+        case .prnMedication(let log):
+            Button(role: .destructive) {
+                deleteMedicationLog(log)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+
+            Button {
+                startEditMedicationLogTime(log)
+            } label: {
+                Label("Time", systemImage: "clock")
+            }
+            .tint(.blue)
+
+        case .substance(let log):
+            Button(role: .destructive) {
+                deleteSubstanceLog(log)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+
+            Button {
+                startEditSubstanceTime(log)
+            } label: {
+                Label("Time", systemImage: "clock")
+            }
+            .tint(.blue)
+
+            Button {
+                startEditSubstanceAmount(log)
+            } label: {
+                Label("Amount", systemImage: "number")
+            }
+            .tint(.purple)
+
+        case .mindfulness(let log):
+            Button(role: .destructive) {
+                deleteMindfulnessLog(log)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+
+            Button {
+                startEditMindfulnessTime(log)
+            } label: {
+                Label("Time", systemImage: "clock")
+            }
+            .tint(.blue)
+
+        case .scheduledSelfCare:
+            EmptyView()
+
+        case .loggedSelfCare(let log):
+            Button(role: .destructive) {
+                deleteSelfCareLog(log)
+            } label: {
+                Label("Undo", systemImage: "arrow.uturn.backward")
+            }
+            .tint(.orange)
+
+            Button {
+                startEditSelfCareTime(log)
+            } label: {
+                Label("Time", systemImage: "clock")
+            }
+            .tint(.blue)
+        }
     }
 
-    private var medicationsTakenCount: Int {
-        scheduledMedications.filter { medicationStatus($0).taken }.count
+    private func handleItemTap(_ item: TimelineItem) {
+        switch item.type {
+        case .scheduledMedication(let med):
+            if !item.isCompleted {
+                logMedication(med)
+            }
+        case .scheduledSelfCare(let practice):
+            logSelfCare(practice)
+        default:
+            break
+        }
     }
+
+    // MARK: - Logging Functions
 
     private func logMedication(_ medication: UserMedication) {
         let log = MedicationLog(
@@ -183,6 +568,31 @@ struct TodayView: View {
         substanceToLog = nil
     }
 
+    private func logMindfulness(_ practice: UserMindfulness) {
+        let log = MindfulnessLog(
+            userMindfulness: practice,
+            practiceName: practice.name ?? "",
+            timestamp: Date()
+        )
+        modelContext.insert(log)
+    }
+
+    private func logSelfCare(_ practice: UserSelfCare) {
+        let log = SelfCareLog(
+            userSelfCare: practice,
+            practiceName: practice.name ?? "",
+            timeOfDay: practice.timeOfDay,
+            timestamp: Date()
+        )
+        modelContext.insert(log)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            checkForCategoryCompletion(practice.timeOfDay)
+        }
+    }
+
+    // MARK: - Delete Functions
+
     private func deleteMedicationLog(_ log: MedicationLog) {
         modelContext.delete(log)
     }
@@ -196,6 +606,16 @@ struct TodayView: View {
     private func deleteSubstanceLog(_ log: SubstanceLog) {
         modelContext.delete(log)
     }
+
+    private func deleteMindfulnessLog(_ log: MindfulnessLog) {
+        modelContext.delete(log)
+    }
+
+    private func deleteSelfCareLog(_ log: SelfCareLog) {
+        modelContext.delete(log)
+    }
+
+    // MARK: - Edit Functions
 
     private func startEditMedicationLogTime(_ log: MedicationLog) {
         editTime = log.timestamp ?? Date()
@@ -252,19 +672,6 @@ struct TodayView: View {
         substanceLogToEditAmount = nil
     }
 
-    private func logMindfulness(_ practice: UserMindfulness) {
-        let log = MindfulnessLog(
-            userMindfulness: practice,
-            practiceName: practice.name ?? "",
-            timestamp: Date()
-        )
-        modelContext.insert(log)
-    }
-
-    private func deleteMindfulnessLog(_ log: MindfulnessLog) {
-        modelContext.delete(log)
-    }
-
     private func startEditMindfulnessTime(_ log: MindfulnessLog) {
         editTime = log.timestamp ?? Date()
         mindfulnessLogToEditTime = log
@@ -275,31 +682,6 @@ struct TodayView: View {
             log.timestamp = editTime
         }
         mindfulnessLogToEditTime = nil
-    }
-
-    // Self-care functions
-    private func selfCareStatus(_ practice: UserSelfCare) -> (completed: Bool, time: Date?) {
-        let log = todaySelfCareLogs.first { $0.userSelfCare?.id == practice.id }
-        return (log != nil, log?.timestamp)
-    }
-
-    private func logSelfCare(_ practice: UserSelfCare) {
-        let log = SelfCareLog(
-            userSelfCare: practice,
-            practiceName: practice.name ?? "",
-            timeOfDay: practice.timeOfDay,
-            timestamp: Date()
-        )
-        modelContext.insert(log)
-
-        // Check for completion after logging
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            checkForCategoryCompletion(practice.timeOfDay)
-        }
-    }
-
-    private func deleteSelfCareLog(_ log: SelfCareLog) {
-        modelContext.delete(log)
     }
 
     private func startEditSelfCareTime(_ log: SelfCareLog) {
@@ -314,573 +696,18 @@ struct TodayView: View {
         selfCareLogToEditTime = nil
     }
 
-    private func selfCareSummary(for timeOfDay: SelfCareTimeOfDay) -> String {
-        let practices: [UserSelfCare]
-        let logs: [SelfCareLog]
-
-        switch timeOfDay {
-        case .morning:
-            practices = morningSelfCare
-            logs = todayMorningSelfCareLogs
-        case .afternoon:
-            practices = afternoonSelfCare
-            logs = todayAfternoonSelfCareLogs
-        case .evening:
-            practices = eveningSelfCare
-            logs = todayEveningSelfCareLogs
-        }
-
-        if practices.isEmpty {
-            return "None"
-        }
-
-        let completed = practices.filter { practice in
-            logs.contains { $0.userSelfCare?.id == practice.id }
-        }.count
-
-        return "\(completed)/\(practices.count)"
-    }
-
-    private func isCategoryComplete(_ timeOfDay: SelfCareTimeOfDay) -> Bool {
-        let practices: [UserSelfCare]
-        let logs: [SelfCareLog]
-
-        switch timeOfDay {
-        case .morning:
-            practices = morningSelfCare
-            logs = todayMorningSelfCareLogs
-        case .afternoon:
-            practices = afternoonSelfCare
-            logs = todayAfternoonSelfCareLogs
-        case .evening:
-            practices = eveningSelfCare
-            logs = todayEveningSelfCareLogs
-        }
-
-        guard !practices.isEmpty else { return false }
-
-        let completed = practices.filter { practice in
-            logs.contains { $0.userSelfCare?.id == practice.id }
-        }.count
-
-        return completed == practices.count
-    }
+    // MARK: - Self-Care Completion
 
     private func checkForCategoryCompletion(_ timeOfDay: SelfCareTimeOfDay) {
-        guard isCategoryComplete(timeOfDay) else { return }
-        completedTimeOfDay = timeOfDay
-    }
+        let practicesForTimeOfDay = userSelfCare.filter { $0.timeOfDay == timeOfDay }
+        guard !practicesForTimeOfDay.isEmpty else { return }
 
-    private var medicationsSummary: String {
-        if scheduledMedications.isEmpty {
-            let prnCount = todayPrnLogs.count
-            return prnCount == 0 ? "None today" : "\(prnCount) dose\(prnCount == 1 ? "" : "s")"
-        } else {
-            let prnCount = todayPrnLogs.count
-            let prnSuffix = prnCount > 0 ? " + \(prnCount) PRN" : ""
-            return "\(medicationsTakenCount)/\(scheduledMedications.count)\(prnSuffix)"
-        }
-    }
+        let completedCount = practicesForTimeOfDay.filter { practice in
+            todaySelfCareLogs.contains { $0.userSelfCare?.id == practice.id }
+        }.count
 
-    private var substancesSummary: String {
-        if todaySubstanceLogs.isEmpty {
-            return "None today"
-        }
-        return "\(todaySubstanceLogs.count) log\(todaySubstanceLogs.count == 1 ? "" : "s")"
-    }
-
-    private var mindfulnessSummary: String {
-        if todayMindfulnessLogs.isEmpty {
-            return "None today"
-        }
-        return "\(todayMindfulnessLogs.count) session\(todayMindfulnessLogs.count == 1 ? "" : "s")"
-    }
-
-    var body: some View {
-        NavigationStack {
-            List {
-                if let entry = todayEntry {
-                    // All Done Card - hides tracking sections
-                    Section {
-                        AllDoneCard(entry: entry, onEdit: { showingEditEntry = true })
-                    }
-                } else {
-                    // Log Today's Entry button
-                    Section {
-                        Button(action: { showingAddEntry = true }) {
-                            HStack {
-                                Image(systemName: "square.and.pencil")
-                                    .font(.title2)
-                                    .foregroundStyle(.blue)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Log Today's Entry")
-                                        .font(.headline)
-                                    Text("Track your mood, sleep & symptoms")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                            }
-                            .padding(.vertical, 8)
-                        }
-                    }
-
-                    // Morning Self-Care Section
-                    if !morningSelfCare.isEmpty {
-                        selfCareSection(for: .morning, practices: morningSelfCare, logs: todayMorningSelfCareLogs)
-                    }
-
-                    // Afternoon Self-Care Section
-                    if !afternoonSelfCare.isEmpty {
-                        selfCareSection(for: .afternoon, practices: afternoonSelfCare, logs: todayAfternoonSelfCareLogs)
-                    }
-
-                    // Evening Self-Care Section
-                    if !eveningSelfCare.isEmpty {
-                        selfCareSection(for: .evening, practices: eveningSelfCare, logs: todayEveningSelfCareLogs)
-                    }
-
-                    // Medications Section
-                    if !scheduledMedications.isEmpty || !prnMedications.isEmpty {
-                    Section {
-                        // Scheduled medications
-                        ForEach(scheduledMedications) { medication in
-                            let status = medicationStatus(medication)
-                            ScheduledMedicationRow(
-                                medication: medication,
-                                taken: status.taken,
-                                time: status.time,
-                                onToggle: { logMedication(medication) }
-                            )
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                if status.taken {
-                                    Button {
-                                        untickMedication(medication)
-                                    } label: {
-                                        Label("Undo", systemImage: "arrow.uturn.backward")
-                                    }
-                                    .tint(.orange)
-
-                                    Button {
-                                        startEditScheduledMedicationTime(medication)
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-                                }
-                            }
-                        }
-
-                        // PRN logs
-                        ForEach(todayPrnLogs) { log in
-                            PrnLogRow(log: log)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        deleteMedicationLog(log)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-
-                                    Button {
-                                        startEditMedicationLogTime(log)
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-                                }
-                        }
-
-                        // Take As-Needed button
-                        if !prnMedications.isEmpty {
-                            Menu {
-                                ForEach(prnMedications) { medication in
-                                    Button {
-                                        logMedication(medication)
-                                    } label: {
-                                        Label(medication.name ?? "Unknown", systemImage: "pills")
-                                    }
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.blue)
-                                    Text("Take As-Needed")
-                                        .foregroundStyle(.blue)
-                                    Spacer()
-                                }
-                            }
-                        }
-                    } header: {
-                        HStack {
-                            Label("Medications", systemImage: "pills.fill")
-                            Spacer()
-                            Text(medicationsSummary)
-                                .font(.subheadline)
-                                .foregroundStyle(medicationsTakenCount == scheduledMedications.count ? .green : .secondary)
-                        }
-                    }
-                }
-
-                // Substances Section
-                if !userSubstances.isEmpty || !todaySubstanceLogs.isEmpty {
-                    Section {
-                        ForEach(todaySubstanceLogs) { log in
-                            SubstanceLogRow(log: log)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        deleteSubstanceLog(log)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-
-                                    Button {
-                                        startEditSubstanceTime(log)
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-
-                                    Button {
-                                        startEditSubstanceAmount(log)
-                                    } label: {
-                                        Label("Amount", systemImage: "number")
-                                    }
-                                    .tint(.purple)
-                                }
-                        }
-
-                        if !userSubstances.isEmpty {
-                            Menu {
-                                ForEach(userSubstances) { substance in
-                                    Button {
-                                        promptLogSubstance(substance)
-                                    } label: {
-                                        Label(substance.name ?? "Unknown", systemImage: "drop.triangle")
-                                    }
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.blue)
-                                    Text("Log Substance")
-                                        .foregroundStyle(.blue)
-                                    Spacer()
-                                }
-                            }
-                        }
-                    } header: {
-                        HStack {
-                            Label("Substances", systemImage: "drop.triangle.fill")
-                            Spacer()
-                            Text(substancesSummary)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-
-                // Mindfulness Section
-                if !userMindfulness.isEmpty || !todayMindfulnessLogs.isEmpty {
-                    Section {
-                        ForEach(todayMindfulnessLogs) { log in
-                            MindfulnessLogRow(log: log)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        deleteMindfulnessLog(log)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-
-                                    Button {
-                                        startEditMindfulnessTime(log)
-                                    } label: {
-                                        Label("Time", systemImage: "clock")
-                                    }
-                                    .tint(.blue)
-                                }
-                        }
-
-                        if !userMindfulness.isEmpty {
-                            Menu {
-                                ForEach(userMindfulness) { practice in
-                                    Button {
-                                        logMindfulness(practice)
-                                    } label: {
-                                        Label(practice.name ?? "Unknown", systemImage: practice.category?.icon ?? "brain.head.profile")
-                                    }
-                                }
-                            } label: {
-                                HStack {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.blue)
-                                    Text("Log Practice")
-                                        .foregroundStyle(.blue)
-                                    Spacer()
-                                }
-                            }
-                        }
-                    } header: {
-                        HStack {
-                            Label("Mindfulness", systemImage: "brain.head.profile")
-                            Spacer()
-                            Text(mindfulnessSummary)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-                } // end else (no todayEntry)
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("Today")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 16) {
-                        Button {
-                            showingArchive = true
-                        } label: {
-                            Label("History", systemImage: "clock.arrow.circlepath")
-                        }
-
-                        Button {
-                            if todayEntry != nil {
-                                showingEntryExistsDialog = true
-                            } else {
-                                showingAddEntry = true
-                            }
-                        } label: {
-                            Label("Add Entry", systemImage: "plus")
-                        }
-                    }
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        showingSettings = true
-                    } label: {
-                        Label("Settings", systemImage: "gear")
-                    }
-                }
-            }
-            .sheet(isPresented: $showingAddEntry) {
-                StepperEntryView()
-            }
-            .sheet(isPresented: $showingEditEntry) {
-                if let entry = todayEntry {
-                    StepperEntryView(entryToEdit: entry)
-                }
-            }
-            .sheet(isPresented: $showingArchive) {
-                ArchiveView()
-            }
-            .sheet(isPresented: $showingSettings) {
-                SettingsView()
-            }
-            .alert("Log Substance", isPresented: Binding(
-                get: { substanceToLog != nil },
-                set: { if !$0 { substanceToLog = nil } }
-            )) {
-                TextField("Amount", text: $substanceAmount)
-                    .keyboardType(.decimalPad)
-                Button("Cancel", role: .cancel) {
-                    substanceToLog = nil
-                }
-                Button("Log") {
-                    confirmLogSubstance()
-                }
-            } message: {
-                if let substance = substanceToLog {
-                    Text("\(substance.name ?? "Unknown") (\(substance.defaultUnit?.abbreviation ?? ""))")
-                }
-            }
-            // Edit time for PRN medication log
-            .sheet(isPresented: Binding(
-                get: { medicationLogToEditTime != nil },
-                set: { if !$0 { medicationLogToEditTime = nil } }
-            )) {
-                if let log = medicationLogToEditTime {
-                    EditTimeSheet(
-                        title: "Edit Time",
-                        subtitle: log.medicationName ?? "Medication",
-                        time: $editTime,
-                        onSave: saveMedicationLogTime,
-                        onCancel: { medicationLogToEditTime = nil }
-                    )
-                }
-            }
-            // Edit time for scheduled medication
-            .sheet(isPresented: Binding(
-                get: { medicationToEditTime != nil },
-                set: { if !$0 { medicationToEditTime = nil } }
-            )) {
-                if let medication = medicationToEditTime {
-                    EditTimeSheet(
-                        title: "Edit Time",
-                        subtitle: medication.name ?? "Medication",
-                        time: $editTime,
-                        onSave: saveScheduledMedicationTime,
-                        onCancel: { medicationToEditTime = nil }
-                    )
-                }
-            }
-            // Edit time for substance log
-            .sheet(isPresented: Binding(
-                get: { substanceLogToEditTime != nil },
-                set: { if !$0 { substanceLogToEditTime = nil } }
-            )) {
-                if let log = substanceLogToEditTime {
-                    EditTimeSheet(
-                        title: "Edit Time",
-                        subtitle: log.substanceName ?? "Substance",
-                        time: $editTime,
-                        onSave: saveSubstanceTime,
-                        onCancel: { substanceLogToEditTime = nil }
-                    )
-                }
-            }
-            // Edit amount for substance log
-            .alert("Edit Amount", isPresented: Binding(
-                get: { substanceLogToEditAmount != nil },
-                set: { if !$0 { substanceLogToEditAmount = nil } }
-            )) {
-                TextField("Amount", text: $editAmount)
-                    .keyboardType(.decimalPad)
-                Button("Cancel", role: .cancel) {
-                    substanceLogToEditAmount = nil
-                }
-                Button("Save") {
-                    saveSubstanceAmount()
-                }
-            } message: {
-                if let log = substanceLogToEditAmount {
-                    Text("\(log.substanceName ?? "Unknown") (\(log.unit?.abbreviation ?? ""))")
-                }
-            }
-            // Edit time for mindfulness log
-            .sheet(isPresented: Binding(
-                get: { mindfulnessLogToEditTime != nil },
-                set: { if !$0 { mindfulnessLogToEditTime = nil } }
-            )) {
-                if let log = mindfulnessLogToEditTime {
-                    EditTimeSheet(
-                        title: "Edit Time",
-                        subtitle: log.practiceName ?? "Practice",
-                        time: $editTime,
-                        onSave: saveMindfulnessTime,
-                        onCancel: { mindfulnessLogToEditTime = nil }
-                    )
-                }
-            }
-            // Edit time for self-care log
-            .sheet(isPresented: Binding(
-                get: { selfCareLogToEditTime != nil },
-                set: { if !$0 { selfCareLogToEditTime = nil } }
-            )) {
-                if let log = selfCareLogToEditTime {
-                    EditTimeSheet(
-                        title: "Edit Time",
-                        subtitle: log.practiceName ?? "Practice",
-                        time: $editTime,
-                        onSave: saveSelfCareTime,
-                        onCancel: { selfCareLogToEditTime = nil }
-                    )
-                }
-            }
-            // Self-care completion celebration
-            .alert("Well Done!", isPresented: Binding(
-                get: { completedTimeOfDay != nil },
-                set: { if !$0 { completedTimeOfDay = nil } }
-            )) {
-                Button("OK") {
-                    completedTimeOfDay = nil
-                }
-            } message: {
-                if let timeOfDay = completedTimeOfDay {
-                    Text(timeOfDay.completionMessage)
-                }
-            }
-            // Entry exists dialog
-            .confirmationDialog(
-                "Entry Exists",
-                isPresented: $showingEntryExistsDialog,
-                titleVisibility: .visible
-            ) {
-                Button("Edit Today's Entry") {
-                    showingEditEntry = true
-                }
-                Button("Create Entry for Another Day") {
-                    showingAddEntry = true
-                }
-                Button("Cancel", role: .cancel) { }
-            } message: {
-                Text("You already have an entry for today.")
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func selfCareSection(for timeOfDay: SelfCareTimeOfDay, practices: [UserSelfCare], logs: [SelfCareLog]) -> some View {
-        Section {
-            ForEach(practices) { practice in
-                let status = selfCareStatus(practice)
-                TodaySelfCareRow(
-                    practice: practice,
-                    completed: status.completed,
-                    time: status.time,
-                    onToggle: { logSelfCare(practice) }
-                )
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    if status.completed {
-                        if let log = todaySelfCareLogs.first(where: { $0.userSelfCare?.id == practice.id }) {
-                            Button(role: .destructive) {
-                                deleteSelfCareLog(log)
-                            } label: {
-                                Label("Undo", systemImage: "arrow.uturn.backward")
-                            }
-                            .tint(.orange)
-
-                            Button {
-                                startEditSelfCareTime(log)
-                            } label: {
-                                Label("Time", systemImage: "clock")
-                            }
-                            .tint(.blue)
-                        }
-                    }
-                }
-            }
-
-            // Log Practice menu for practices not yet logged
-            let unloggedPractices = practices.filter { practice in
-                !logs.contains { $0.userSelfCare?.id == practice.id }
-            }
-            if !unloggedPractices.isEmpty {
-                Menu {
-                    ForEach(unloggedPractices) { practice in
-                        Button {
-                            logSelfCare(practice)
-                        } label: {
-                            Label(practice.name ?? "Unknown", systemImage: timeOfDay.icon)
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(.blue)
-                        Text("Log Practice")
-                            .foregroundStyle(.blue)
-                        Spacer()
-                    }
-                }
-            }
-        } header: {
-            HStack {
-                Label("\(timeOfDay.displayName) Self-Care", systemImage: timeOfDay.icon)
-                    .foregroundStyle(timeOfDay.color)
-                Spacer()
-                Text(selfCareSummary(for: timeOfDay))
-                    .font(.subheadline)
-                    .foregroundStyle(isCategoryComplete(timeOfDay) ? .green : .secondary)
-            }
+        if completedCount == practicesForTimeOfDay.count {
+            completedTimeOfDay = timeOfDay
         }
     }
 }
@@ -986,6 +813,10 @@ private struct AllDoneCard: View {
             .buttonStyle(.borderedProminent)
         }
         .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
     }
 
     private func anxietyColor(_ level: AnxietyLevel) -> Color {
@@ -995,333 +826,6 @@ private struct AllDoneCard: View {
         case .moderate: return .orange
         case .severe: return .red
         case .extreme: return .purple
-        }
-    }
-}
-
-// MARK: - Today Entry Row
-
-private struct TodayEntryRow: View {
-    let entry: SymptomEntry
-    let onEditTap: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 16) {
-                if let mood = entry.moodLevel {
-                    VStack {
-                        Text(mood.emoji)
-                            .font(.title)
-                        Text(mood.displayName)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Spacer()
-
-                if let anxiety = entry.anxietyLevel, anxiety != .none {
-                    statusBadge(
-                        title: "Anxiety",
-                        value: anxiety.displayName,
-                        color: anxietyColor(anxiety)
-                    )
-                }
-
-                if let anhedonia = entry.anhedoniaLevel, anhedonia != .none {
-                    statusBadge(
-                        title: "Anhedonia",
-                        value: anhedonia.displayName,
-                        color: .purple
-                    )
-                }
-
-                Button("Edit", action: onEditTap)
-                    .font(.subheadline)
-            }
-
-            if entry.sleepHours != nil || entry.exerciseMinutes != nil || entry.timeInDaylightMinutes != nil {
-                Divider()
-
-                HStack(spacing: 16) {
-                    if let sleep = entry.sleepHours {
-                        metricView(icon: "moon.zzz", value: String(format: "%.1fh", sleep))
-                    }
-                    if let exercise = entry.exerciseMinutes {
-                        metricView(icon: "figure.run", value: "\(Int(exercise))m")
-                    }
-                    if let daylight = entry.timeInDaylightMinutes {
-                        metricView(icon: "sun.max", value: "\(Int(daylight))m")
-                    }
-                }
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    private func statusBadge(title: String, value: String, color: Color) -> some View {
-        VStack(spacing: 4) {
-            Text(value)
-                .font(.caption)
-                .fontWeight(.medium)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(color.opacity(0.2))
-                .foregroundStyle(color)
-                .clipShape(Capsule())
-            Text(title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-    }
-
-    private func metricView(icon: String, value: String) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon)
-                .foregroundStyle(.secondary)
-                .font(.caption)
-            Text(value)
-                .font(.subheadline)
-                .fontWeight(.medium)
-        }
-    }
-
-    private func anxietyColor(_ level: AnxietyLevel) -> Color {
-        switch level {
-        case .none: return .green
-        case .mild: return .yellow
-        case .moderate: return .orange
-        case .severe: return .red
-        case .extreme: return .purple
-        }
-    }
-}
-
-// MARK: - Scheduled Medication Row
-
-private struct ScheduledMedicationRow: View {
-    let medication: UserMedication
-    let taken: Bool
-    let time: Date?
-    let onToggle: () -> Void
-
-    private var timeFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Button(action: onToggle) {
-                Image(systemName: taken ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(taken ? .green : .secondary)
-                    .font(.title3)
-            }
-            .buttonStyle(.plain)
-            .disabled(taken)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(medication.name ?? "Unknown")
-                    .font(.subheadline)
-                if let dosage = medication.dosage, !dosage.isEmpty {
-                    Text(dosage)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            Spacer()
-
-            if let time = time {
-                Text(timeFormatter.string(from: time))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
-// MARK: - PRN Log Row
-
-private struct PrnLogRow: View {
-    let log: MedicationLog
-
-    private var timeFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-                .font(.title3)
-
-            HStack(spacing: 6) {
-                Text(log.medicationName ?? "Unknown")
-                    .font(.subheadline)
-                Text("PRN")
-                    .font(.caption2)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(Color.orange.opacity(0.2))
-                    .foregroundStyle(.orange)
-                    .clipShape(Capsule())
-            }
-
-            Spacer()
-
-            if let time = log.timestamp {
-                Text(timeFormatter.string(from: time))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
-// MARK: - Substance Log Row
-
-private struct SubstanceLogRow: View {
-    let log: SubstanceLog
-
-    private var timeFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter
-    }
-
-    private var formattedAmount: String {
-        let amount = log.amount ?? 0
-        let unit = log.unit ?? .other
-        let formattedAmount = amount.truncatingRemainder(dividingBy: 1) == 0
-            ? String(format: "%.0f", amount)
-            : String(format: "%.1f", amount)
-        return "\(formattedAmount) \(unit.abbreviation)"
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-                .font(.title3)
-
-            Text(log.substanceName ?? "Unknown")
-                .font(.subheadline)
-
-            Spacer()
-
-            Text(formattedAmount)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            if let time = log.timestamp {
-                Text(timeFormatter.string(from: time))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
-// MARK: - Mindfulness Log Row
-
-private struct MindfulnessLogRow: View {
-    let log: MindfulnessLog
-
-    private var timeFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter
-    }
-
-    private var isGuidedPractice: Bool {
-        guard let notes = log.notes else { return false }
-        return GuidedPracticeLogMetadata.from(json: notes) != nil
-    }
-
-    private var guidedPractice: GuidedPractice? {
-        guard let notes = log.notes,
-              let metadata = GuidedPracticeLogMetadata.from(json: notes) else { return nil }
-        return GuidedPracticeDatabase.practice(byId: metadata.practiceId)
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-                .font(.title3)
-
-            HStack(spacing: 6) {
-                if let practice = guidedPractice {
-                    Image(systemName: practice.category.icon)
-                        .foregroundStyle(practice.category.color)
-                        .font(.caption)
-                }
-
-                Text(log.practiceName ?? "Unknown")
-                    .font(.subheadline)
-
-                if isGuidedPractice {
-                    Text("Guided")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Color.purple.opacity(0.2))
-                        .foregroundStyle(.purple)
-                        .clipShape(Capsule())
-                }
-            }
-
-            Spacer()
-
-            if let time = log.timestamp {
-                Text(timeFormatter.string(from: time))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
-// MARK: - Self-Care Row
-
-private struct TodaySelfCareRow: View {
-    let practice: UserSelfCare
-    let completed: Bool
-    let time: Date?
-    let onToggle: () -> Void
-
-    private var timeFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Button(action: onToggle) {
-                Image(systemName: completed ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(completed ? .green : .secondary)
-                    .font(.title3)
-            }
-            .buttonStyle(.plain)
-            .disabled(completed)
-
-            Text(practice.name ?? "Unknown")
-                .font(.subheadline)
-
-            Spacer()
-
-            if let time = time {
-                Text(timeFormatter.string(from: time))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
         }
     }
 }

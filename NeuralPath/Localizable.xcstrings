@@ -87,6 +87,7 @@
       }
     },
     "%@ Self-Care" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -247,6 +248,16 @@
     },
     "%lld." : {
 
+    },
+    "%lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld"
+          }
+        }
+      }
     },
     "%lld%%" : {
 
@@ -491,6 +502,7 @@
       }
     },
     "Add Entry" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -918,6 +930,9 @@
     "As-Needed (PRN)" : {
 
     },
+    "As-Needed Medication" : {
+
+    },
     "Automatically import sleep data and sync your health information." : {
       "localizations" : {
         "be" : {
@@ -1209,6 +1224,7 @@
       }
     },
     "Create Entry for Another Day" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -1608,6 +1624,7 @@
 
     },
     "Edit Today's Entry" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -1822,6 +1839,9 @@
         }
       }
     },
+    "Finish Day" : {
+
+    },
     "Format" : {
       "localizations" : {
         "be" : {
@@ -1951,9 +1971,6 @@
           }
         }
       }
-    },
-    "Guided" : {
-
     },
     "Has schedule" : {
       "localizations" : {
@@ -2372,6 +2389,7 @@
       }
     },
     "Log Today's Entry" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -3096,6 +3114,9 @@
           }
         }
       }
+    },
+    "planned" : {
+
     },
     "Please restart the app for the language change to take effect." : {
       "localizations" : {
@@ -4166,6 +4187,7 @@
       }
     },
     "Track your mood, sleep & symptoms" : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -4273,6 +4295,9 @@
           }
         }
       }
+    },
+    "Use the + button to log activities" : {
+
     },
     "Variable" : {
       "localizations" : {
@@ -4405,6 +4430,7 @@
 
     },
     "You already have an entry for today." : {
+      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -4471,6 +4497,9 @@
           }
         }
       }
+    },
+    "Your day starts here" : {
+
     },
     "Your donation helps keep the app free and supports ongoing development of new features." : {
       "localizations" : {

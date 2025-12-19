@@ -44,6 +44,12 @@ enum SelfCareTimeOfDay: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    var defaultTime: Date {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        return calendar.date(bySettingHour: defaultReminderHour, minute: 0, second: 0, of: today) ?? today
+    }
+
     var completionMessage: String {
         switch self {
         case .morning: return "You've completed your morning self-care. Great start to the day!"
