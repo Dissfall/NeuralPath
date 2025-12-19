@@ -181,6 +181,48 @@ struct PracticeStep: Identifiable {
     }
 }
 
+// MARK: - Practice Tag
+
+enum PracticeTag: String, CaseIterable, Identifiable, Hashable {
+    case anxietyRelief
+    case moodBoost
+    case morning
+    case evening
+    case quick
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .anxietyRelief: return "Anxiety Relief"
+        case .moodBoost: return "Mood Boost"
+        case .morning: return "Morning"
+        case .evening: return "Evening"
+        case .quick: return "Quick"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .anxietyRelief: return "brain.head.profile"
+        case .moodBoost: return "sun.max"
+        case .morning: return "sunrise"
+        case .evening: return "moon.stars"
+        case .quick: return "bolt"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .anxietyRelief: return .orange
+        case .moodBoost: return .yellow
+        case .morning: return .orange
+        case .evening: return .indigo
+        case .quick: return .purple
+        }
+    }
+}
+
 // MARK: - Suggestion Context
 
 struct SuggestionContext {
@@ -202,6 +244,16 @@ struct SuggestionContext {
         self.forMorning = forMorning
         self.forEvening = forEvening
         self.forQuickBreak = forQuickBreak
+    }
+
+    var tags: [PracticeTag] {
+        var result: [PracticeTag] = []
+        if forAnxiety { result.append(.anxietyRelief) }
+        if forLowMood { result.append(.moodBoost) }
+        if forMorning { result.append(.morning) }
+        if forEvening { result.append(.evening) }
+        if forQuickBreak { result.append(.quick) }
+        return result
     }
 }
 
@@ -234,6 +286,18 @@ struct GuidedPractice: Identifiable {
 
     var timedStepsCount: Int {
         steps.filter { $0.durationSeconds != nil }.count
+    }
+
+    var tags: [PracticeTag] {
+        suggestedFor.tags
+    }
+
+    func hasTag(_ tag: PracticeTag) -> Bool {
+        tags.contains(tag)
+    }
+
+    func hasAllTags(from selectedTags: Set<PracticeTag>) -> Bool {
+        selectedTags.isSubset(of: Set(tags))
     }
 }
 

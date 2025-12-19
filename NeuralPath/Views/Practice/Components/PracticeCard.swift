@@ -94,6 +94,11 @@ struct PracticeCard: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
+
+                // Tags
+                if !practice.tags.isEmpty {
+                    tagRow(maxTags: 3)
+                }
             }
 
             // Chevron
@@ -105,6 +110,31 @@ struct PracticeCard: View {
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color(.secondarySystemGroupedBackground))
+        )
+    }
+
+    // MARK: - Tag Row
+
+    private func tagRow(maxTags: Int) -> some View {
+        HStack(spacing: 4) {
+            ForEach(practice.tags.prefix(maxTags)) { tag in
+                tagChip(tag)
+            }
+        }
+    }
+
+    private func tagChip(_ tag: PracticeTag) -> some View {
+        HStack(spacing: 2) {
+            Image(systemName: tag.icon)
+            Text(tag.displayName)
+        }
+        .font(.caption2)
+        .foregroundStyle(tag.color)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(
+            Capsule()
+                .fill(tag.color.opacity(0.12))
         )
     }
 

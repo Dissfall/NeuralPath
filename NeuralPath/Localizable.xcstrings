@@ -4,6 +4,9 @@
     "" : {
 
     },
+    "(%lld)" : {
+
+    },
     "%@" : {
 
     },
@@ -2448,6 +2451,9 @@
         }
       }
     },
+    "Matching Practices" : {
+
+    },
     "May be worsening symptoms (%lld%% worse)" : {
       "localizations" : {
         "be" : {
@@ -2790,6 +2796,9 @@
         }
       }
     },
+    "No Matches" : {
+
+    },
     "No Medications" : {
       "localizations" : {
         "be" : {
@@ -2869,6 +2878,9 @@
           }
         }
       }
+    },
+    "No practices match the selected tags" : {
+
     },
     "No PRN Medications" : {
       "localizations" : {
