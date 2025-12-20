@@ -930,6 +930,12 @@
             "state" : "translated",
             "value" : "ШІ Аналіз"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ШІ Аналіз"
+          }
         }
       }
     },
@@ -1409,6 +1415,22 @@
         }
       }
     },
+    "Charts & Trends" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Графікі і Трэнды"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Графіки та Тренди"
+          }
+        }
+      }
+    },
     "Chest & Stomach" : {
       "localizations" : {
         "be" : {
@@ -1585,6 +1607,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Іншая Дата"
+          }
+        }
+      }
+    },
+    "Daily Entries" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Штодзённыя Запісы"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щоденні Записи"
           }
         }
       }
@@ -2201,6 +2239,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Выхад без Захавання"
+          }
+        }
+      }
+    },
+    "Explore breathing, grounding, and emotional exercises in the Practices tab. Each practice guides you step-by-step with timers." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Даследуйце дыхальныя, замацавальныя і эмацыйныя практыкаванні ва ўкладцы «Практыкі». Кожная практыка вядзе вас пакрокава з таймерамі."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Досліджуйте дихальні, заземлювальні та емоційні вправи у вкладці «Практики». Кожна практика веде вас покроково з таймерами."
           }
         }
       }
@@ -4249,6 +4303,22 @@
         }
       }
     },
+    "Quick Logging" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хуткае Лагіраванне"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Швидке Логування"
+          }
+        }
+      }
+    },
     "Quick Reset" : {
       "localizations" : {
         "be" : {
@@ -5199,6 +5269,38 @@
         }
       }
     },
+    "Tap 'Finish Day' to log your mood, anxiety, sleep, and other daily metrics. Try to log at the same time each day." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Націсніце «Скончыць Дзень», каб запісаць настрой, трывогу, сон і іншыя штодзённыя паказчыкі. Старайцеся запісваць у адзін і той жа час кожны дзень."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Натисніть «Завершити День», щоб записати настрій, тривогу, сон та інші щоденні показники. Намагайтеся записувати в один і той самий час щодня."
+          }
+        }
+      }
+    },
+    "Tap 'Take As-Needed' to log PRN medications. Tap 'Log Substance' to track substances with custom amounts." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Націсніце «Па Меры Неабходнасці», каб запісаць PRN лекі. Націсніце «Запісаць Рэчыва», каб адсочваць рэчывы з уласнымі колькасцямі."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Натисніть «За Потреби», щоб записати PRN ліки. Натисніть «Записати Речовину», щоб відстежувати речовини з власними кількостями."
+          }
+        }
+      }
+    },
     "Tap to add a suggested practice" : {
       "localizations" : {
         "be" : {
@@ -5238,6 +5340,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Дзякуй!"
+          }
+        }
+      }
+    },
+    "The Analysis tab provides insights about your patterns and correlations to help you understand your mental health." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укладка «Аналіз» дае разуменне вашых патэрнаў і карэляцый, каб дапамагчы вам зразумець сваё ментальнае здароўе."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладка «Аналіз» надає розуміння ваших патернів та кореляцій, щоб допомогти вам зрозуміти своє ментальне здоров'я."
           }
         }
       }
@@ -5471,6 +5589,22 @@
         }
       }
     },
+    "Today View" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сённяшні Выгляд"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сьогоднішній Вигляд"
+          }
+        }
+      }
+    },
     "Today's view is now a timeline of your day. See medications, practices, and activities in chronological order." : {
       "localizations" : {
         "be" : {
@@ -5690,12 +5824,18 @@
         }
       }
     },
-    "Use the + button to log activities" : {
+    "Use the + button to log activities or 'Finish Day' to add entry" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Націсніце + каб запісаць актыунасці"
+            "value" : "Націсніце + каб запісаць актыўнасці або «Скончыць Дзень» каб дадаць запіс"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Натисніть + щоб записати активності або «Завершити День» щоб додати запис"
           }
         }
       }
@@ -5726,6 +5866,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Прагледзець Усе %lld Патырнаў"
+          }
+        }
+      }
+    },
+    "View your progress over time in the Charts tab. Spot patterns between sleep, mood, and medications." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Праглядайце свой прагрэс з часам ва ўкладцы «Графікі». Заўважайце патэрны паміж сном, настроем і лекамі."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переглядайте свій прогрес з часом у вкладці «Графіки». Помічайте патерни між сном, настроєм та ліками."
           }
         }
       }
@@ -6013,6 +6169,22 @@
         }
       }
     },
+    "Your daily dashboard. Tap circles to mark medications as taken. Swipe left on items to edit time, amount, or delete." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша штодзённая панэль. Нацскайце колы, каб адзначыць лекі і іншыя актыунасці як скончаныя. Правядзіце ўлева па элементах, каб змяніць час, колькасць або выдаліць."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша щоденна панель. Натисніть кола, щоб позначити ліки як прийняті. Проведіть вліво по елементах, щоб змінити час, кількість або видалити."
+          }
+        }
+      }
+    },
     "Your data stays on your device. ML models are trained locally using Apple's CoreML framework. No data is ever sent to external servers for analysis." : {
       "localizations" : {
         "be" : {
@@ -6039,6 +6211,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ваш дзень пачанаецца тут"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваш день починається тут"
           }
         }
       }

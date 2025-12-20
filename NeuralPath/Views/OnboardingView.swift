@@ -1379,32 +1379,38 @@ struct OnboardingHowToUseStep: View {
         (
             "calendar",
             .blue,
-            "Today View",
-            "Your daily dashboard. Tap circles to mark medications as taken. Swipe left on items to edit time, amount, or delete."
+            String(localized: "Today View"),
+            String(localized: "Your daily dashboard. Tap circles to mark medications as taken. Swipe left on items to edit time, amount, or delete.")
         ),
         (
             "hand.tap",
             .green,
-            "Quick Logging",
-            "Tap 'Take As-Needed' to log PRN medications. Tap 'Log Substance' to track substances with custom amounts."
+            String(localized: "Quick Logging"),
+            String(localized: "Tap 'Take As-Needed' to log PRN medications. Tap 'Log Substance' to track substances with custom amounts.")
+        ),
+        (
+            "figure.mind.and.body",
+            .teal,
+            String(localized: "Guided Practices"),
+            String(localized: "Explore breathing, grounding, and emotional exercises in the Practices tab. Each practice guides you step-by-step with timers.")
         ),
         (
             "square.and.pencil",
             .orange,
-            "Daily Entries",
-            "Tap the + button to log your mood, anxiety, sleep, and other daily metrics. Try to log at the same time each day."
+            String(localized: "Daily Entries"),
+            String(localized: "Tap 'Finish Day' to log your mood, anxiety, sleep, and other daily metrics. Try to log at the same time each day.")
         ),
         (
             "chart.xyaxis.line",
             .purple,
-            "Charts & Trends",
-            "View your progress over time in the Charts tab. Spot patterns between sleep, mood, and medications."
+            String(localized: "Charts & Trends"),
+            String(localized: "View your progress over time in the Charts tab. Spot patterns between sleep, mood, and medications.")
         ),
         (
             "brain",
             .pink,
-            "AI Analysis",
-            "The Analysis tab provides insights about your patterns and correlations to help you understand your mental health."
+            String(localized: "AI Analysis"),
+            String(localized: "The Analysis tab provides insights about your patterns and correlations to help you understand your mental health.")
         )
     ]
 

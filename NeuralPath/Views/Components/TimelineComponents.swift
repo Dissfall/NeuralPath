@@ -521,7 +521,7 @@ struct EmptyTimelineView: View {
             Text("Your day starts here")
                 .font(.headline)
 
-            Text("Use the + button to log activities")
+            Text("Use the + button to log activities or 'Finish Day' to add entry")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
