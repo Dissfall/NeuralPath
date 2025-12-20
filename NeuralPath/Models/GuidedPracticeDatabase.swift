@@ -44,11 +44,11 @@ enum GuidedPracticeDatabase {
 
     static let boxBreathing = GuidedPractice(
         id: "box_breathing",
-        name: "Box Breathing",
+        name: String(localized: "Box Breathing"),
         category: .breathing,
         mindfulnessCategory: .breathing,
-        description: "A calming technique using equal-length inhales, holds, exhales, and holds. Used by Navy SEALs to stay calm under pressure.",
-        benefit: "Activates the parasympathetic nervous system to reduce stress and anxiety",
+        description: String(localized: "A calming technique using equal-length inhales, holds, exhales, and holds. Used by Navy SEALs to stay calm under pressure."),
+        benefit: String(localized: "Activates the parasympathetic nervous system to reduce stress and anxiety"),
         totalDurationSeconds: 180,
         steps: boxBreathingSteps(),
         suggestedFor: SuggestionContext(
@@ -62,11 +62,11 @@ enum GuidedPracticeDatabase {
 
     static let physiologicalSigh = GuidedPractice(
         id: "physiological_sigh",
-        name: "Physiological Sigh",
+        name: String(localized: "Physiological Sigh"),
         category: .breathing,
         mindfulnessCategory: .breathing,
-        description: "A science-backed technique: two quick inhales through the nose, then a long exhale through the mouth. The fastest known way to calm your nervous system.",
-        benefit: "Rapidly reduces stress in under a minute",
+        description: String(localized: "A science-backed technique: two quick inhales through the nose, then a long exhale through the mouth. The fastest known way to calm your nervous system."),
+        benefit: String(localized: "Rapidly reduces stress in under a minute"),
         totalDurationSeconds: 60,
         steps: physiologicalSighSteps(),
         suggestedFor: SuggestionContext(
@@ -80,11 +80,11 @@ enum GuidedPracticeDatabase {
 
     static let fourSevenEightBreathing = GuidedPractice(
         id: "four_seven_eight",
-        name: "4-7-8 Breathing",
+        name: String(localized: "4-7-8 Breathing"),
         category: .breathing,
         mindfulnessCategory: .breathing,
-        description: "Developed by Dr. Andrew Weil, this asymmetric breathing pattern promotes deep relaxation and can help with falling asleep.",
-        benefit: "Promotes deep relaxation and better sleep",
+        description: String(localized: "Developed by Dr. Andrew Weil, this asymmetric breathing pattern promotes deep relaxation and can help with falling asleep."),
+        benefit: String(localized: "Promotes deep relaxation and better sleep"),
         totalDurationSeconds: 120,
         steps: fourSevenEightSteps(),
         suggestedFor: SuggestionContext(
@@ -100,11 +100,11 @@ enum GuidedPracticeDatabase {
 
     static let fiveFourThreeTwoOne = GuidedPractice(
         id: "five_four_three_two_one",
-        name: "5-4-3-2-1 Grounding",
+        name: String(localized: "5-4-3-2-1 Grounding"),
         category: .grounding,
         mindfulnessCategory: .bodyScan,
-        description: "A sensory awareness exercise that helps bring you back to the present moment by engaging all five senses.",
-        benefit: "Interrupts anxious thoughts and grounds you in the present",
+        description: String(localized: "A sensory awareness exercise that helps bring you back to the present moment by engaging all five senses."),
+        benefit: String(localized: "Interrupts anxious thoughts and grounds you in the present"),
         totalDurationSeconds: 180,
         steps: fiveFourThreeTwoOneSteps(),
         suggestedFor: SuggestionContext(
@@ -118,11 +118,11 @@ enum GuidedPracticeDatabase {
 
     static let bodyCheckIn = GuidedPractice(
         id: "body_check_in",
-        name: "Body Check-In",
+        name: String(localized: "Body Check-In"),
         category: .grounding,
         mindfulnessCategory: .bodyScan,
-        description: "A simplified body scan where you notice sensations in different body regions without trying to change anything.",
-        benefit: "Increases body awareness and releases held tension",
+        description: String(localized: "A simplified body scan where you notice sensations in different body regions without trying to change anything."),
+        benefit: String(localized: "Increases body awareness and releases held tension"),
         totalDurationSeconds: 180,
         steps: bodyCheckInSteps(),
         suggestedFor: SuggestionContext(
@@ -138,11 +138,11 @@ enum GuidedPracticeDatabase {
 
     static let selfCompassionBreak = GuidedPractice(
         id: "self_compassion_break",
-        name: "Self-Compassion Break",
+        name: String(localized: "Self-Compassion Break"),
         category: .emotional,
         mindfulnessCategory: .meditation,
-        description: "Based on Kristin Neff's research, this practice helps you respond to difficulty with kindness rather than self-criticism.",
-        benefit: "Reduces self-criticism and builds emotional resilience",
+        description: String(localized: "Based on Kristin Neff's research, this practice helps you respond to difficulty with kindness rather than self-criticism."),
+        benefit: String(localized: "Reduces self-criticism and builds emotional resilience"),
         totalDurationSeconds: 300,
         steps: selfCompassionBreakSteps(),
         suggestedFor: SuggestionContext(
@@ -156,11 +156,11 @@ enum GuidedPracticeDatabase {
 
     static let rainPractice = GuidedPractice(
         id: "rain_practice",
-        name: "RAIN Practice",
+        name: String(localized: "RAIN Practice"),
         category: .emotional,
         mindfulnessCategory: .meditation,
-        description: "A four-step process for working with difficult emotions: Recognize, Allow, Investigate, and Nurture.",
-        benefit: "Transforms your relationship with difficult emotions",
+        description: String(localized: "A four-step process for working with difficult emotions: Recognize, Allow, Investigate, and Nurture."),
+        benefit: String(localized: "Transforms your relationship with difficult emotions"),
         totalDurationSeconds: 300,
         steps: rainPracticeSteps(),
         suggestedFor: SuggestionContext(
@@ -176,11 +176,11 @@ enum GuidedPracticeDatabase {
 
     static let oneMindfulBreath = GuidedPractice(
         id: "one_mindful_breath",
-        name: "One Mindful Breath",
+        name: String(localized: "One Mindful Breath"),
         category: .micro,
         mindfulnessCategory: .breathing,
-        description: "For moments when even 2 minutes feels like too much. Just one single, fully present breath.",
-        benefit: "A tiny reset that takes almost no time",
+        description: String(localized: "For moments when even 2 minutes feels like too much. Just one single, fully present breath."),
+        benefit: String(localized: "A tiny reset that takes almost no time"),
         totalDurationSeconds: 30,
         steps: oneMindfulBreathSteps(),
         suggestedFor: SuggestionContext(
@@ -194,11 +194,11 @@ enum GuidedPracticeDatabase {
 
     static let noticingPractice = GuidedPractice(
         id: "noticing_practice",
-        name: "Noticing Practice",
+        name: String(localized: "Noticing Practice"),
         category: .micro,
         mindfulnessCategory: .gratitude,
-        description: "A simple prompt to pause and appreciate something small in your current moment.",
-        benefit: "Shifts attention toward the positive",
+        description: String(localized: "A simple prompt to pause and appreciate something small in your current moment."),
+        benefit: String(localized: "Shifts attention toward the positive"),
         totalDurationSeconds: 45,
         steps: noticingPracticeSteps(),
         suggestedFor: SuggestionContext(
@@ -212,11 +212,11 @@ enum GuidedPracticeDatabase {
 
     static let gentleMovement = GuidedPractice(
         id: "gentle_movement",
-        name: "Gentle Movement",
+        name: String(localized: "Gentle Movement"),
         category: .micro,
         mindfulnessCategory: .yoga,
-        description: "Simple shoulder rolls to release physical tension. Perfect when you've been sitting too long.",
-        benefit: "Releases physical tension quickly",
+        description: String(localized: "Simple shoulder rolls to release physical tension. Perfect when you've been sitting too long."),
+        benefit: String(localized: "Releases physical tension quickly"),
         totalDurationSeconds: 45,
         steps: gentleMovementSteps(),
         suggestedFor: SuggestionContext(
@@ -235,7 +235,7 @@ enum GuidedPracticeDatabase {
 
         // Intro
         steps.append(PracticeStep(
-            instruction: "Find a comfortable position. We'll breathe in a box pattern: in, hold, out, hold.",
+            instruction: String(localized: "Find a comfortable position. We'll breathe in a box pattern: in, hold, out, hold."),
             durationSeconds: 5,
             animationType: .none,
             hapticStyle: .soft
@@ -244,25 +244,25 @@ enum GuidedPracticeDatabase {
         // 4 cycles of box breathing
         for cycle in 1...4 {
             steps.append(PracticeStep(
-                instruction: "Breathe in slowly...",
+                instruction: String(localized: "Breathe in slowly..."),
                 durationSeconds: 4,
                 animationType: .breatheIn,
                 hapticStyle: .light
             ))
             steps.append(PracticeStep(
-                instruction: "Hold...",
+                instruction: String(localized: "Hold..."),
                 durationSeconds: 4,
                 animationType: .hold,
                 hapticStyle: .none
             ))
             steps.append(PracticeStep(
-                instruction: "Breathe out slowly...",
+                instruction: String(localized: "Breathe out slowly..."),
                 durationSeconds: 4,
                 animationType: .breatheOut,
                 hapticStyle: .light
             ))
             steps.append(PracticeStep(
-                instruction: cycle < 4 ? "Hold..." : "Hold... Last cycle.",
+                instruction: cycle < 4 ? String(localized: "Hold...") : String(localized: "Hold... Last cycle."),
                 durationSeconds: 4,
                 animationType: .hold,
                 hapticStyle: .none
@@ -271,7 +271,7 @@ enum GuidedPracticeDatabase {
 
         // Outro
         steps.append(PracticeStep(
-            instruction: "Return to natural breathing. Notice how you feel.",
+            instruction: String(localized: "Return to natural breathing. Notice how you feel."),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .medium
@@ -284,7 +284,7 @@ enum GuidedPracticeDatabase {
         var steps: [PracticeStep] = []
 
         steps.append(PracticeStep(
-            instruction: "We'll do 3 physiological sighs. This is the fastest way to calm your nervous system.",
+            instruction: String(localized: "We'll do 3 physiological sighs. This is the fastest way to calm your nervous system."),
             durationSeconds: 5,
             animationType: .none,
             hapticStyle: .soft
@@ -292,19 +292,19 @@ enum GuidedPracticeDatabase {
 
         for sigh in 1...3 {
             steps.append(PracticeStep(
-                instruction: "Quick inhale through nose...",
+                instruction: String(localized: "Quick inhale through nose..."),
                 durationSeconds: 1,
                 animationType: .breatheIn,
                 hapticStyle: .light
             ))
             steps.append(PracticeStep(
-                instruction: "Second quick inhale...",
+                instruction: String(localized: "Second quick inhale..."),
                 durationSeconds: 1,
                 animationType: .breatheIn,
                 hapticStyle: .light
             ))
             steps.append(PracticeStep(
-                instruction: "Long exhale through mouth...",
+                instruction: String(localized: "Long exhale through mouth..."),
                 durationSeconds: 6,
                 animationType: .breatheOut,
                 hapticStyle: .medium
@@ -312,7 +312,7 @@ enum GuidedPracticeDatabase {
 
             if sigh < 3 {
                 steps.append(PracticeStep(
-                    instruction: "Pause...",
+                    instruction: String(localized: "Pause..."),
                     durationSeconds: 3,
                     animationType: .hold,
                     hapticStyle: .none
@@ -321,7 +321,7 @@ enum GuidedPracticeDatabase {
         }
 
         steps.append(PracticeStep(
-            instruction: "Notice the calm spreading through your body.",
+            instruction: String(localized: "Notice the calm spreading through your body."),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .soft
@@ -334,7 +334,7 @@ enum GuidedPracticeDatabase {
         var steps: [PracticeStep] = []
 
         steps.append(PracticeStep(
-            instruction: "Place the tip of your tongue behind your upper front teeth. We'll breathe in a 4-7-8 pattern.",
+            instruction: String(localized: "Place the tip of your tongue behind your upper front teeth. We'll breathe in a 4-7-8 pattern."),
             durationSeconds: 6,
             animationType: .none,
             hapticStyle: .soft
@@ -343,19 +343,19 @@ enum GuidedPracticeDatabase {
         // 3 cycles
         for cycle in 1...3 {
             steps.append(PracticeStep(
-                instruction: "Breathe in quietly through your nose...",
+                instruction: String(localized: "Breathe in quietly through your nose..."),
                 durationSeconds: 4,
                 animationType: .breatheIn,
                 hapticStyle: .light
             ))
             steps.append(PracticeStep(
-                instruction: "Hold your breath...",
+                instruction: String(localized: "Hold your breath..."),
                 durationSeconds: 7,
                 animationType: .hold,
                 hapticStyle: .none
             ))
             steps.append(PracticeStep(
-                instruction: "Exhale completely through your mouth...",
+                instruction: String(localized: "Exhale completely through your mouth..."),
                 durationSeconds: 8,
                 animationType: .breatheOut,
                 hapticStyle: .medium
@@ -363,7 +363,7 @@ enum GuidedPracticeDatabase {
 
             if cycle < 3 {
                 steps.append(PracticeStep(
-                    instruction: "Pause before the next cycle...",
+                    instruction: String(localized: "Pause before the next cycle..."),
                     durationSeconds: 2,
                     animationType: .none,
                     hapticStyle: .none
@@ -372,7 +372,7 @@ enum GuidedPracticeDatabase {
         }
 
         steps.append(PracticeStep(
-            instruction: "Let your breathing return to normal. Feel the deep relaxation.",
+            instruction: String(localized: "Let your breathing return to normal. Feel the deep relaxation."),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .soft
@@ -385,7 +385,7 @@ enum GuidedPracticeDatabase {
         var steps: [PracticeStep] = []
 
         steps.append(PracticeStep(
-            instruction: "Let's ground ourselves using your five senses. Take a moment to look around.",
+            instruction: String(localized: "Let's ground ourselves using your five senses. Take a moment to look around."),
             durationSeconds: 5,
             animationType: .none,
             hapticStyle: .soft
@@ -402,7 +402,7 @@ enum GuidedPracticeDatabase {
         }
 
         steps.append(PracticeStep(
-            instruction: "Take a deep breath. You are here, in this moment.",
+            instruction: String(localized: "Take a deep breath. You are here, in this moment."),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .medium
@@ -415,7 +415,7 @@ enum GuidedPracticeDatabase {
         var steps: [PracticeStep] = []
 
         steps.append(PracticeStep(
-            instruction: "Get comfortable. We'll briefly check in with different parts of your body.",
+            instruction: String(localized: "Get comfortable. We'll briefly check in with different parts of your body."),
             durationSeconds: 5,
             animationType: .none,
             hapticStyle: .soft
@@ -423,7 +423,7 @@ enum GuidedPracticeDatabase {
 
         for region in BodyRegion.allCases {
             steps.append(PracticeStep(
-                instruction: "Bring attention to your \(region.displayName.lowercased()). Notice any sensations without trying to change anything.",
+                instruction: String(localized: "Bring attention to your \(region.displayName.lowercased()). Notice any sensations without trying to change anything."),
                 durationSeconds: 20,
                 animationType: .bodyRegion,
                 hapticStyle: .light,
@@ -432,7 +432,7 @@ enum GuidedPracticeDatabase {
         }
 
         steps.append(PracticeStep(
-            instruction: "Now sense your body as a whole. Thank yourself for taking this time.",
+            instruction: String(localized: "Now sense your body as a whole. Thank yourself for taking this time."),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .medium
@@ -445,7 +445,7 @@ enum GuidedPracticeDatabase {
         var steps: [PracticeStep] = []
 
         steps.append(PracticeStep(
-            instruction: "Think of a situation that's causing you stress. Hold it gently in your awareness.",
+            instruction: String(localized: "Think of a situation that's causing you stress. Hold it gently in your awareness."),
             durationSeconds: 10,
             animationType: .none,
             hapticStyle: .soft
@@ -453,14 +453,14 @@ enum GuidedPracticeDatabase {
 
         // Step 1: Mindfulness
         steps.append(PracticeStep(
-            instruction: "Say to yourself: \"This is a moment of difficulty.\"",
+            instruction: String(localized: "Say to yourself: \"This is a moment of difficulty.\""),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .light
         ))
 
         steps.append(PracticeStep(
-            instruction: "Acknowledge what you're feeling without judgment. This is real, and it's hard.",
+            instruction: String(localized: "Acknowledge what you're feeling without judgment. This is real, and it's hard."),
             durationSeconds: 15,
             animationType: .notice,
             hapticStyle: .none
@@ -468,14 +468,14 @@ enum GuidedPracticeDatabase {
 
         // Step 2: Common Humanity
         steps.append(PracticeStep(
-            instruction: "Say to yourself: \"Difficulty is part of being human.\"",
+            instruction: String(localized: "Say to yourself: \"Difficulty is part of being human.\""),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .light
         ))
 
         steps.append(PracticeStep(
-            instruction: "You're not alone in this. Everyone struggles. This is part of our shared human experience.",
+            instruction: String(localized: "You're not alone in this. Everyone struggles. This is part of our shared human experience."),
             durationSeconds: 15,
             animationType: .notice,
             hapticStyle: .none
@@ -483,28 +483,28 @@ enum GuidedPracticeDatabase {
 
         // Step 3: Self-Kindness
         steps.append(PracticeStep(
-            instruction: "Say to yourself: \"May I be kind to myself.\"",
+            instruction: String(localized: "Say to yourself: \"May I be kind to myself.\""),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .light
         ))
 
         steps.append(PracticeStep(
-            instruction: "What would you say to a good friend in this situation? Can you offer yourself the same kindness?",
+            instruction: String(localized: "What would you say to a good friend in this situation? Can you offer yourself the same kindness?"),
             durationSeconds: nil,
             animationType: .notice,
             hapticStyle: .none
         ))
 
         steps.append(PracticeStep(
-            instruction: "Place your hand on your heart if it feels right. Feel the warmth of your own compassion.",
+            instruction: String(localized: "Place your hand on your heart if it feels right. Feel the warmth of your own compassion."),
             durationSeconds: 20,
             animationType: .relax,
             hapticStyle: .soft
         ))
 
         steps.append(PracticeStep(
-            instruction: "When you're ready, take a deep breath and return to your day.",
+            instruction: String(localized: "When you're ready, take a deep breath and return to your day."),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .medium
@@ -517,7 +517,7 @@ enum GuidedPracticeDatabase {
         var steps: [PracticeStep] = []
 
         steps.append(PracticeStep(
-            instruction: "RAIN is a four-step practice for working with difficult emotions. Let's begin.",
+            instruction: String(localized: "RAIN is a four-step practice for working with difficult emotions. Let's begin."),
             durationSeconds: 5,
             animationType: .none,
             hapticStyle: .soft
@@ -525,14 +525,14 @@ enum GuidedPracticeDatabase {
 
         // R - Recognize
         steps.append(PracticeStep(
-            instruction: "R — Recognize: What am I feeling right now?",
+            instruction: String(localized: "R — Recognize: What am I feeling right now?"),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .light
         ))
 
         steps.append(PracticeStep(
-            instruction: "Simply name what's present. Anxiety? Sadness? Frustration? There's no wrong answer.",
+            instruction: String(localized: "Simply name what's present. Anxiety? Sadness? Frustration? There's no wrong answer."),
             durationSeconds: 20,
             animationType: .notice,
             hapticStyle: .none
@@ -540,14 +540,14 @@ enum GuidedPracticeDatabase {
 
         // A - Allow
         steps.append(PracticeStep(
-            instruction: "A — Allow: Can I let this feeling be here?",
+            instruction: String(localized: "A — Allow: Can I let this feeling be here?"),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .light
         ))
 
         steps.append(PracticeStep(
-            instruction: "You don't have to like it or want it. Just let it exist without pushing it away.",
+            instruction: String(localized: "You don't have to like it or want it. Just let it exist without pushing it away."),
             durationSeconds: 20,
             animationType: .notice,
             hapticStyle: .none
@@ -555,14 +555,14 @@ enum GuidedPracticeDatabase {
 
         // I - Investigate
         steps.append(PracticeStep(
-            instruction: "I — Investigate: Where do I feel this in my body?",
+            instruction: String(localized: "I — Investigate: Where do I feel this in my body?"),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .light
         ))
 
         steps.append(PracticeStep(
-            instruction: "With curiosity, notice physical sensations. Tightness? Heaviness? Where exactly?",
+            instruction: String(localized: "With curiosity, notice physical sensations. Tightness? Heaviness? Where exactly?"),
             durationSeconds: 25,
             animationType: .notice,
             hapticStyle: .none
@@ -570,21 +570,21 @@ enum GuidedPracticeDatabase {
 
         // N - Nurture
         steps.append(PracticeStep(
-            instruction: "N — Nurture: What do I need right now?",
+            instruction: String(localized: "N — Nurture: What do I need right now?"),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .light
         ))
 
         steps.append(PracticeStep(
-            instruction: "Offer yourself what you need. Perhaps words of comfort, or simply the intention to be kind.",
+            instruction: String(localized: "Offer yourself what you need. Perhaps words of comfort, or simply the intention to be kind."),
             durationSeconds: 25,
             animationType: .relax,
             hapticStyle: .soft
         ))
 
         steps.append(PracticeStep(
-            instruction: "Rest here for a moment. You've done important work.",
+            instruction: String(localized: "Rest here for a moment. You've done important work."),
             durationSeconds: nil,
             animationType: .none,
             hapticStyle: .medium
@@ -596,25 +596,25 @@ enum GuidedPracticeDatabase {
     private static func oneMindfulBreathSteps() -> [PracticeStep] {
         [
             PracticeStep(
-                instruction: "Just one breath. That's all.",
+                instruction: String(localized: "Just one breath. That's all."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .soft
             ),
             PracticeStep(
-                instruction: "Breathe in deeply...",
+                instruction: String(localized: "Breathe in deeply..."),
                 durationSeconds: 5,
                 animationType: .breatheIn,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "And let it go...",
+                instruction: String(localized: "And let it go..."),
                 durationSeconds: 7,
                 animationType: .breatheOut,
                 hapticStyle: .medium
             ),
             PracticeStep(
-                instruction: "You did it. That's enough.",
+                instruction: String(localized: "You did it. That's enough."),
                 durationSeconds: nil,
                 animationType: .none,
                 hapticStyle: .soft
@@ -625,25 +625,25 @@ enum GuidedPracticeDatabase {
     private static func noticingPracticeSteps() -> [PracticeStep] {
         [
             PracticeStep(
-                instruction: "Pause.",
+                instruction: String(localized: "Pause."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .soft
             ),
             PracticeStep(
-                instruction: "What's one thing you can appreciate about this moment — however small?",
+                instruction: String(localized: "What's one thing you can appreciate about this moment — however small?"),
                 durationSeconds: nil,
                 animationType: .notice,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "Let that feeling of appreciation settle in your body for a moment.",
+                instruction: String(localized: "Let that feeling of appreciation settle in your body for a moment."),
                 durationSeconds: 10,
                 animationType: .relax,
                 hapticStyle: .soft
             ),
             PracticeStep(
-                instruction: "Carry this with you.",
+                instruction: String(localized: "Carry this with you."),
                 durationSeconds: nil,
                 animationType: .none,
                 hapticStyle: .medium
@@ -654,49 +654,49 @@ enum GuidedPracticeDatabase {
     private static func gentleMovementSteps() -> [PracticeStep] {
         [
             PracticeStep(
-                instruction: "Let's release some tension. Sit or stand comfortably.",
+                instruction: String(localized: "Let's release some tension. Sit or stand comfortably."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .soft
             ),
             PracticeStep(
-                instruction: "Roll your shoulders backward slowly... 1...",
+                instruction: String(localized: "Roll your shoulders backward slowly... 1..."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "2...",
+                instruction: String(localized: "2..."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "3...",
+                instruction: String(localized: "3..."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "Now roll them forward... 1...",
+                instruction: String(localized: "Now roll them forward... 1..."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "2...",
+                instruction: String(localized: "2..."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "3...",
+                instruction: String(localized: "3..."),
                 durationSeconds: 3,
                 animationType: .none,
                 hapticStyle: .light
             ),
             PracticeStep(
-                instruction: "Take a breath. Notice how your shoulders feel now.",
+                instruction: String(localized: "Take a breath. Notice how your shoulders feel now."),
                 durationSeconds: nil,
                 animationType: .none,
                 hapticStyle: .medium

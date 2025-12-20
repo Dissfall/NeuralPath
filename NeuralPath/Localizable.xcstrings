@@ -86,17 +86,6 @@
         }
       }
     },
-    "%@ Self-Care" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "be" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ клапота пра сябе"
-          }
-        }
-      }
-    },
     "%@ worsens symptoms, especially next day" : {
       "localizations" : {
         "be" : {
@@ -338,12 +327,132 @@
         }
       }
     },
+    "2..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2..."
+          }
+        }
+      }
+    },
+    "3..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3..."
+          }
+        }
+      }
+    },
+    "4-7-8 Breathing" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дыханне 4-7-8"
+          }
+        }
+      }
+    },
+    "5-4-3-2-1 Grounding" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Замацаванне 5-4-3-2-1"
+          }
+        }
+      }
+    },
     "7-Day Forecast" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Прагноз на 7 дзён"
+          }
+        }
+      }
+    },
+    "A — Allow: Can I let this feeling be here?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "А — Дазволіць: Ці магу я дазволіць гэтаму пачуццю быць тут?"
+          }
+        }
+      }
+    },
+    "A calming technique using equal-length inhales, holds, exhales, and holds. Used by Navy SEALs to stay calm under pressure." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Супакойваючая тэхніка з аднолькавымі па працягласці ўдыхамі, затрымкамі, выдыхамі і затрымкамі. Выкарыстоўваецца «марскімі катыкамі» для захавання спакою ў стрэсавых сітуацыях."
+          }
+        }
+      }
+    },
+    "A four-step process for working with difficult emotions: Recognize, Allow, Investigate, and Nurture." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чатырохкрокавы працэс для працы з цяжкімі эмоцыямі: Распазнаць, Дазволіць, Даследаваць і Клапаціцца."
+          }
+        }
+      }
+    },
+    "A science-backed technique: two quick inhales through the nose, then a long exhale through the mouth. The fastest known way to calm your nervous system." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Навукова абгрунтаваная тэхніка: два хуткіх удыхі праз нос, потым доўгі выдых праз рот. Найхутчэйшы вядомы спосаб супакоіць нервовую сістэму."
+          }
+        }
+      }
+    },
+    "A sensory awareness exercise that helps bring you back to the present moment by engaging all five senses." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкаванне сэнсарнай усведамленасці, якое дапамагае вярнуцца ў цяперашні момант, задзейнічаючы ўсе пяць пачуццяў."
+          }
+        }
+      }
+    },
+    "A simple prompt to pause and appreciate something small in your current moment." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Просты запыт спыніцца і ацаніць нешта маленькае ў вашым цяперашнім моманце."
+          }
+        }
+      }
+    },
+    "A simplified body scan where you notice sensations in different body regions without trying to change anything." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спрошчанае сканаванне цела, пры якім вы заўважаеце адчуванні ў розных частках цела, не спрабуючы нічога змяніць."
+          }
+        }
+      }
+    },
+    "A tiny reset that takes almost no time" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Маленькая перазагрузка, якая амаль не займае часу"
           }
         }
       }
@@ -364,6 +473,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Пра ШІ Аналіз"
+          }
+        }
+      }
+    },
+    "Acknowledge what you're feeling without judgment. This is real, and it's hard." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прызнайце тое, што вы адчуваеце, без асуджэння. Гэта рэальна, і гэта цяжка."
+          }
+        }
+      }
+    },
+    "Activates the parasympathetic nervous system to reduce stress and anxiety" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Актывуе парасімпатычную нервовую сістэму для зніжэння стрэсу і трывогі"
           }
         }
       }
@@ -429,7 +558,14 @@
       }
     },
     "Add any additional notes about your day..." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадайце любыя заўвагі пра ваш дзень…"
+          }
+        }
+      }
     },
     "Add any instructions or notes about this practice" : {
       "localizations" : {
@@ -497,17 +633,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Дадаць уласную рэчыва"
-          }
-        }
-      }
-    },
-    "Add Entry" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "be" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Дадаць запіс"
           }
         }
       }
@@ -612,19 +737,15 @@
         }
       }
     },
-    "Add Quality Rating" : {
-      "extractionState" : "stale",
+    "Add Rating" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Дадаць рэйтынг якасці"
+            "value" : "Дадаць Адзнаку"
           }
         }
       }
-    },
-    "Add Rating" : {
-
     },
     "Add self-care practices in Settings" : {
       "localizations" : {
@@ -707,7 +828,14 @@
       }
     },
     "Add to Library" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дадаць у Бібліятэку"
+          }
+        }
+      }
     },
     "Add Your Medications" : {
       "localizations" : {
@@ -715,17 +843,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Дадаць Вашы Лекі"
-          }
-        }
-      }
-    },
-    "Additional notes" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "be" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Дадатковыя Заўвагі"
           }
         }
       }
@@ -811,15 +928,11 @@
       }
     },
     "An entry already exists for this date. Please select a different date or edit the existing entry." : {
-
-    },
-    "An entry for this date already exists. Please choose a different date or delete the existing entry first." : {
-      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Запіс на гэту дату ўжо існуе. Калі ласка, абярыце іншую дату або спачатку выдаліце існуючы запіс."
+            "value" : "Для гэтай даты ўжо існуе запіс. Калі ласка, абярыце іншую дату або адрэдактуйце існуючы запіс."
           }
         }
       }
@@ -864,6 +977,16 @@
         }
       }
     },
+    "And let it go..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "І адпусціце..."
+          }
+        }
+      }
+    },
     "Anhedonia" : {
       "localizations" : {
         "be" : {
@@ -904,6 +1027,16 @@
         }
       }
     },
+    "Anxiety Relief" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зняцце Трывогі"
+          }
+        }
+      }
+    },
     "Apple Health" : {
 
     },
@@ -913,6 +1046,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Архівавана"
+          }
+        }
+      }
+    },
+    "Arms & Hands" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рукі і Далоні"
           }
         }
       }
@@ -928,10 +1071,24 @@
       }
     },
     "As-Needed (PRN)" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лекі па меры неабходнасці"
+          }
+        }
+      }
     },
     "As-Needed Medication" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лекі па меры неабходнасці"
+          }
+        }
+      }
     },
     "Automatically import sleep data and sync your health information." : {
       "localizations" : {
@@ -944,7 +1101,24 @@
       }
     },
     "Back" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назад"
+          }
+        }
+      }
+    },
+    "Based on Kristin Neff's research, this practice helps you respond to difficulty with kindness rather than self-criticism." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На аснове даследаванняў Крысцін Неф, гэтая практыка дапамагае рэагаваць на цяжкасці з добрынёй, а не самакрытыкай."
+          }
+        }
+      }
     },
     "Based on today's patterns" : {
       "localizations" : {
@@ -977,7 +1151,14 @@
       }
     },
     "Begin" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачаць"
+          }
+        }
+      }
     },
     "Best time to log" : {
       "localizations" : {
@@ -985,6 +1166,106 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Найлепшы час для запісу"
+          }
+        }
+      }
+    },
+    "Body Check-In" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Праверка Цела"
+          }
+        }
+      }
+    },
+    "Body Scan" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сканаванне Цела"
+          }
+        }
+      }
+    },
+    "Box Breathing" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Квадратнае Дыханне"
+          }
+        }
+      }
+    },
+    "Breathe in deeply..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Глыбока ўдыхніце..."
+          }
+        }
+      }
+    },
+    "Breathe in quietly through your nose..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ціха ўдыхніце праз нос..."
+          }
+        }
+      }
+    },
+    "Breathe in slowly..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Павольна ўдыхніце..."
+          }
+        }
+      }
+    },
+    "Breathe out slowly..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Павольна выдыхніце..."
+          }
+        }
+      }
+    },
+    "Breathing" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дыханне"
+          }
+        }
+      }
+    },
+    "Breathing Exercises" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дыхальныя Практыкаванні"
+          }
+        }
+      }
+    },
+    "Bring attention to your %@. Notice any sensations without trying to change anything." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звярніце ўвагу на %@. Заўважце адчуванні, не спрабуючы нічога змяняць."
           }
         }
       }
@@ -1019,12 +1300,32 @@
         }
       }
     },
+    "Calm your nervous system" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Супакойце нервовую сістэму"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скасаваць"
+          }
+        }
+      }
+    },
+    "Carry this with you." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Несіце гэта з сабой."
           }
         }
       }
@@ -1055,6 +1356,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Графікі"
+          }
+        }
+      }
+    },
+    "Chest & Stomach" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Грудзі і Жывот"
           }
         }
       }
@@ -1139,17 +1450,6 @@
         }
       }
     },
-    "Configure Times" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "be" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Наладзіць Час"
-          }
-        }
-      }
-    },
     "Connect" : {
       "localizations" : {
         "be" : {
@@ -1211,7 +1511,14 @@
       }
     },
     "Continue Practice" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Працягнуць Практыку"
+          }
+        }
+      }
     },
     "Continue Setup" : {
       "localizations" : {
@@ -1223,19 +1530,15 @@
         }
       }
     },
-    "Create Entry for Another Day" : {
-      "extractionState" : "stale",
+    "Custom Time" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Стварыць Запіс для Іншага Дню"
+            "value" : "Іншая Дата"
           }
         }
       }
-    },
-    "Custom Time" : {
-
     },
     "Daily Entry" : {
       "localizations" : {
@@ -1358,15 +1661,11 @@
       }
     },
     "Day" : {
-
-    },
-    "Daylight" : {
-      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Дзённае Святло"
+            "value" : "Дзень"
           }
         }
       }
@@ -1392,7 +1691,14 @@
       }
     },
     "Default Time" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час па-змоўчкі"
+          }
+        }
+      }
     },
     "Default Unit" : {
       "localizations" : {
@@ -1474,6 +1780,16 @@
         }
       }
     },
+    "Developed by Dr. Andrew Weil, this asymmetric breathing pattern promotes deep relaxation and can help with falling asleep." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Распрацаваная доктарам Эндру Вейлам, гэтая асіметрычная схема дыхання спрыяе глыбокай рэлаксацыі і можа дапамагчы заснуць."
+          }
+        }
+      }
+    },
     "Developer Menu" : {
       "localizations" : {
         "be" : {
@@ -1495,10 +1811,24 @@
       }
     },
     "Discard" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасаваць"
+          }
+        }
+      }
     },
     "Discard Changes?" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасаваць Змены?"
+          }
+        }
+      }
     },
     "Don't remind me again" : {
       "localizations" : {
@@ -1621,15 +1951,21 @@
       }
     },
     "Edit Time" : {
-
-    },
-    "Edit Today's Entry" : {
-      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Рэдагаваць Запіс Дня"
+            "value" : "Рэдактаваць Час"
+          }
+        }
+      }
+    },
+    "Emotional" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эмацыйнае"
           }
         }
       }
@@ -1654,33 +1990,32 @@
         }
       }
     },
-    "Enable reminders and set individual times for each medication in Manage Medications." : {
-      "extractionState" : "stale",
+    "End & Log Progress" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Уключыце напаміны і ўсталюйце індывідуальны час для кожнаых лекаў  ў раздзеле «Кіраванне лекамі»."
+            "value" : "Скончыць і Запісаць Прагрэсс"
           }
         }
       }
     },
-    "End & Log Progress" : {
-
-    },
     "End Practice?" : {
-
-    },
-    "Enter amount for %@" : {
-
-    },
-    "Entry Already Exists" : {
-      "extractionState" : "stale",
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Запіс Ужо Існуе"
+            "value" : "Скончыць Практыку?"
+          }
+        }
+      }
+    },
+    "Enter amount for %@" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Увядзіце колькасць %@"
           }
         }
       }
@@ -1721,17 +2056,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Запіс Існуе"
-          }
-        }
-      }
-    },
-    "Entry for Yesterday?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "be" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Запіс на Ўчтора?"
           }
         }
       }
@@ -1796,8 +2120,25 @@
         }
       }
     },
+    "Exhale completely through your mouth..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поўнасцю выдыхніце праз рот..."
+          }
+        }
+      }
+    },
     "Exit Without Saving" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выхад без Захавання"
+          }
+        }
+      }
     },
     "Export Data" : {
       "localizations" : {
@@ -1839,7 +2180,37 @@
         }
       }
     },
+    "Feet" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ступні"
+          }
+        }
+      }
+    },
+    "Find a comfortable position. We'll breathe in a box pattern: in, hold, out, hold." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Знайдзіце зручнае становішча. Мы будзем дыхаць па схеме квадрата: удых, затрымка, выдых, затрымка."
+          }
+        }
+      }
+    },
     "Finish Day" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скончыць Дзень"
+          }
+        }
+      }
+    },
+    "For moments when even 2 minutes feels like too much. Just one single, fully present breath." : {
 
     },
     "Format" : {
@@ -1863,7 +2234,14 @@
       }
     },
     "Friday" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пятніца"
+          }
+        }
+      }
     },
     "Generate Test Data" : {
       "localizations" : {
@@ -1885,6 +2263,16 @@
         }
       }
     },
+    "Gentle Movement" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лёгкія Рухі"
+          }
+        }
+      }
+    },
     "Get a daily notification to practice mindfulness at your chosen time" : {
       "localizations" : {
         "be" : {
@@ -1895,19 +2283,25 @@
         }
       }
     },
-    "Get a daily notification to take this medication at your chosen time" : {
-      "extractionState" : "stale",
+    "Get comfortable. We'll briefly check in with different parts of your body." : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Атрымлівайце штодзённы напамін, каб прымаць гэты прэпарат у выбраны вамі час."
+            "value" : "Зручна ўладкуйцеся. Мы будзем пераключаць увагу на розныя часткі вашага цела."
           }
         }
       }
     },
     "Get notified when it's time to take this medication" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Атрымлівайце паведамленні, калі прыйшоў час прымаць гэты прэпарат"
+          }
+        }
+      }
     },
     "Get reminded at times set for each medication" : {
       "localizations" : {
@@ -1950,7 +2344,14 @@
       }
     },
     "Go back to previous steps to add information about your day." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вярнуцца да папярэдніх крокаў, каб дадаць інфармацыю пра свой дзень."
+          }
+        }
+      }
     },
     "Goal" : {
       "localizations" : {
@@ -1968,6 +2369,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Прадаставіць Доступ"
+          }
+        }
+      }
+    },
+    "Gratitude Practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыка Удзячнасці"
+          }
+        }
+      }
+    },
+    "Grounding" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зазямленне"
           }
         }
       }
@@ -1997,7 +2418,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Здароўе” не Далучанна"
+            "value" : "«Здароўе» не далучана"
           }
         }
       }
@@ -2042,12 +2463,52 @@
         }
       }
     },
+    "Hips & Lower Back" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "сцёгны і паясніцу"
+          }
+        }
+      }
+    },
     "History" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Гісторыя"
+          }
+        }
+      }
+    },
+    "Hold your breath..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Затрымайце дыханне..."
+          }
+        }
+      }
+    },
+    "Hold..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Затрымайце..."
+          }
+        }
+      }
+    },
+    "Hold... Last cycle." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Затрымайце... Апошні цыкл."
           }
         }
       }
@@ -2083,7 +2544,24 @@
       }
     },
     "hrs" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "гадзін"
+          }
+        }
+      }
+    },
+    "I — Investigate: Where do I feel this in my body?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "І — Даследаваць: Дзе я адчуваю гэта ў сваім целе?"
+          }
+        }
+      }
     },
     "iCloud Sync" : {
       "localizations" : {
@@ -2175,6 +2653,16 @@
         }
       }
     },
+    "Increases body awareness and releases held tension" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Павышае ўсведамленасць цела і вызваляе затрыманае напружанне"
+          }
+        }
+      }
+    },
     "Insufficient data (need at least 7 days before and after)" : {
       "localizations" : {
         "be" : {
@@ -2205,22 +2693,48 @@
         }
       }
     },
-    "It's early morning. Are you logging for yesterday?" : {
-      "extractionState" : "stale",
+    "Interrupts anxious thoughts and grounds you in the present" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ранняя раніца. Вы робіце запіс за ўчарашні дзень?"
+            "value" : "Перарывае трывожныя думкі і замацоўвае вас у цяперашнім"
           }
         }
       }
     },
     "It's early morning. Would you like to log this entry for yesterday instead?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зараз ранняя раніца. Можа, вы хочаце запісаць гэты запіс за ўчарашні дзень?"
+          }
+        }
+      }
+    },
+    "Journaling" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вядзенне Дзённіка"
+          }
+        }
+      }
+    },
+    "Just one breath. That's all." : {
 
     },
     "Keep Editing" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Працягнуць Рэдактаваць"
+          }
+        }
+      }
     },
     "Key factors:" : {
       "localizations" : {
@@ -2272,12 +2786,62 @@
         }
       }
     },
+    "Legs" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ногі"
+          }
+        }
+      }
+    },
+    "Let that feeling of appreciation settle in your body for a moment." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дазвольце пачуццям благадарнасці застацца у вашым целе на некаторы мумант."
+          }
+        }
+      }
+    },
+    "Let your breathing return to normal. Feel the deep relaxation." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дазвольце вашаму дыханню вярнуцца да вольнага тэмпу. Адчувайце релаксацыю."
+          }
+        }
+      }
+    },
     "Let's get you set up in just a few steps" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Давайце наладзім усё ўсяго за некалькі крокаў"
+          }
+        }
+      }
+    },
+    "Let's ground ourselves using your five senses. Take a moment to look around." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Давайце зазямлімся выкарыстоўваючы пяць органаў пачуццяў. На хвіліну агледзьцеся."
+          }
+        }
+      }
+    },
+    "Let's release some tension. Sit or stand comfortably." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Давайце знімем напружанне. Сядзьце або станьце зручна."
           }
         }
       }
@@ -2293,7 +2857,14 @@
       }
     },
     "Loading data from Apple Health..." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спампоўка дадзенных с прылады “Здароўе”"
+          }
+        }
+      }
     },
     "Loading medications..." : {
       "localizations" : {
@@ -2326,7 +2897,14 @@
       }
     },
     "Log for Yesterday?" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запіс на Учора?"
+          }
+        }
+      }
     },
     "Log Mindfulness" : {
       "localizations" : {
@@ -2388,13 +2966,12 @@
         }
       }
     },
-    "Log Today's Entry" : {
-      "extractionState" : "stale",
+    "Long exhale through mouth..." : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Зрабіць Запіс Дня"
+            "value" : "Доўгі выдых праз рот…"
           }
         }
       }
@@ -2470,7 +3047,14 @@
       }
     },
     "Matching Practices" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адабраныя Практыкі"
+          }
+        }
+      }
     },
     "May be worsening symptoms (%lld%% worse)" : {
       "localizations" : {
@@ -2555,6 +3139,16 @@
     "Medications (2 test meds)" : {
 
     },
+    "Meditation" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Медытацыя"
+          }
+        }
+      }
+    },
     "Metric" : {
       "localizations" : {
         "be" : {
@@ -2571,6 +3165,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "хв"
+          }
+        }
+      }
+    },
+    "Mindful Walking" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уважлівая Хадзьба"
           }
         }
       }
@@ -2646,7 +3250,14 @@
       }
     },
     "Monday" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Панядзелак"
+          }
+        }
+      }
     },
     "Monitor caffeine, alcohol, and other substances that affect your wellbeing." : {
       "localizations" : {
@@ -2667,6 +3278,9 @@
           }
         }
       }
+    },
+    "Mood Boost" : {
+
     },
     "Mood Level" : {
       "localizations" : {
@@ -2698,12 +3312,32 @@
         }
       }
     },
+    "N — Nurture: What do I need right now?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Н — Клапаціцца: Што мне зараз трэба?"
+          }
+        }
+      }
+    },
     "Name" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Імя"
+          }
+        }
+      }
+    },
+    "Neck & Head" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "шыю й галаву"
           }
         }
       }
@@ -2749,7 +3383,14 @@
       }
     },
     "Night" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ноч"
+          }
+        }
+      }
     },
     "No Analysis Available" : {
       "localizations" : {
@@ -2802,7 +3443,14 @@
       }
     },
     "No data entered yet" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма запісау"
+          }
+        }
+      }
     },
     "No Entries Yet" : {
       "localizations" : {
@@ -2815,7 +3463,14 @@
       }
     },
     "No Matches" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма Саупадзеній"
+          }
+        }
+      }
     },
     "No Medications" : {
       "localizations" : {
@@ -2898,7 +3553,14 @@
       }
     },
     "No practices match the selected tags" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Няма практык з гэтымі тэгамі"
+          }
+        }
+      }
     },
     "No PRN Medications" : {
       "localizations" : {
@@ -2980,19 +3642,15 @@
         }
       }
     },
-    "No, today" : {
-      "extractionState" : "stale",
+    "No, use today" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Не сёдня"
+            "value" : "Не, запіс на сёння"
           }
         }
       }
-    },
-    "No, use today" : {
-
     },
     "None" : {
       "localizations" : {
@@ -3034,12 +3692,87 @@
         }
       }
     },
+    "Notice 1 thing you can taste" : {
+
+    },
+    "Notice 2 things you can smell" : {
+
+    },
+    "Notice 3 things you can hear" : {
+
+    },
+    "Notice 4 things you can feel" : {
+
+    },
+    "Notice 5 things you can see" : {
+
+    },
+    "Notice the calm spreading through your body." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заўважце спакой, які распаўсюджваецца па вашым целе."
+          }
+        }
+      }
+    },
+    "Noticing Practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыка Заўважання"
+          }
+        }
+      }
+    },
+    "Now roll them forward... 1..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цяпер круціце іх уперад... 1..."
+          }
+        }
+      }
+    },
+    "Now sense your body as a whole. Thank yourself for taking this time." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зараз адчуйце сваё цела цалкам. Падзякуйце сабе за гэты час."
+          }
+        }
+      }
+    },
+    "Offer yourself what you need. Perhaps words of comfort, or simply the intention to be kind." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прапануйце сабе тое, што вам трэба. Магчыма, гэта словы суцяшэння, або словы падтрымкі."
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Добра"
+          }
+        }
+      }
+    },
+    "One Mindful Breath" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адзін Ўсвядомлены Ўдых"
           }
         }
       }
@@ -3094,13 +3827,32 @@
         }
       }
     },
-    "Per medication" : {
-      "extractionState" : "stale",
+    "Pause before the next cycle..." : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "За Прэпарат"
+            "value" : "Паўза перад наступным цыклам..."
+          }
+        }
+      }
+    },
+    "Pause." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паўза."
+          }
+        }
+      }
+    },
+    "Pause..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Паўза..."
           }
         }
       }
@@ -3111,6 +3863,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "за месяц"
+          }
+        }
+      }
+    },
+    "Physiological Sigh" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фізіялагічны Ўздых"
+          }
+        }
+      }
+    },
+    "Place the tip of your tongue behind your upper front teeth. We'll breathe in a 4-7-8 pattern." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пастаўце кончык языка за верхнія пярэднія зубы. Мы будзем дыхаць па схеме 4-7-8."
+          }
+        }
+      }
+    },
+    "Place your hand on your heart if it feels right. Feel the warmth of your own compassion." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пакладзіце руку на сэрца, калі гэта адчуваецца слушна. Адчуйце цеплыню ўласнага спачування."
           }
         }
       }
@@ -3126,7 +3908,14 @@
       }
     },
     "Practice" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкі"
+          }
+        }
+      }
     },
     "Practice Name" : {
       "localizations" : {
@@ -3218,6 +4007,29 @@
         }
       }
     },
+    "Process and regulate emotions" : {
+
+    },
+    "Progressive Relaxation" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Праграсіўная Рэлаксацыя"
+          }
+        }
+      }
+    },
+    "Promotes deep relaxation and better sleep" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спрыяе глыбокай рэлаксацыі і лепшаму сну"
+          }
+        }
+      }
+    },
     "Quality" : {
       "localizations" : {
         "be" : {
@@ -3227,6 +4039,9 @@
           }
         }
       }
+    },
+    "Quick" : {
+
     },
     "Quick Add" : {
       "localizations" : {
@@ -3244,6 +4059,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Хуткая Генерацыя"
+          }
+        }
+      }
+    },
+    "Quick inhale through nose..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хуткі ўдых праз нос..."
+          }
+        }
+      }
+    },
+    "Quick Reset" : {
+
+    },
+    "R — Recognize: What am I feeling right now?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Р — Распазнаць: Што я адчуваю цяпер?"
+          }
+        }
+      }
+    },
+    "RAIN is a four-step practice for working with difficult emotions. Let's begin." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RAIN — гэта чатырохкрокавая практыка для працы з цяжкімі эмоцыямі. Пачнём."
+          }
+        }
+      }
+    },
+    "RAIN Practice" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыка RAIN"
+          }
+        }
+      }
+    },
+    "Rapidly reduces stress in under a minute" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хутка зніжае стрэс менш чым за хвіліну"
           }
         }
       }
@@ -3268,12 +4136,32 @@
         }
       }
     },
+    "Reduces self-criticism and builds emotional resilience" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зніжае самакрытыку і развівае эмацыйную ўстойлівасць"
+          }
+        }
+      }
+    },
     "Refresh" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Абнавіць"
+          }
+        }
+      }
+    },
+    "Releases physical tension quickly" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хутка вызваляе фізічнае напружанне"
           }
         }
       }
@@ -3309,10 +4197,24 @@
       }
     },
     "Reminders are automatically scheduled based on frequency. Change default times in Settings." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нагадванні плануюцца аўтаматычна ў адпаведнасці з усталяванай частатой. Змяніць стандартныя часы можна ў Наладах."
+          }
+        }
+      }
     },
     "Remove" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скасаваць"
+          }
+        }
+      }
     },
     "Report a Bug" : {
       "localizations" : {
@@ -3335,6 +4237,16 @@
     },
     "Reset What's New Popup" : {
 
+    },
+    "Rest here for a moment. You've done important work." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адпачыйце тут на хвіліну. Вы праделалі важную працу."
+          }
+        }
+      }
     },
     "Restart Now" : {
       "localizations" : {
@@ -3366,6 +4278,29 @@
         }
       }
     },
+    "Return to natural breathing. Notice how you feel." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вярніцеся да натуральнага дыхання. Заўважце, як вы сябе адчуваеце."
+          }
+        }
+      }
+    },
+    "Return to the present moment" : {
+
+    },
+    "Roll your shoulders backward slowly... 1..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Павольна круціце плечы назад... 1..."
+          }
+        }
+      }
+    },
     "Running AI analysis..." : {
       "localizations" : {
         "be" : {
@@ -3377,7 +4312,14 @@
       }
     },
     "Saturday" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Субота"
+          }
+        }
+      }
     },
     "Save" : {
       "localizations" : {
@@ -3390,7 +4332,44 @@
       }
     },
     "Save Entry" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Захаваць Запіс"
+          }
+        }
+      }
+    },
+    "Say to yourself: \"Difficulty is part of being human.\"" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажыце сабе: «Цяжкасці — гэта частка чалавечага жыцця.»"
+          }
+        }
+      }
+    },
+    "Say to yourself: \"May I be kind to myself.\"" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажыце сабе: «Няхай я буду добры да сябе.»"
+          }
+        }
+      }
+    },
+    "Say to yourself: \"This is a moment of difficulty.\"" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажыце сабе: «Гэта момант цяжкасці.»"
+          }
+        }
+      }
     },
     "Schedule" : {
       "localizations" : {
@@ -3428,6 +4407,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Пошук па назве або брэндзе..."
+          }
+        }
+      }
+    },
+    "Second quick inhale..." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другі хуткі ўдых..."
           }
         }
       }
@@ -3532,8 +4521,25 @@
         }
       }
     },
+    "Self-Compassion Break" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перапынак на Самаспачуванне"
+          }
+        }
+      }
+    },
     "Set default reminder times. Medications are auto-assigned based on their dosing frequency." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усталюйце стандартныя часы нагадванняў. Лекі прызначаюцца аўтаматычна ў адпаведнасці з іх частатой прыёму."
+          }
+        }
+      }
     },
     "Set reminder times when editing each medication" : {
       "localizations" : {
@@ -3585,6 +4591,16 @@
         }
       }
     },
+    "Shifts attention toward the positive" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пераключае ўвагу на станоўчае"
+          }
+        }
+      }
+    },
     "Show All Factors" : {
       "localizations" : {
         "be" : {
@@ -3601,6 +4617,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Падобныя Мінулыя Дні"
+          }
+        }
+      }
+    },
+    "Simple shoulder rolls to release physical tension. Perfect when you've been sitting too long." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Простыя круці плячыма для зняцця фізічнага напружання. Ідэальна, калі вы занадта доўга сядзелі."
+          }
+        }
+      }
+    },
+    "Simply name what's present. Anxiety? Sadness? Frustration? There's no wrong answer." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проста назавіце, што прысутнічае. Трывога? Смутак? Расчараванне? Няправільнага адказу няма."
           }
         }
       }
@@ -3836,7 +4872,14 @@
       }
     },
     "Suggested for You" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адабраныя для Вас"
+          }
+        }
+      }
     },
     "Suggestions" : {
       "localizations" : {
@@ -3849,7 +4892,14 @@
       }
     },
     "Sunday" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нядзеля"
+          }
+        }
+      }
     },
     "Support" : {
       "localizations" : {
@@ -3913,6 +4963,26 @@
         }
       }
     },
+    "Take a breath. Notice how your shoulders feel now." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зрабіце ўдых. Заўважце, як адчуваюцца вашы плечы зараз."
+          }
+        }
+      }
+    },
+    "Take a deep breath. You are here, in this moment." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Глыбока ўдыхніце. Вы тут, у гэтым моманце."
+          }
+        }
+      }
+    },
     "Take As-Needed" : {
       "localizations" : {
         "be" : {
@@ -3934,10 +5004,24 @@
       }
     },
     "Tap to continue" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Націсніце каб працягнуць"
+          }
+        }
+      }
     },
     "Tap to select emotions" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Націсніце каб выбраць эмоцыі"
+          }
+        }
+      }
     },
     "Test data generation for development" : {
 
@@ -3973,13 +5057,44 @@
       }
     },
     "thing" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "рэч"
+          }
+        }
+      }
     },
     "things" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "рэчы"
+          }
+        }
+      }
+    },
+    "Think of a situation that's causing you stress. Hold it gently in your awareness." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падумайце пра сітуацыю, якая выклікае ў вас стрэс. Трымайце яе далікатна ў сваёй свядомасці."
+          }
+        }
+      }
     },
     "This medication will have its own reminder at the specified time" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Гэты прэпарат будзе мець свой уласны напамін у вызначаны час."
+          }
+        }
+      }
     },
     "This will delete all entries marked as test data, including [TEST] medications and substances." : {
 
@@ -3995,7 +5110,14 @@
       }
     },
     "Thursday" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чацьвер"
+          }
+        }
+      }
     },
     "Time" : {
       "localizations" : {
@@ -4048,7 +5170,14 @@
       }
     },
     "Time Outdoors" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разоў на Вуліцы"
+          }
+        }
+      }
     },
     "Time Range" : {
       "localizations" : {
@@ -4081,7 +5210,14 @@
       }
     },
     "Times" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разоў"
+          }
+        }
+      }
     },
     "to" : {
       "localizations" : {
@@ -4183,23 +5319,22 @@
         }
       }
     },
-    "Track your mood, sleep & symptoms" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "be" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сачыце за сваім настроем, сном і сімптомамі"
-          }
-        }
-      }
-    },
     "Tracking" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сачыць"
+          }
+        }
+      }
+    },
+    "Transforms your relationship with difficult emotions" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трансфармуе вашы адносіны з цяжкімі эмоцыямі"
           }
         }
       }
@@ -4225,7 +5360,14 @@
       }
     },
     "Tuesday" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ауторак"
+          }
+        }
+      }
     },
     "UI Debug" : {
 
@@ -4249,6 +5391,9 @@
           }
         }
       }
+    },
+    "Under 1 minute practices" : {
+
     },
     "Undo" : {
       "localizations" : {
@@ -4281,7 +5426,14 @@
       }
     },
     "Update Entry" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Абнавіць Запіс"
+          }
+        }
+      }
     },
     "Updated %@" : {
       "localizations" : {
@@ -4294,7 +5446,14 @@
       }
     },
     "Use the + button to log activities" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Націсніце + каб запісаць актыунасці"
+          }
+        }
+      }
     },
     "Variable" : {
       "localizations" : {
@@ -4346,8 +5505,25 @@
         }
       }
     },
+    "We'll do 3 physiological sighs. This is the fastest way to calm your nervous system." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мы зробім 3 фізіялагічныя ўздыхі. Гэта найхутчэйшы спосаб супакоіць нервовую сістэму."
+          }
+        }
+      }
+    },
     "Wednesday" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Серада"
+          }
+        }
+      }
     },
     "Welcome to NeuralPath" : {
       "localizations" : {
@@ -4360,7 +5536,14 @@
       }
     },
     "Well done" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добрая праца"
+          }
+        }
+      }
     },
     "Well Done!" : {
       "localizations" : {
@@ -4372,12 +5555,32 @@
         }
       }
     },
+    "What would you say to a good friend in this situation? Can you offer yourself the same kindness?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Што б вы сказалі сябррам ў гэтай сітуацыі? Ці можаце вы прапанаваць сабе такую ж дабрыню?"
+          }
+        }
+      }
+    },
     "What's New" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Што Новага"
+          }
+        }
+      }
+    },
+    "What's one thing you can appreciate about this moment — however small?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Што адно вы можаце ацаніць у гэтым моманце — хай нават самае малое?"
           }
         }
       }
@@ -4402,6 +5605,26 @@
         }
       }
     },
+    "When you're ready, take a deep breath and return to your day." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Калі будзеце гатовы, глыбока ўдыхніце і вярніцеся да свайго дня."
+          }
+        }
+      }
+    },
+    "With curiosity, notice physical sensations. Tightness? Heaviness? Where exactly?" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "З цікаўнасцю заўважце фізічныя адчуванні. Сціснутасць? Цяжар? Дзе менавіта?"
+          }
+        }
+      }
+    },
     "Worsening" : {
       "localizations" : {
         "be" : {
@@ -4412,8 +5635,7 @@
         }
       }
     },
-    "Yes, for yesterday" : {
-      "extractionState" : "stale",
+    "Yes, use yesterday" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
@@ -4423,22 +5645,25 @@
         }
       }
     },
-    "Yes, use yesterday" : {
-
-    },
-    "You already have an entry for today." : {
-      "extractionState" : "stale",
+    "Yoga" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "У вас ужо ёсць запіс на сёння."
+            "value" : "Ёга"
           }
         }
       }
     },
     "You can change default %@ time in Settings" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы можаце зманіць час для %@ у наладках"
+          }
+        }
+      }
     },
     "You can change this later in Settings." : {
       "localizations" : {
@@ -4451,19 +5676,74 @@
       }
     },
     "You completed %@" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы скончылі %@"
+          }
+        }
+      }
+    },
+    "You did it. That's enough." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы зрабілі гэта. Гэтага дастаткова."
+          }
+        }
+      }
+    },
+    "You don't have to like it or want it. Just let it exist without pushing it away." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вам не павінны падабацца гэтыя эмоцыі. Проста дазвольце ім існаваць, не адштурхваючы."
+          }
+        }
+      }
     },
     "You have unsaved changes that will be lost." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У вас ёсць незахаваныя змены, якія будуць страчаны."
+          }
+        }
+      }
     },
     "You showed up. That matters." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы прыйшлі. Гэта важна."
+          }
+        }
+      }
     },
     "You'll be reminded every 48 hours starting from when this is set up" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нагадкі будуць прыходзіць кожныя 48 гадзін пасля ўсталявання."
+          }
+        }
+      }
     },
     "You'll be reminded once per week on the selected day" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вам будуць штотыдзень нагадваць у выбраны дзень."
+          }
+        }
+      }
     },
     "You're All Set!" : {
       "localizations" : {
@@ -4471,6 +5751,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Усё Гатова!"
+          }
+        }
+      }
+    },
+    "You're not alone in this. Everyone struggles. This is part of our shared human experience." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы не адзін у гэтым. Усе змагаюцца. Гэта частка нашага агульнага чалавечага досведу."
           }
         }
       }

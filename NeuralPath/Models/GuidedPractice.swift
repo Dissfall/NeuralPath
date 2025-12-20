@@ -18,10 +18,10 @@ enum GuidedPracticeCategory: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .breathing: return "Breathing"
-        case .grounding: return "Grounding"
-        case .emotional: return "Emotional"
-        case .micro: return "Quick Reset"
+        case .breathing: return String(localized: "Breathing")
+        case .grounding: return String(localized: "Grounding")
+        case .emotional: return String(localized: "Emotional")
+        case .micro: return String(localized: "Quick Reset")
         }
     }
 
@@ -45,10 +45,10 @@ enum GuidedPracticeCategory: String, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .breathing: return "Calm your nervous system"
-        case .grounding: return "Return to the present moment"
-        case .emotional: return "Process and regulate emotions"
-        case .micro: return "Under 1 minute practices"
+        case .breathing: return String(localized: "Calm your nervous system")
+        case .grounding: return String(localized: "Return to the present moment")
+        case .emotional: return String(localized: "Process and regulate emotions")
+        case .micro: return String(localized: "Under 1 minute practices")
         }
     }
 }
@@ -101,12 +101,12 @@ enum BodyRegion: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .feet: return "Feet"
-        case .legs: return "Legs"
-        case .hips: return "Hips & Lower Back"
-        case .torso: return "Chest & Stomach"
-        case .arms: return "Arms & Hands"
-        case .head: return "Neck & Head"
+        case .feet: return String(localized: "Feet")
+        case .legs: return String(localized: "Legs")
+        case .hips: return String(localized: "Hips & Lower Back")
+        case .torso: return String(localized: "Chest & Stomach")
+        case .arms: return String(localized: "Arms & Hands")
+        case .head: return String(localized: "Neck & Head")
         }
     }
 }
@@ -142,11 +142,11 @@ enum SensoryType: String, CaseIterable {
 
     var instruction: String {
         switch self {
-        case .see: return "Notice 5 things you can see"
-        case .feel: return "Notice 4 things you can feel"
-        case .hear: return "Notice 3 things you can hear"
-        case .smell: return "Notice 2 things you can smell"
-        case .taste: return "Notice 1 thing you can taste"
+        case .see: return String(localized: "Notice 5 things you can see")
+        case .feel: return String(localized: "Notice 4 things you can feel")
+        case .hear: return String(localized: "Notice 3 things you can hear")
+        case .smell: return String(localized: "Notice 2 things you can smell")
+        case .taste: return String(localized: "Notice 1 thing you can taste")
         }
     }
 }
@@ -194,11 +194,11 @@ enum PracticeTag: String, CaseIterable, Identifiable, Hashable {
 
     var displayName: String {
         switch self {
-        case .anxietyRelief: return "Anxiety Relief"
-        case .moodBoost: return "Mood Boost"
-        case .morning: return "Morning"
-        case .evening: return "Evening"
-        case .quick: return "Quick"
+        case .anxietyRelief: return String(localized: "Anxiety Relief")
+        case .moodBoost: return String(localized: "Mood Boost")
+        case .morning: return String(localized: "Morning")
+        case .evening: return String(localized: "Evening")
+        case .quick: return String(localized: "Quick")
         }
     }
 

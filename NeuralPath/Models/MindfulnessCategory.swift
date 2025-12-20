@@ -20,14 +20,14 @@ enum MindfulnessCategory: String, Codable, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .meditation: return "Meditation"
-        case .breathing: return "Breathing Exercises"
-        case .yoga: return "Yoga"
-        case .journaling: return "Journaling"
-        case .bodyScan: return "Body Scan"
-        case .relaxation: return "Progressive Relaxation"
-        case .walking: return "Mindful Walking"
-        case .gratitude: return "Gratitude Practice"
+        case .meditation: return String(localized: "Meditation")
+        case .breathing: return String(localized: "Breathing Exercises")
+        case .yoga: return String(localized: "Yoga")
+        case .journaling: return String(localized: "Journaling")
+        case .bodyScan: return String(localized: "Body Scan")
+        case .relaxation: return String(localized: "Progressive Relaxation")
+        case .walking: return String(localized: "Mindful Walking")
+        case .gratitude: return String(localized: "Gratitude Practice")
         }
     }
 
