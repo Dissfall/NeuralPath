@@ -47,10 +47,15 @@ class StoreKitManager {
     func loadProducts() async {
         isLoading = true
         do {
+            print("[StoreKit] Loading products for IDs: \(Self.donationProductIDs)")
             products = try await Product.products(for: Self.donationProductIDs)
+            print("[StoreKit] Loaded \(products.count) products: \(products.map { $0.id })")
+            if products.isEmpty {
+                print("[StoreKit] No products found. Ensure StoreKit configuration file is set up or products exist in App Store Connect.")
+            }
             isLoading = false
         } catch {
-            print("Failed to load products: \(error)")
+            print("[StoreKit] Failed to load products: \(error)")
             isLoading = false
         }
     }

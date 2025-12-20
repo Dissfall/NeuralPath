@@ -1,0 +1,228 @@
+{
+  "identifier" : "4B8A1B5D-8D3A-4A6F-9C7E-1F2E3D4C5B6A",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6740032509",
+    "_developerTeamID" : "S3WMJX2VH4",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21668930",
+      "localizations" : [
+
+      ],
+      "name" : "NeuralPath Donations",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "0.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740032510",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Small monthly donation",
+              "displayName" : "Supporter",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.geometryrain.neuralpath.donation.tier1",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Tier 1 - Supporter",
+          "subscriptionGroupID" : "21668930",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6740032511",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly donation",
+              "displayName" : "Friend",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.geometryrain.neuralpath.donation.tier2",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Tier 2 - Friend",
+          "subscriptionGroupID" : "21668930",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6740032512",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly donation",
+              "displayName" : "Patron",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.geometryrain.neuralpath.donation.tier3",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Tier 3 - Patron",
+          "subscriptionGroupID" : "21668930",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 4,
+          "internalID" : "6740032513",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly donation",
+              "displayName" : "Champion",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.geometryrain.neuralpath.donation.tier4",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Tier 4 - Champion",
+          "subscriptionGroupID" : "21668930",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 5,
+          "internalID" : "6740032514",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly donation",
+              "displayName" : "Hero",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.geometryrain.neuralpath.donation.tier5",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Tier 5 - Hero",
+          "subscriptionGroupID" : "21668930",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "14.99",
+          "familyShareable" : false,
+          "groupNumber" : 6,
+          "internalID" : "6740032515",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly donation",
+              "displayName" : "Legend",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.geometryrain.neuralpath.donation.tier6",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Tier 6 - Legend",
+          "subscriptionGroupID" : "21668930",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
