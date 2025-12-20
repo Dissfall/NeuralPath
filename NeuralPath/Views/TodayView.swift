@@ -5,8 +5,12 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct TodayView: View {
+    // Haptic generators
+    private let successFeedback = UINotificationFeedbackGenerator()
+    private let impactFeedback = UIImpactFeedbackGenerator(style: .light)
     @Environment(\.modelContext) private var modelContext
 
     @Query(sort: \SymptomEntry.timestamp, order: .reverse) private var entries: [SymptomEntry]
@@ -231,6 +235,7 @@ struct TodayView: View {
                             ForEach(timelineSections) { section in
                                 timelineSection(section)
                             }
+                            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: timelineItems.map { "\($0.id)_\($0.time.timeIntervalSince1970)" })
                         }
 
                         // Finish Day button
@@ -424,104 +429,119 @@ struct TodayView: View {
             )
 
             ForEach(section.items) { item in
-                TimelineItemRow(item: item) {
-                    handleItemTap(item)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    swipeActions(for: item)
+                let actions = swipeActions(for: item)
+                if actions.isEmpty {
+                    TimelineItemRow(item: item) {
+                        handleItemTap(item)
+                    }
+                    .transition(.asymmetric(
+                        insertion: .scale.combined(with: .opacity),
+                        removal: .scale.combined(with: .opacity)
+                    ))
+                } else {
+                    SwipeableTimelineItemRow(
+                        item: item,
+                        onTap: { handleItemTap(item) },
+                        swipeActions: actions
+                    )
+                    .transition(.asymmetric(
+                        insertion: .scale.combined(with: .opacity),
+                        removal: .scale.combined(with: .opacity)
+                    ))
                 }
             }
         }
         .padding(.vertical, 8)
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: section.items.map(\.id))
     }
 
-    @ViewBuilder
-    private func swipeActions(for item: TimelineItem) -> some View {
+    private func swipeActions(for item: TimelineItem) -> [SwipeAction] {
+        var actions: [SwipeAction] = []
+
         switch item.type {
         case .scheduledMedication(let med):
             if item.isCompleted {
-                Button {
-                    untickMedication(med)
-                } label: {
-                    Label("Undo", systemImage: "arrow.uturn.backward")
-                }
-                .tint(.orange)
-
-                Button {
-                    startEditScheduledMedicationTime(med)
-                } label: {
-                    Label("Time", systemImage: "clock")
-                }
-                .tint(.blue)
+                actions.append(SwipeAction(
+                    icon: "arrow.uturn.backward",
+                    label: "Undo",
+                    color: .orange,
+                    action: { untickMedication(med) }
+                ))
+                actions.append(SwipeAction(
+                    icon: "clock",
+                    label: "Time",
+                    color: .blue,
+                    action: { startEditScheduledMedicationTime(med) }
+                ))
             }
 
         case .prnMedication(let log):
-            Button(role: .destructive) {
-                deleteMedicationLog(log)
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-
-            Button {
-                startEditMedicationLogTime(log)
-            } label: {
-                Label("Time", systemImage: "clock")
-            }
-            .tint(.blue)
+            actions.append(SwipeAction(
+                icon: "clock",
+                label: "Time",
+                color: .blue,
+                action: { startEditMedicationLogTime(log) }
+            ))
+            actions.append(SwipeAction(
+                icon: "trash",
+                label: "Delete",
+                color: .red,
+                action: { deleteMedicationLog(log) }
+            ))
 
         case .substance(let log):
-            Button(role: .destructive) {
-                deleteSubstanceLog(log)
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-
-            Button {
-                startEditSubstanceTime(log)
-            } label: {
-                Label("Time", systemImage: "clock")
-            }
-            .tint(.blue)
-
-            Button {
-                startEditSubstanceAmount(log)
-            } label: {
-                Label("Amount", systemImage: "number")
-            }
-            .tint(.purple)
+            actions.append(SwipeAction(
+                icon: "number",
+                label: "Amount",
+                color: .purple,
+                action: { startEditSubstanceAmount(log) }
+            ))
+            actions.append(SwipeAction(
+                icon: "clock",
+                label: "Time",
+                color: .blue,
+                action: { startEditSubstanceTime(log) }
+            ))
+            actions.append(SwipeAction(
+                icon: "trash",
+                label: "Delete",
+                color: .red,
+                action: { deleteSubstanceLog(log) }
+            ))
 
         case .mindfulness(let log):
-            Button(role: .destructive) {
-                deleteMindfulnessLog(log)
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-
-            Button {
-                startEditMindfulnessTime(log)
-            } label: {
-                Label("Time", systemImage: "clock")
-            }
-            .tint(.blue)
+            actions.append(SwipeAction(
+                icon: "clock",
+                label: "Time",
+                color: .blue,
+                action: { startEditMindfulnessTime(log) }
+            ))
+            actions.append(SwipeAction(
+                icon: "trash",
+                label: "Delete",
+                color: .red,
+                action: { deleteMindfulnessLog(log) }
+            ))
 
         case .scheduledSelfCare:
-            EmptyView()
+            break
 
         case .loggedSelfCare(let log):
-            Button(role: .destructive) {
-                deleteSelfCareLog(log)
-            } label: {
-                Label("Undo", systemImage: "arrow.uturn.backward")
-            }
-            .tint(.orange)
-
-            Button {
-                startEditSelfCareTime(log)
-            } label: {
-                Label("Time", systemImage: "clock")
-            }
-            .tint(.blue)
+            actions.append(SwipeAction(
+                icon: "clock",
+                label: "Time",
+                color: .blue,
+                action: { startEditSelfCareTime(log) }
+            ))
+            actions.append(SwipeAction(
+                icon: "arrow.uturn.backward",
+                label: "Undo",
+                color: .orange,
+                action: { deleteSelfCareLog(log) }
+            ))
         }
+
+        return actions
     }
 
     private func handleItemTap(_ item: TimelineItem) {
@@ -546,6 +566,7 @@ struct TodayView: View {
             timestamp: Date()
         )
         modelContext.insert(log)
+        successFeedback.notificationOccurred(.success)
     }
 
     private func promptLogSubstance(_ substance: UserSubstance) {
@@ -566,6 +587,7 @@ struct TodayView: View {
         )
         modelContext.insert(log)
         substanceToLog = nil
+        successFeedback.notificationOccurred(.success)
     }
 
     private func logMindfulness(_ practice: UserMindfulness) {
@@ -575,6 +597,7 @@ struct TodayView: View {
             timestamp: Date()
         )
         modelContext.insert(log)
+        successFeedback.notificationOccurred(.success)
     }
 
     private func logSelfCare(_ practice: UserSelfCare) {
@@ -585,6 +608,7 @@ struct TodayView: View {
             timestamp: Date()
         )
         modelContext.insert(log)
+        successFeedback.notificationOccurred(.success)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             checkForCategoryCompletion(practice.timeOfDay)
@@ -595,24 +619,29 @@ struct TodayView: View {
 
     private func deleteMedicationLog(_ log: MedicationLog) {
         modelContext.delete(log)
+        impactFeedback.impactOccurred()
     }
 
     private func untickMedication(_ medication: UserMedication) {
         if let log = todayMedicationLogs.first(where: { $0.medicationName == medication.name }) {
             modelContext.delete(log)
+            impactFeedback.impactOccurred()
         }
     }
 
     private func deleteSubstanceLog(_ log: SubstanceLog) {
         modelContext.delete(log)
+        impactFeedback.impactOccurred()
     }
 
     private func deleteMindfulnessLog(_ log: MindfulnessLog) {
         modelContext.delete(log)
+        impactFeedback.impactOccurred()
     }
 
     private func deleteSelfCareLog(_ log: SelfCareLog) {
         modelContext.delete(log)
+        impactFeedback.impactOccurred()
     }
 
     // MARK: - Edit Functions
@@ -632,6 +661,7 @@ struct TodayView: View {
     private func saveMedicationLogTime() {
         if let log = medicationLogToEditTime {
             log.timestamp = editTime
+            impactFeedback.impactOccurred()
         }
         medicationLogToEditTime = nil
     }
@@ -640,6 +670,7 @@ struct TodayView: View {
         if let medication = medicationToEditTime,
            let log = todayMedicationLogs.first(where: { $0.medicationName == medication.name }) {
             log.timestamp = editTime
+            impactFeedback.impactOccurred()
         }
         medicationToEditTime = nil
     }
@@ -652,6 +683,7 @@ struct TodayView: View {
     private func saveSubstanceTime() {
         if let log = substanceLogToEditTime {
             log.timestamp = editTime
+            impactFeedback.impactOccurred()
         }
         substanceLogToEditTime = nil
     }
@@ -668,6 +700,7 @@ struct TodayView: View {
         if let log = substanceLogToEditAmount,
            let amount = Double(editAmount), amount > 0 {
             log.amount = amount
+            impactFeedback.impactOccurred()
         }
         substanceLogToEditAmount = nil
     }
@@ -680,6 +713,7 @@ struct TodayView: View {
     private func saveMindfulnessTime() {
         if let log = mindfulnessLogToEditTime {
             log.timestamp = editTime
+            impactFeedback.impactOccurred()
         }
         mindfulnessLogToEditTime = nil
     }
@@ -692,6 +726,7 @@ struct TodayView: View {
     private func saveSelfCareTime() {
         if let log = selfCareLogToEditTime {
             log.timestamp = editTime
+            impactFeedback.impactOccurred()
         }
         selfCareLogToEditTime = nil
     }
