@@ -24,6 +24,29 @@ struct WhatsNewVersion {
 enum WhatsNewContent {
     static let versions: [WhatsNewVersion] = [
         WhatsNewVersion(
+            version: "1.2.0",
+            features: [
+                WhatsNewFeature(
+                    icon: "figure.mind.and.body",
+                    iconColor: .teal,
+                    title: String(localized: "Guided Practices"),
+                    description: String(localized: "New practices screen with guided breathing, grounding, and emotional exercises. Step-by-step instructions with timers and animations.")
+                ),
+                WhatsNewFeature(
+                    icon: "clock.badge.checkmark",
+                    iconColor: .orange,
+                    title: String(localized: "Simplified Scheduling"),
+                    description: String(localized: "Easier activity scheduling — just set morning, afternoon, or evening instead of exact times.")
+                ),
+                WhatsNewFeature(
+                    icon: "timeline.selection",
+                    iconColor: .blue,
+                    title: String(localized: "Timeline View"),
+                    description: String(localized: "Today's view is now a timeline of your day. See medications, practices, and activities in chronological order.")
+                ),
+            ]
+        ),
+        WhatsNewVersion(
             version: "1.1.0",
             features: [
                 WhatsNewFeature(

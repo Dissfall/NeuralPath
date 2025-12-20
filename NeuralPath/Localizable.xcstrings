@@ -1939,6 +1939,22 @@
         }
       }
     },
+    "Easier activity scheduling — just set morning, afternoon, or evening instead of exact times." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прасцейшае планаванне актыўнасцей — проста выберыце раніцу, дзень ці вечар замест дакладнага часу."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Простіше планування активностей — просто оберіть ранок, день чи вечір замість точного часу."
+          }
+        }
+      }
+    },
     "Edit" : {
       "localizations" : {
         "be" : {
@@ -2451,6 +2467,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Зазямленне"
+          }
+        }
+      }
+    },
+    "Guided Practices" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кіраваныя практыкі"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Керовані практики"
           }
         }
       }
@@ -3437,6 +3469,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Новы Запіс"
+          }
+        }
+      }
+    },
+    "New practices screen with guided breathing, grounding, and emotional exercises. Step-by-step instructions with timers and animations." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новы экран практык з кіраванымі дыхальнымі, замацавальнымі і эмацыйнымі практыкаваннямі. Пакрокавыя інструкцыі з таймерамі і анімацыяй."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новий екран практик із керованими дихальними, заземлювальними та емоційними вправами. Покрокові інструкції з таймерами та анімацією."
           }
         }
       }
@@ -4773,6 +4821,22 @@
         }
       }
     },
+    "Simplified Scheduling" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спрошчанае планаванне"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спрощене планування"
+          }
+        }
+      }
+    },
     "Simply name what's present. Anxiety? Sadness? Frustration? There's no wrong answer." : {
       "localizations" : {
         "be" : {
@@ -5351,6 +5415,22 @@
         }
       }
     },
+    "Timeline View" : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Храналогія дня"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хронологія дня"
+          }
+        }
+      }
+    },
     "Times" : {
       "localizations" : {
         "be" : {
@@ -5387,6 +5467,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сёння"
+          }
+        }
+      }
+    },
+    "Today's view is now a timeline of your day. See medications, practices, and activities in chronological order." : {
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сённяшні выгляд цяпер — гэта храналогія вашага дня. Глядзіце лекі, практыкі і актыўнасці ў храналагічным парадку."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сьогоднішній вигляд тепер — це хронологія вашого дня. Переглядайте ліки, практики та активності в хронологічному порядку."
           }
         }
       }
