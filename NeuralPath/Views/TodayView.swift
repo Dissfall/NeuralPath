@@ -842,7 +842,7 @@ private struct AllDoneCard: View {
             Button(action: onEdit) {
                 Label("Edit Entry", systemImage: "pencil")
                     .font(.headline)
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
