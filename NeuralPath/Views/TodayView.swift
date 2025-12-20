@@ -114,8 +114,7 @@ struct TodayView: View {
     }
 
     private var showFinishDayButton: Bool {
-        let hour = Calendar.current.component(.hour, from: Date())
-        return hour >= 18 && todayEntry == nil
+        todayEntry == nil
     }
 
     // MARK: - Timeline Building

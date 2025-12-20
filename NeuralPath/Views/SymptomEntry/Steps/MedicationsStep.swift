@@ -24,7 +24,7 @@ struct MedicationsStep: View {
     @ViewBuilder
     private var medicationsSection: some View {
         StepSectionCard(
-            title: "Medications",
+            title: String(localized: "Medications"),
             icon: "pills.fill",
             color: .blue
         ) {

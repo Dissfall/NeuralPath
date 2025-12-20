@@ -67,7 +67,7 @@ struct MedicationHistoryView: View {
                     }
                 }
             }
-            .navigationTitle("Medications")
+            .navigationTitle(String(localized: "Medications"))
             .toolbar {
                 if !medications.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {

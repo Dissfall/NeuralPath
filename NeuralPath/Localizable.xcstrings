@@ -2,33 +2,71 @@
   "sourceLanguage" : "en",
   "strings" : {
     "" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "(%lld)" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(%lld)"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "%@" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "%@ (%@)" : {
       "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ (%2$@)"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@ %@" : {
       "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ %2$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@ • %lld min" : {
       "localizations" : {
@@ -97,7 +135,14 @@
       }
     },
     "%lld" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      }
     },
     "%lld active medications" : {
       "localizations" : {
@@ -236,7 +281,7 @@
       }
     },
     "%lld." : {
-
+      "shouldTranslate" : false
     },
     "%lld/%lld" : {
       "localizations" : {
@@ -246,10 +291,11 @@
             "value" : "%1$lld/%2$lld"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%lld%%" : {
-
+      "shouldTranslate" : false
     },
     "%lld%% confidence" : {
       "localizations" : {
@@ -292,10 +338,10 @@
       }
     },
     "0" : {
-
+      "shouldTranslate" : false
     },
     "0.0" : {
-
+      "shouldTranslate" : false
     },
     "1 active medication" : {
       "localizations" : {
@@ -382,7 +428,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "А — Дазволіць: Ці магу я дазволіць гэтаму пачуццю быць тут?"
+            "value" : "Дазволіць: Ці магу я дазволіць гэтаму пачуццю быць тут?"
           }
         }
       }
@@ -917,6 +963,9 @@
         }
       }
     },
+    "All Set!" : {
+
+    },
     "Amount" : {
       "localizations" : {
         "be" : {
@@ -1038,7 +1087,7 @@
       }
     },
     "Apple Health" : {
-
+      "shouldTranslate" : false
     },
     "Archived" : {
       "localizations" : {
@@ -1325,7 +1374,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Несіце гэта з сабой."
+            "value" : "Нясіце гэта з сабой."
           }
         }
       }
@@ -1875,7 +1924,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Працягласць"
+            "value" : "Працьлегласць"
           }
         }
       }
@@ -2207,11 +2256,24 @@
             "state" : "translated",
             "value" : "Скончыць Дзень"
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Завершити День"
+          }
         }
       }
     },
     "For moments when even 2 minutes feels like too much. Just one single, fully present breath." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На моманты, калі нават 2 хвіліны здаюцца зашмат. Проста адзін, цалкам усвядомлены ўдых."
+          }
+        }
+      }
     },
     "Format" : {
       "localizations" : {
@@ -2518,7 +2580,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Гадзін"
+            "value" : "Працьлегласць"
           }
         }
       }
@@ -2532,6 +2594,9 @@
           }
         }
       }
+    },
+    "How to Use" : {
+
     },
     "How to Use NeuralPath" : {
       "localizations" : {
@@ -2558,7 +2623,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "І — Даследаваць: Дзе я адчуваю гэта ў сваім целе?"
+            "value" : "Даследаваць: Дзе я адчуваю гэта ў сваім целе?"
           }
         }
       }
@@ -2724,7 +2789,14 @@
       }
     },
     "Just one breath. That's all." : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проста адзін удых. Гэта ўсё."
+          }
+        }
+      }
     },
     "Keep Editing" : {
       "localizations" : {
@@ -3137,7 +3209,7 @@
       }
     },
     "Medications (2 test meds)" : {
-
+      "shouldTranslate" : false
     },
     "Meditation" : {
       "localizations" : {
@@ -3280,7 +3352,14 @@
       }
     },
     "Mood Boost" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Падняць Настрой"
+          }
+        }
+      }
     },
     "Mood Level" : {
       "localizations" : {
@@ -3317,7 +3396,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Н — Клапаціцца: Што мне зараз трэба?"
+            "value" : "Клапаціцца: Што мне зараз патрэбна?"
           }
         }
       }
@@ -3693,19 +3772,54 @@
       }
     },
     "Notice 1 thing you can taste" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зауважце 1 рэч якую вы можаце паспрабаваць на ўкус"
+          }
+        }
+      }
     },
     "Notice 2 things you can smell" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зауважце 2 рэчы якія вы можаце панюхаць"
+          }
+        }
+      }
     },
     "Notice 3 things you can hear" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зауважце 3 рэчы якія вы чуеце"
+          }
+        }
+      }
     },
     "Notice 4 things you can feel" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заўважце 4 рэчы да якіх вы можаце дакрануцца"
+          }
+        }
+      }
     },
     "Notice 5 things you can see" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заўважце 5 рэчаў якія вы можаце бачыць"
+          }
+        }
+      }
     },
     "Notice the calm spreading through your body." : {
       "localizations" : {
@@ -3892,7 +4006,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пакладзіце руку на сэрца, калі гэта адчуваецца слушна. Адчуйце цеплыню ўласнага спачування."
+            "value" : "Пакладзіце руку на сэрца, калі гэта адчуваецца добра. Адчуйце цеплыню ўласнага спачування."
           }
         }
       }
@@ -4008,7 +4122,14 @@
       }
     },
     "Process and regulate emotions" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рэгулюйце сваі эмоцыйі"
+          }
+        }
+      }
     },
     "Progressive Relaxation" : {
       "localizations" : {
@@ -4041,7 +4162,14 @@
       }
     },
     "Quick" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хутка"
+          }
+        }
+      }
     },
     "Quick Add" : {
       "localizations" : {
@@ -4074,14 +4202,21 @@
       }
     },
     "Quick Reset" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хуткая Перазагрузка"
+          }
+        }
+      }
     },
     "R — Recognize: What am I feeling right now?" : {
       "localizations" : {
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Р — Распазнаць: Што я адчуваю цяпер?"
+            "value" : "Распазнаць: Што я адчуваю зараз?"
           }
         }
       }
@@ -4227,16 +4362,16 @@
       }
     },
     "Reset Donation Prompt" : {
-
+      "shouldTranslate" : false
     },
     "Reset Onboarding" : {
-
+      "shouldTranslate" : false
     },
     "Reset Time Warning" : {
-
+      "shouldTranslate" : false
     },
     "Reset What's New Popup" : {
-
+      "shouldTranslate" : false
     },
     "Rest here for a moment. You've done important work." : {
       "localizations" : {
@@ -4289,7 +4424,14 @@
       }
     },
     "Return to the present moment" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вярніцеся ў сучасны мумант"
+          }
+        }
+      }
     },
     "Roll your shoulders backward slowly... 1..." : {
       "localizations" : {
@@ -4346,7 +4488,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скажыце сабе: «Цяжкасці — гэта частка чалавечага жыцця.»"
+            "value" : "Скажыце сабе: «Цяжкасці — гэта частка чалавечага жыцця»"
           }
         }
       }
@@ -4356,7 +4498,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скажыце сабе: «Няхай я буду добры да сябе.»"
+            "value" : "Скажыце сабе: «Няхай я буду добрымі да сябе»"
           }
         }
       }
@@ -4366,7 +4508,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скажыце сабе: «Гэта момант цяжкасці.»"
+            "value" : "Скажыце сабе: «Гэта момант цяжкасці»"
           }
         }
       }
@@ -5024,7 +5166,7 @@
       }
     },
     "Test data generation for development" : {
-
+      "shouldTranslate" : false
     },
     "Thank You!" : {
       "localizations" : {
@@ -5071,7 +5213,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "рэчы"
+            "value" : "рэчаў"
           }
         }
       }
@@ -5097,7 +5239,7 @@
       }
     },
     "This will delete all entries marked as test data, including [TEST] medications and substances." : {
-
+      "shouldTranslate" : false
     },
     "This will permanently delete all your entries, medications, substances, mindfulness practices, and self-care routines from this device and iCloud. This cannot be undone." : {
       "localizations" : {
@@ -5174,7 +5316,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Разоў на Вуліцы"
+            "value" : "Час на Вуліцы"
           }
         }
       }
@@ -5370,7 +5512,7 @@
       }
     },
     "UI Debug" : {
-
+      "shouldTranslate" : false
     },
     "Unable to Load Data" : {
       "localizations" : {
@@ -5393,7 +5535,14 @@
       }
     },
     "Under 1 minute practices" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Практыкі да адной хвіліны"
+          }
+        }
+      }
     },
     "Undo" : {
       "localizations" : {
@@ -5525,6 +5674,9 @@
         }
       }
     },
+    "Welcome" : {
+
+    },
     "Welcome to NeuralPath" : {
       "localizations" : {
         "be" : {
@@ -5560,7 +5712,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Што б вы сказалі сябррам ў гэтай сітуацыі? Ці можаце вы прапанаваць сабе такую ж дабрыню?"
+            "value" : "Што б вы сказалі сябрам ў гэтай сітуацыі? Ці можаце вы прапанаваць сабе такую ж дабрыню?"
           }
         }
       }
@@ -5760,7 +5912,7 @@
         "be" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вы не адзін у гэтым. Усе змагаюцца. Гэта частка нашага агульнага чалавечага досведу."
+            "value" : "Вы не адны у гэтым. Усе змагаюцца. Гэта частка нашага агульнага чалавечага досведу."
           }
         }
       }
@@ -5786,7 +5938,14 @@
       }
     },
     "Your day starts here" : {
-
+      "localizations" : {
+        "be" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваш дзень пачанаецца тут"
+          }
+        }
+      }
     },
     "Your donation helps keep the app free and supports ongoing development of new features." : {
       "localizations" : {

@@ -145,7 +145,7 @@ struct ReviewStep: View {
                 let medNames = viewModel.takenMedications.compactMap { (id, _) -> String? in
                     viewModel.userMedications.first { $0.id == id }?.name
                 }
-                ReviewRow(label: "Medications", value: medNames.joined(separator: ", "))
+                ReviewRow(label: String(localized: "Medications"), value: medNames.joined(separator: ", "))
             }
 
             if !viewModel.takenSubstances.isEmpty {

@@ -51,15 +51,15 @@ enum OnboardingStep: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .welcome: return "Welcome"
-        case .healthKit: return "Apple Health"
-        case .medications: return "Medications"
-        case .substances: return "Substances"
-        case .mindfulness: return "Mindfulness"
-        case .selfCare: return "Self-Care"
-        case .reminders: return "Reminders"
-        case .howToUse: return "How to Use"
-        case .complete: return "All Set!"
+        case .welcome: return String(localized: "Welcome")
+        case .healthKit: return String(localized: "Apple Health")
+        case .medications: return String(localized: "Medications")
+        case .substances: return String(localized: "Substances")
+        case .mindfulness: return String(localized: "Mindfulness")
+        case .selfCare: return String(localized: "Self-Care")
+        case .reminders: return String(localized: "Reminders")
+        case .howToUse: return String(localized: "How to Use")
+        case .complete: return String(localized: "All Set!")
         }
     }
 }

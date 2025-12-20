@@ -16,9 +16,9 @@ enum TimeBlock: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .morning: return "Morning"
-        case .afternoon: return "Afternoon"
-        case .evening: return "Evening"
+        case .morning: return String(localized: "Morning")
+        case .afternoon: return String(localized: "Afternoon")
+        case .evening: return String(localized: "Evening")
         }
     }
 
