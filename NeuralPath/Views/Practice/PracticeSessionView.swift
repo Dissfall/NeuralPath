@@ -17,6 +17,7 @@ struct PracticeSessionView: View {
     @State private var showExitConfirmation = false
     @State private var showCompletion = false
     @State private var stepTimer: Timer?
+    @State private var showContinueButton = false
 
     private var currentStep: PracticeStep {
         practice.steps[currentStepIndex]
@@ -247,6 +248,8 @@ struct PracticeSessionView: View {
                 )
             } else {
                 tapToContinueButton
+                    .opacity(showContinueButton ? 1 : 0)
+                    .disabled(!showContinueButton)
             }
 
             PracticeProgressText(
@@ -285,24 +288,30 @@ struct PracticeSessionView: View {
 
     // MARK: - Step Control
 
-    private func scheduleStepTimer() {
-        if let duration = currentStep.durationSeconds {
-            stepTimer?.invalidate()
-            stepTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(duration), repeats: false) { _ in
-                advanceToNextStep()
+    private func startCurrentStep() {
+        isStepActive = true
+        triggerHaptic()
+
+        if currentStep.durationSeconds == nil {
+            // Progressive reveal: hide button initially, show after delay
+            let stepIndexWhenStarted = currentStepIndex
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                // Only show button if still on the same step
+                guard currentStepIndex == stepIndexWhenStarted else { return }
+                withAnimation(.easeIn(duration: 0.5)) {
+                    showContinueButton = true
+                }
             }
         }
     }
 
-    private func startCurrentStep() {
-        isStepActive = true
-        triggerHaptic()
-        scheduleStepTimer()
-    }
-
     private func advanceToNextStep() {
+        // Prevent double-advancement from Timer + AnimatedCountdown both firing
+        guard isStepActive else { return }
+
         stepTimer?.invalidate()
         isStepActive = false
+        showContinueButton = false
 
         if isLastStep {
             withAnimation {
